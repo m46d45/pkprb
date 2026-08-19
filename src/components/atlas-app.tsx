@@ -8,10 +8,7 @@ import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { useMapStore } from "@/lib/store";
-import { HAZARD_LABEL, VIEW_LABEL } from "@/lib/weights";
 import { formatNumber } from "@/lib/utils";
-import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
-import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { cn } from "@/lib/utils";
 
 export function AtlasApp() {
@@ -66,7 +63,7 @@ export function AtlasApp() {
           <div className="absolute inset-0">
             <MapView scores={scores} />
           </div>
-          <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
+          <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start">
             <Button
               variant="secondary"
               size="sm"
@@ -76,13 +73,6 @@ export function AtlasApp() {
               <SlidersHorizontal className="size-3.5" />
               Parameter
             </Button>
-            <div className="pointer-events-auto ml-auto max-w-xs rounded-lg border border-line bg-surface/95 px-3 py-2 text-[11px] leading-relaxed text-muted shadow-sm">
-              <p className="font-medium text-ink">
-                {VIEW_LABEL[viewMode]} · {HAZARD_LABEL[hazard]}
-              </p>
-              IDPKI per juta penduduk. Bukan peta kesiapan atau ketangguhan
-              daerah.
-            </div>
           </div>
           <div className="absolute bottom-3 left-3 z-10 max-w-sm rounded-lg border border-line bg-surface/95 p-3 shadow-sm">
             {viewMode === "keselarasan" ? (
@@ -91,7 +81,7 @@ export function AtlasApp() {
               <p className="text-[12px] text-muted">
                 {viewMode === "risiko"
                   ? "Urutan warna: risiko rendah → tinggi (krem–terracotta)."
-                  : "Urutan warna: IDPKI rendah → tinggi (krem–teal)."}
+                  : "Urutan warna: pendidikan rendah → tinggi (krem–teal)."}
               </p>
             )}
           </div>
@@ -126,8 +116,7 @@ export function AtlasApp() {
             );
           })}
           <span className="ml-auto hidden shrink-0 text-muted lg:block">
-            Senjang dihitung dari risiko − IDPKI
-            (ternormalisasi).
+            Senjang dihitung dari risiko − IDPKI (ternormalisasi).
           </span>
         </div>
       </footer>
@@ -136,7 +125,6 @@ export function AtlasApp() {
 }
 
 function Header() {
-  const { user, isPending } = useCurrentUserState();
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line bg-surface px-4">
       <Link to="/" className="flex items-baseline gap-2 no-underline">
@@ -146,25 +134,12 @@ function Header() {
         </span>
       </Link>
       <nav className="ml-auto flex items-center gap-3 text-[13px]">
-        <Link to="/metodologi" className="text-muted hover:text-ink">
+        <Link
+          to="/metodologi"
+          className="rounded-md border border-line px-3 py-1.5 hover:border-ink"
+        >
           Metodologi
         </Link>
-        {isPending ? (
-          <div className="size-8 animate-pulse rounded-full bg-paper" />
-        ) : user ? (
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        ) : (
-          <SignedOut>
-            <Link
-              to="/login"
-              className="rounded-md border border-line px-3 py-1.5 hover:border-ink"
-            >
-              Masuk
-            </Link>
-          </SignedOut>
-        )}
       </nav>
     </header>
   );
