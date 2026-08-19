@@ -203,7 +203,7 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
           <p className="mt-3">
             Normalisasi per juta penduduk mencegah Jawa otomatis “tinggi”
             hanya karena jumlah kampus. Tab <em>Pendidikan</em> mewarnai
-            provinsi menurut IDPKI (krem → teal).
+            skala mutlak 0–15 (krem → teal), bukan min–maks 38 provinsi.
           </p>
         </section>
 
@@ -216,8 +216,9 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
             relatif untuk prototipe — bukan salinan sel resmi IRBI/BNPB.
           </p>
           <p className="mt-3">
-            Tab <em>Risiko</em> mewarnai min–maks di antara 38 provinsi (krem →
-            terracotta) pada bahaya yang sedang dipilih.
+            Tab <em>Risiko</em> memakai skala mutlak: 0–100 untuk bahaya
+            tunggal, 0–200 untuk komposit IRBI. Warna tidak distretch ke
+            provinsi terendah–tertinggi.
           </p>
         </section>
 

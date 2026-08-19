@@ -2,7 +2,7 @@ import { useMemo, useRef, useState, type MouseEvent } from "react";
 import { geoMercator, geoPath } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
-import { bivariateColor, EDU_RAMP, rampColor, RISK_RAMP } from "@/lib/palette";
+import { bivariateColor, EDU_CAP, EDU_RAMP, rampColor, RISK_RAMP, riskCap } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
@@ -51,6 +51,7 @@ function rewindGeo(geo: Geo): Geo {
 export function MapCanvas({ geo, scores }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const viewMode = useMapStore((s) => s.viewMode);
+  const hazard = useMapStore((s) => s.hazard);
   const selectedId = useMapStore((s) => s.selectedId);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
   const [hover, setHover] = useState<{
@@ -69,11 +70,6 @@ export function MapCanvas({ geo, scores }: Props) {
     () => new Map(scores.map((s) => [s.provinceId, s])),
     [scores],
   );
-
-  const idpkiMin = Math.min(...scores.map((s) => s.idpki));
-  const idpkiMax = Math.max(...scores.map((s) => s.idpki), 0.001);
-  const riskMin = Math.min(...scores.map((s) => s.risk));
-  const riskMax = Math.max(...scores.map((s) => s.risk));
 
   const drawn = useMemo(() => rewindGeo(geo), [geo]);
 
@@ -94,13 +90,9 @@ export function MapCanvas({ geo, scores }: Props) {
     if (!s) return "#cfc6b8";
     if (viewMode === "keselarasan") return bivariateColor(s.riskClass, s.eduClass);
     if (viewMode === "risiko") {
-      const t = (s.risk - riskMin) / Math.max(1e-6, riskMax - riskMin);
-      return rampColor(RISK_RAMP, t);
+      return rampColor(RISK_RAMP, s.risk / riskCap(hazard));
     }
-    return rampColor(
-      EDU_RAMP,
-      (s.idpki - idpkiMin) / Math.max(1e-6, idpkiMax - idpkiMin),
-    );
+    return rampColor(EDU_RAMP, s.idpki / EDU_CAP);
   }
 
   function placeHover(
