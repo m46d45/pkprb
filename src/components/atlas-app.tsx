@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { SlidersHorizontal, X } from "lucide-react";
 import { MapView } from "@/components/map-view";
 import { ControlPanel } from "@/components/control-panel";
+import { ViewToolbar } from "@/components/view-toolbar";
 import { BivariateLegend } from "@/components/bivariate-legend";
 import { RampLegend } from "@/components/ramp-legend";
 import { ProvincePanel } from "@/components/province-panel";
@@ -55,6 +56,7 @@ export function AtlasApp() {
   return (
     <div className="flex h-dvh max-w-[100vw] flex-col overflow-hidden bg-paper text-ink">
       <Header />
+      <ViewToolbar />
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <aside
           className={cn(
