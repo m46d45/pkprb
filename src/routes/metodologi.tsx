@@ -50,7 +50,8 @@ function Metodologi() {
     <main className="min-h-dvh bg-paper">
       <header className="border-b border-line bg-surface px-4 py-4">
         <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-3">
-          <Link to="/" className="font-display text-xl tracking-tight no-underline">
+          <Link to="/" className="flex items-center gap-2 font-display text-xl tracking-tight no-underline">
+            <img src="/favicon.svg?v=2" alt="" width={28} height={28} className="size-7 rounded-md" />
             PKPRB
           </Link>
           <Link

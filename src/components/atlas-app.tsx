@@ -151,7 +151,8 @@ export function AtlasApp() {
 function Header() {
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line bg-surface px-4">
-      <Link to="/" className="flex items-baseline gap-2 no-underline">
+      <Link to="/" className="flex items-center gap-2 no-underline">
+        <img src="/favicon.svg?v=2" alt="" width={28} height={28} className="size-7 rounded-md" />
         <span className="font-display text-xl tracking-tight">PKPRB</span>
         <span className="hidden text-[12px] text-muted sm:inline">
           Peta Keselarasan Pendidikan dan Risiko Bencana
