@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-paper: #f3eee4;
+  --color-surface: #fffaf3;
+  --color-ink: #1f1a16;
+  --color-muted: #6d645a;
+  --color-line: #d4cbbd;
+  --color-accent: #1f1a16;
+  --color-accent-foreground: #f3eee4;
+  --color-risk: #c45c48;
+  --color-edu: #3d7f92;
+  --color-sea: #d5e0dc;
+  --color-ring: #3d7f92;
+  --color-background: #f3eee4;
+  --color-foreground: #1f1a16;
+  --color-card: #fffaf3;
+  --color-border: #d4cbbd;
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  * {
+    border-color: var(--color-line);
+  }
+  html,
+  body,
+  #app {
+    min-height: 100%;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+.leaflet-container {
+  background: var(--color-sea);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  height: 100%;
+  width: 100%;
+}
+.leaflet-control-zoom a {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-line) !important;
+}
+.leaflet-bar {
+  border: 1px solid var(--color-line) !important;
+  box-shadow: none !important;
+}
+.leaflet-tooltip.pkpr-tip {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  box-shadow: none;
+}
+.leaflet-tooltip.pkpr-tip::before {
+  border-top-color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
