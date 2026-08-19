@@ -70,6 +70,7 @@ export function MapCanvas({ geo, scores }: Props) {
     [scores],
   );
 
+  const idpkiMin = Math.min(...scores.map((s) => s.idpki));
   const idpkiMax = Math.max(...scores.map((s) => s.idpki), 0.001);
   const riskMin = Math.min(...scores.map((s) => s.risk));
   const riskMax = Math.max(...scores.map((s) => s.risk));
@@ -96,7 +97,10 @@ export function MapCanvas({ geo, scores }: Props) {
       const t = (s.risk - riskMin) / Math.max(1e-6, riskMax - riskMin);
       return rampColor(RISK_RAMP, t);
     }
-    return rampColor(EDU_RAMP, s.idpki / idpkiMax);
+    return rampColor(
+      EDU_RAMP,
+      (s.idpki - idpkiMin) / Math.max(1e-6, idpkiMax - idpkiMin),
+    );
   }
 
   function placeHover(

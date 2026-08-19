@@ -4,9 +4,11 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { MapView } from "@/components/map-view";
 import { ControlPanel } from "@/components/control-panel";
 import { BivariateLegend } from "@/components/bivariate-legend";
+import { RampLegend } from "@/components/ramp-legend";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
+import { EDU_RAMP, RISK_RAMP } from "@/lib/palette";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -87,12 +89,20 @@ export function AtlasApp() {
           <div className="absolute bottom-3 left-3 z-10 max-w-sm rounded-lg border border-line bg-surface/95 p-3 shadow-sm">
             {viewMode === "keselarasan" ? (
               <BivariateLegend />
+            ) : viewMode === "risiko" ? (
+              <RampLegend
+                title="Risiko"
+                min={Math.min(...scores.map((s) => s.risk))}
+                max={Math.max(...scores.map((s) => s.risk))}
+                ramp={RISK_RAMP}
+              />
             ) : (
-              <p className="text-[12px] text-muted">
-                {viewMode === "risiko"
-                  ? "Urutan warna: risiko rendah → tinggi (krem–terracotta)."
-                  : "Urutan warna: pendidikan rendah → tinggi (krem–teal)."}
-              </p>
+              <RampLegend
+                title="Pendidikan"
+                min={Math.min(...scores.map((s) => s.idpki))}
+                max={Math.max(...scores.map((s) => s.idpki))}
+                ramp={EDU_RAMP}
+              />
             )}
           </div>
         </main>
