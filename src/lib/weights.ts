@@ -23,9 +23,9 @@ export const HAZARD_LABEL: Record<HazardId, string> = {
 };
 
 export const VIEW_LABEL = {
-  keselarasan: "Keselarasan 3×3",
+  idpki: "Pendidikan",
   risiko: "Risiko",
-  idpki: "IDPKI",
+  keselarasan: "Keselarasan",
 } as const;
 
 /** Default relevance 0–1 per discipline × hazard (Delphi prior). */

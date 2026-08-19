@@ -23,7 +23,7 @@ export const DISCIPLINES = [
 
 export type DisciplineId = (typeof DISCIPLINES)[number];
 
-export const VIEW_MODES = ["keselarasan", "risiko", "idpki"] as const;
+export const VIEW_MODES = ["idpki", "risiko", "keselarasan"] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
 export type IabeeStatus = "none" | "provisional" | "general";
