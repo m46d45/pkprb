@@ -72,7 +72,7 @@ export function ProvincePanel({
             label="Senjang (norm)"
             value={formatNumber(score.gap)}
           />
-          <Stat label="Pendidikan" value={formatNumber(score.education)} />
+          <Stat label="Prodi" value={formatNumber(score.education)} />
           <Stat label="Penelitian" value={formatNumber(score.research)} />
           <Stat label="Pengabdian" value={formatNumber(score.service)} />
         </dl>
