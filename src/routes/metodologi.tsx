@@ -75,6 +75,10 @@ function Metodologi() {
             <a href="/Metodologi-PKPRB.docx" className="text-ink underline underline-offset-2">
               Unduh versi Word
             </a>
+            {" · "}
+            <a href="/Template-Data-PKPRB.xlsx" className="text-ink underline underline-offset-2">
+              Template data Excel
+            </a>
             .
           </p>
         </div>
