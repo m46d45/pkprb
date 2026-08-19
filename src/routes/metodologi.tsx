@@ -71,7 +71,11 @@ function Metodologi() {
           <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
             Peta Keselarasan Pendidikan dan Risiko Bencana. Dokumen ini
             menjelaskan rumus yang benar-benar dijalankan peta, supaya tim
-            dapat meninjau asumsi, bobot, dan celah data.
+            dapat meninjau asumsi, bobot, dan celah data.{" "}
+            <a href="/Metodologi-PKPRB.docx" className="text-ink underline underline-offset-2">
+              Unduh versi Word
+            </a>
+            .
           </p>
         </div>
       </header>
