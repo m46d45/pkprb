@@ -1,12 +1,41 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { DISCIPLINES, HAZARDS } from "@/lib/types";
+import { centers } from "@/data/centers";
+import { DISCIPLINES, STRATA_LEVELS } from "@/lib/types";
+import type { HazardId } from "@/lib/types";
 import {
+  DEFAULT_ACC,
+  DEFAULT_STRATA,
   DEFAULT_WEIGHTS,
   DISCIPLINE_LABEL,
   HAZARD_LABEL,
+  STRATA_LABEL,
 } from "@/lib/weights";
 
-export const Route = createFileRoute("/metodologi")({ component: Metodologi });
+export const Route = createFileRoute("/metodologi")({
+  component: Metodologi,
+  head: () => ({
+    meta: [
+      {
+        title: "Metodologi PKPRB — Peta Keselarasan Pendidikan dan Risiko Bencana",
+      },
+    ],
+  }),
+});
+
+const HAZARD_ROWS: HazardId[] = [
+  "gempa",
+  "tsunami",
+  "banjir",
+  "longsor",
+  "likuefaksi",
+  "gunungapi",
+  "karhutla",
+  "composite",
+];
+
+function dec(n: number) {
+  return n.toFixed(2).replace(".", ",");
+}
 
 function Formula({ children }: { children: string }) {
   return (
@@ -20,31 +49,97 @@ function Metodologi() {
   return (
     <main className="min-h-dvh bg-paper">
       <header className="border-b border-line bg-surface px-4 py-4">
-        <Link to="/" className="text-sm text-muted hover:text-ink">
-          ← Peta
-        </Link>
-        <h1 className="mt-2 font-display text-3xl">Metodologi PKPRB</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
-          Semua rumus di bawah ini adalah yang dijalankan peta. Bukan peta
-          kesiapan, ketangguhan, atau kapasitas kelembagaan daerah.
-        </p>
+        <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-3">
+          <Link to="/" className="font-display text-xl tracking-tight no-underline">
+            PKPRB
+          </Link>
+          <Link
+            to="/"
+            className="rounded-md border border-line px-3 py-1.5 text-[13px] hover:border-ink"
+          >
+            ← Buka peta
+          </Link>
+        </div>
+        <div className="mx-auto mt-6 max-w-3xl">
+          <p className="text-[11px] tracking-wide text-muted uppercase">
+            Prototipe · 20 Agustus 2026 · P2MI Multidisiplin FTSL ITB
+          </p>
+          <h1 className="mt-1 font-display text-3xl leading-tight">
+            Metodologi PKPRB
+          </h1>
+          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
+            Peta Keselarasan Pendidikan dan Risiko Bencana. Dokumen ini
+            menjelaskan rumus yang benar-benar dijalankan peta, supaya tim
+            dapat meninjau asumsi, bobot, dan celah data.
+          </p>
+        </div>
       </header>
 
       <article className="mx-auto max-w-3xl space-y-12 px-4 py-10 text-[15px] leading-relaxed">
+        <aside className="rounded-lg border border-line bg-surface px-4 py-3 text-sm">
+          <p className="font-medium">Bukan peta kesiapan atau ketangguhan daerah.</p>
+          <p className="mt-1 text-muted">
+            PKPRB memetakan keselarasan antara profil risiko dan dukungan
+            pendidikan tinggi (prodi, penelitian, pengabdian). Tidak mengukur
+            BPBD, SNI, stok insinyur, atau mutu lulusan di lapangan.
+          </p>
+        </aside>
+
         <section>
-          <h2 className="font-display text-2xl">Tiga lapisan tampilan</h2>
+          <h2 className="font-display text-2xl">Masukan yang kami butuhkan</h2>
+          <p className="mt-3 text-muted">
+            Silakan uji peta lalu komentari butir berikut. Geser sliders: peta
+            dan rumus ini sama.
+          </p>
+          <ol className="mt-4 list-decimal space-y-2 pl-5">
+            <li>
+              Matriks bobot disiplin × bahaya (prior Delphi). Apakah sipil
+              harus 1,00 di gempa? Apakah Planologi 0,40 terlalu rendah?
+            </li>
+            <li>
+              Jenjang S1/S2/S3 default semua 1,00. Perlukah S2/S3 lebih tinggi?
+            </li>
+            <li>
+              IABEE dipetakan ke akreditasi Internasional, bukan bonus di atas
+              Unggul. Setuju?
+            </li>
+            <li>
+              Hanya ITB, UI, UGM, ITS yang disebut PT internasional untuk
+              spillover. Tambah IPB, Unpad, Unhas, atau lainnya?
+            </li>
+            <li>
+              Besaran spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau.
+              Terlalu besar, terlalu kecil, atau arahnya salah?
+            </li>
+            <li>
+              Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
+              0–15 per juta. Cap 15 terlalu ketat?
+            </li>
+            <li>
+              Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan,
+              multidisiplin masih kurasi awal — bukan direktori BAN-PT lengkap.
+            </li>
+            <li>
+              Label kuadran: Senjang, Selaras, Berlebih, Relevan.
+            </li>
+          </ol>
+        </section>
+
+        <section>
+          <h2 className="font-display text-2xl">Cara membaca peta</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
-              <strong>Pendidikan</strong> — IDPKI (Indeks Dukungan Pendidikan
-              untuk Ketangguhan Infrastruktur), per juta penduduk.
+              <strong>Pendidikan</strong> — indeks per juta penduduk (IDPKI),
+              skala warna mutlak 0–15.
             </li>
             <li>
-              <strong>Risiko</strong> — skor komposit bergaya IRBI atau profil
-              per bahaya.
+              <strong>Risiko</strong> — komposit bergaya IRBI atau satu jenis
+              bahaya. Skala mutlak 0–100 (0–200 untuk komposit).
             </li>
             <li>
-              <strong>Keselarasan</strong> — matriks 3×3: tertil risiko × tertil
-              IDPKI.
+              <strong>Keselarasan</strong> — matriks 3×3 tertil risiko × tertil
+              pendidikan di antara 38 provinsi. Ini satu-satunya tampilan yang
+              memang relatif antarprovinsi.
             </li>
           </ol>
         </section>
@@ -52,8 +147,7 @@ function Metodologi() {
         <section>
           <h2 className="font-display text-2xl">1. Skor prodi</h2>
           <p className="mt-3">
-            Tidak ada toggle. Bobot 0 berarti prodi, jenjang, atau akreditasi
-            itu tidak dihitung. Setiap program studi menyumbang:
+            Tidak ada toggle. Bobot 0 = tidak dihitung. Setiap program studi:
           </p>
           <Formula>
             {`E_prodi = w(disiplin, bahaya)
@@ -62,30 +156,28 @@ function Metodologi() {
           </Formula>
           <h3 className="mt-6 font-display text-xl">Jenjang</h3>
           <p className="mt-3">
-            Default sementara sama (1,00) agar sensitivitas disiplin lebih
-            mudah dibaca. D4 memakai bobot S1. Geser sliders untuk membedakan
-            S2/S3.
+            Default sementara sama, agar perbedaan antar-disiplin mudah dibaca.
+            D4 memakai bobot S1.
           </p>
           <SimpleTable
             head={["Jenjang", "Default"]}
-            rows={[
-              ["S1 (dan D4)", "1,00"],
-              ["S2", "1,00"],
-              ["S3", "1,00"],
-            ]}
+            rows={STRATA_LEVELS.map((s) => [
+              s === "S1" ? "S1 (dan D4)" : STRATA_LABEL[s],
+              dec(DEFAULT_STRATA[s]),
+            ])}
           />
           <h3 className="mt-6 font-display text-xl">Akreditasi prodi</h3>
           <p className="mt-3">
-            IABEE (General atau Provisional) dipetakan ke Internasional —
-            bukan bonus terpisah, agar tidak dihitung dua kali di atas Unggul.
+            IABEE General atau Provisional → Internasional. Tidak ditumpuk di
+            atas Unggul.
           </p>
           <SimpleTable
             head={["Peringkat prodi", "Default"]}
             rows={[
-              ["Internasional (IABEE)", "1,00"],
-              ["Unggul atau A", "0,90"],
-              ["Baik Sekali atau B", "0,80"],
-              ["Baik, C, atau terakreditasi lain", "0,70"],
+              ["Internasional (IABEE)", dec(DEFAULT_ACC.internasional)],
+              ["Unggul atau A", dec(DEFAULT_ACC.unggul)],
+              ["Baik Sekali atau B", dec(DEFAULT_ACC["baik-sekali"])],
+              ["Baik, C, atau terakreditasi lain", dec(DEFAULT_ACC.baik)],
             ]}
           />
         </section>
@@ -93,14 +185,13 @@ function Metodologi() {
         <section>
           <h2 className="font-display text-2xl">2. Bobot disiplin × bahaya</h2>
           <p className="mt-3">
-            <em>w</em> adalah prior Delphi (0–1). Nilai default mengikuti jenis
-            bahaya yang dipilih; sliders di peta menimpa nilai ini secara
-            langsung. Sipil tinggi pada gempa dan likuefaksi; Planologi lebih tinggi
-            pada tsunami dan banjir; geologi tinggi pada longsor dan gunung api;
-            kelautan tinggi pada tsunami.
+            Prior 0–1, berganti otomatis saat jenis bahaya dipilih, lalu dapat
+            digeser. Sipil tinggi pada gempa dan likuefaksi; Planologi pada
+            tsunami dan banjir; geologi pada longsor dan gunung api; kelautan
+            pada tsunami.
           </p>
           <div className="mt-4 overflow-x-auto rounded-lg border border-line">
-            <table className="min-w-[720px] w-full text-left text-[12px]">
+            <table className="min-w-[760px] w-full text-left text-[12px]">
               <thead className="bg-surface">
                 <tr>
                   <th className="px-3 py-2 font-medium">Bahaya</th>
@@ -112,12 +203,12 @@ function Metodologi() {
                 </tr>
               </thead>
               <tbody>
-                {HAZARDS.map((h) => (
+                {HAZARD_ROWS.map((h) => (
                   <tr key={h} className="border-t border-line">
                     <td className="px-3 py-1.5">{HAZARD_LABEL[h]}</td>
                     {DISCIPLINES.map((d) => (
                       <td key={d} className="px-2 py-1.5 tabular-nums">
-                        {DEFAULT_WEIGHTS[h][d].toFixed(2)}
+                        {dec(DEFAULT_WEIGHTS[h][d])}
                       </td>
                     ))}
                   </tr>
@@ -130,8 +221,7 @@ function Metodologi() {
         <section>
           <h2 className="font-display text-2xl">3. Penelitian: pusat studi</h2>
           <p className="mt-3">
-            Slider “Keberadaan pusat studi” (w_pusat, default 1) mengali seluruh
-            kontribusi penelitian. Nol berarti pusat studi tidak dihitung.
+            Slider w_pusat (default 1). Nol = pusat studi tidak dihitung.
           </p>
           <Formula>
             {`R_pusat = w_pusat × 1,35 × kematangan × kesesuaian × nasional`}
@@ -153,8 +243,9 @@ function Metodologi() {
         <section>
           <h2 className="font-display text-2xl">4. Pengabdian: layanan kepakaran</h2>
           <p className="mt-3">
-            Dipisah dari penelitian. Hanya pusat yang punya rekam PkM /
-            layanan kepakaran. Slider w_kepakaran default 1.
+            Dipisah dari penelitian. Hanya pusat yang punya rekam PkM. Slider
+            w_kepakaran default 1. Basis data masih proxy dari pusat studi,
+            bukan direktori layanan kepakaran tersendiri.
           </p>
           <Formula>
             {`K_kepakaran = w_kepakaran × 1,10 × kematangan × kesesuaian`}
@@ -173,23 +264,19 @@ function Metodologi() {
           <h2 className="font-display text-2xl">5. Spillover antarprovinsi</h2>
           <p className="mt-3">
             Mengikuti <strong>akreditasi perguruan tinggi</strong>, bukan
-            peringkat prodi. Prodi Unggul di kampus Baik tidak memancar ke
-            pulau lain. Slider w_spill (default 1) menaik-turunkan semua
-            persentase. Provinsi asal tetap menerima 100% skornya.
+            peringkat prodi. Provinsi asal tetap 100% skornya; tetangganya
+            mendapat tambahan. Slider w_spill (default 1) menaik-turunkan
+            semua persentase.
           </p>
-          <p className="mt-3">
-            Prototipe institusi internasional: ITB, UI, UGM, ITS. Unggul
-            institusi dikurasi; lainnya diinfer dari peringkat program.
-          </p>
-          <Formula>
-            {`pulau sama, PT internasional : 12% × w_spill × skor
-pulau sama, PT unggul         :  8% × w_spill × skor
-pulau sama, PT baik sekali    :  4% × w_spill × skor
-pulau sama, PT baik           :  0
-pulau lain, PT internasional  :  6% × w_spill × skor
-pulau lain, PT unggul         :  3% × w_spill × skor
-pulau lain, selain itu        :  0`}
-          </Formula>
+          <SimpleTable
+            head={["Akreditasi PT", "Pulau yang sama", "Pulau lain"]}
+            rows={[
+              ["Internasional (ITB, UI, UGM, ITS)", "12% × w_spill", "6% × w_spill"],
+              ["Unggul", "8% × w_spill", "3% × w_spill"],
+              ["Baik Sekali", "4% × w_spill", "0"],
+              ["Baik", "0", "0"],
+            ]}
+          />
         </section>
 
         <section>
@@ -201,24 +288,23 @@ pulau lain, selain itu        :  0`}
 IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
           </Formula>
           <p className="mt-3">
-            Normalisasi per juta penduduk mencegah Jawa otomatis “tinggi”
-            hanya karena jumlah kampus. Tab <em>Pendidikan</em> mewarnai
-            skala mutlak 0–15 (krem → teal), bukan min–maks 38 provinsi.
+            Per juta penduduk, supaya Jawa tidak otomatis “tinggi” hanya
+            karena jumlah kampus. Tab Pendidikan mewarnai skala mutlak 0–15.
+            Nilai di atas 15 tetap dihitung, warnanya menempel di ujung teal.
           </p>
         </section>
 
         <section>
           <h2 className="font-display text-2xl">7. Risiko</h2>
           <p className="mt-3">
-            Skor komposit dikalibrasi ke angka publik IRBI 2024: Maluku 161,5;
+            Komposit dikalibrasi ke angka publik IRBI 2024: Maluku 161,5;
             Maluku Utara 145,09; DKI Jakarta 59,29. Skor per bahaya (gempabumi,
-            tsunami, banjir, longsor, likuefaksi, gunung api, karhutla) bersifat
-            relatif untuk prototipe — bukan salinan sel resmi IRBI/BNPB.
+            tsunami, banjir, longsor, likuefaksi, gunung api, karhutla) adalah
+            profil relatif prototipe — bukan sel resmi IRBI/BNPB.
           </p>
           <p className="mt-3">
-            Tab <em>Risiko</em> memakai skala mutlak: 0–100 untuk bahaya
-            tunggal, 0–200 untuk komposit IRBI. Warna tidak distretch ke
-            provinsi terendah–tertinggi.
+            Warna Risiko: 0–100 untuk bahaya tunggal, 0–200 untuk komposit.
+            Tidak distretch ke provinsi terendah–tertinggi.
           </p>
         </section>
 
@@ -226,7 +312,7 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
           <h2 className="font-display text-2xl">8. Tertil dan matriks 3×3</h2>
           <p className="mt-3">
             Kelas 0 / 1 / 2 dihitung ulang setiap kali parameter berubah, dari
-            kuantil empiris 38 provinsi:
+            kuantil empiris 38 provinsi (ini perbandingan relatif, sengaja):
           </p>
           <Formula>
             {`kelas = 0  jika nilai ≤ kuantil 1/3
@@ -234,26 +320,27 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
       = 2  jika di atas itu`}
           </Formula>
           <p className="mt-3">
-            Sumbu tegak: tertil risiko (atas = tinggi). Sumbu datar: tertil
-            IDPKI / pendidikan (kanan = tinggi). Empat sudut:
+            Tegak: tertil risiko (atas = tinggi). Datar: tertil pendidikan
+            (kanan = tinggi).
           </p>
           <SimpleTable
-            head={["Risiko", "Pendidikan", "Kuadran"]}
+            head={["Risiko", "Pendidikan", "Kuadran", "Arti singkat"]}
             rows={[
-              ["tinggi (2)", "rendah (0)", "Senjang"],
-              ["tinggi (2)", "tinggi (2)", "Selaras"],
-              ["rendah (0)", "tinggi (2)", "Berlebih"],
-              ["rendah (0)", "rendah (0)", "Relevan"],
-              ["lainnya", "lainnya", "Menengah"],
+              ["tinggi", "rendah", "Senjang", "Prioritas intervensi pendidikan"],
+              ["tinggi", "tinggi", "Selaras", "Simpul yang sudah sepadan"],
+              ["rendah", "tinggi", "Berlebih", "Kapasitas lebih dari bebannya"],
+              ["rendah", "rendah", "Relevan", "Sebanding pada beban kecil"],
+              ["menengah", "menengah", "Menengah", "Bukan sudut matriks"],
             ]}
           />
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">9. Indeks senjang (prioritas)</h2>
+          <h2 className="font-display text-2xl">9. Indeks senjang</h2>
           <p className="mt-3">
             Footer peta mengurutkan enam provinsi dengan senjang terbesar.
-            Risiko dan IDPKI dinormalisasi min–maks ke 0–1, lalu:
+            Untuk ranking ini, risiko dan IDPKI dinormalisasi min–maks 38
+            provinsi ke 0–1:
           </p>
           <Formula>
             {`risiko_norm = (R − min R) / (max R − min R)
@@ -262,9 +349,8 @@ IDPKI_norm  = (E − min E) / (max E − min E)
 senjang = risiko_norm − IDPKI_norm`}
           </Formula>
           <p className="mt-3">
-            Nilai mendekati +1: risiko relatif tinggi, pendidikan relatif
-            rendah. Nilai negatif: pendidikan relatif lebih tinggi daripada
-            risiko.
+            Mendekati +1: risiko relatif tinggi, pendidikan relatif rendah.
+            Negatif: pendidikan relatif lebih tinggi daripada risiko.
           </p>
         </section>
 
@@ -275,35 +361,49 @@ senjang = risiko_norm − IDPKI_norm`}
             <li>14 prodi kebencanaan (BAN-PT).</li>
             <li>
               Kurasi awal: 13 Planologi, 10 geologi, 8 arsitektur, 8
-              lingkungan, 8 kelautan, 9 multidisiplin — bukan direktori BAN-PT
-              lengkap; geser bobot ke 0 untuk mematikannya.
+              lingkungan, 8 kelautan, 9 multidisiplin.
             </li>
             <li>
-              13 pusat studi kebencanaan, sekaligus proxy layanan kepakaran
-              (TDMRC USK, PSB Unand, PSBA UGM, RCDM ITB, PUI Gambut Unri,
-              Nalodo Untad, dan lainnya).
+              13 pusat studi, sekaligus proxy layanan kepakaran (daftar di
+              bawah).
             </li>
             <li>
-              Akreditasi institusi: prototipe (4 internasional; sisanya Unggul /
-              Baik Sekali / Baik).
+              Akreditasi institusi: prototipe. Internasional = ITB, UI, UGM,
+              ITS; Unggul dikurasi; sisanya diinfer dari peringkat program.
             </li>
-            <li>Penduduk: angka prototipe per provinsi (38, termasuk pemekaran Papua).</li>
+            <li>Penduduk: angka prototipe, 38 provinsi termasuk pemekaran Papua.</li>
             <li>Batas administrasi GeoJSON 38 provinsi.</li>
+          </ul>
+          <h3 className="mt-6 font-display text-xl">Pusat studi dalam basis</h3>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-[14px]">
+            {centers.map((c) => (
+              <li key={c.id}>
+                <span className="font-medium">{c.name}</span>
+                {` — ${c.university} (${c.province}). ${c.focus}`}
+              </li>
+            ))}
           </ul>
         </section>
 
         <section>
           <h2 className="font-display text-2xl">Yang tidak diklaim</h2>
           <p className="mt-3">
-            PKPRB tidak mengukur kesiapsiagaan BPBD, kepatuhan SNI, stok
-            insinyur di lapangan, atau mutu lulusan. Bobot disiplin × bahaya
-            adalah prior yang dapat digeser. Inventaris prodi dan pusat studi
-            perlu validasi berkala. Angka IRBI komposit dikalibrasi ke publikasi
-            2024, bukan unduhan resmi per kabupaten.
+            PKPRB bukan indeks kesiapsiagaan, bukan ranking kampus, dan bukan
+            unduhan resmi IRBI per kabupaten. Bobot dapat digeser; hasil
+            berubah. Inventaris prodi non-sipil dan akreditasi institusi
+            perlu validasi BAN-PT. Skor bahaya selain komposit bersifat
+            profil kerja, bukan angka BNPB.
           </p>
-          <p className="mt-3 text-sm text-muted">
-            Terkait P2MI Multidisiplin FTSL ITB 2026, Mainstreaming Disaster
-            Resiliency in Infrastructure Systems.
+          <p className="mt-4 text-sm text-muted">
+            P2MI Multidisiplin FTSL ITB 2026 — Mainstreaming Disaster
+            Resiliency in Infrastructure Systems. Peta:{" "}
+            <a href="https://pkprb.vercel.app">pkprb.vercel.app</a>
+            {" · "}
+            dokumen ini:{" "}
+            <a href="https://pkprb.vercel.app/metodologi">
+              pkprb.vercel.app/metodologi
+            </a>
+            .
           </p>
         </section>
       </article>
@@ -345,3 +445,4 @@ function SimpleTable({
     </div>
   );
 }
+
