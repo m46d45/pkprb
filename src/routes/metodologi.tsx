@@ -31,7 +31,7 @@ function Metodologi() {
             </li>
             <li>
               <strong>Keselarasan 3×3</strong> — tertil risiko × tertil IDPKI.
-              Kuadran intervensi: kesenjangan kapasitas pendidikan.
+              Kuadran intervensi: senjang (risiko tinggi, IDPKI rendah).
             </li>
           </ol>
         </section>

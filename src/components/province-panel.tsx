@@ -64,7 +64,7 @@ export function ProvincePanel({
           <Stat label="IDPKI / juta" value={formatNumber(score.idpki)} />
           <Stat label="Penduduk" value={formatInt(p.population)} />
           <Stat
-            label="Kesenjangan (norm)"
+            label="Senjang (norm)"
             value={formatNumber(score.gap)}
           />
         </dl>

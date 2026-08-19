@@ -203,9 +203,9 @@ export function centersIn(provinceName: string) {
 }
 
 export const QUADRANT_LABEL: Record<Quadrant, string> = {
-  kesenjangan: "Kesenjangan kapasitas pendidikan",
-  selaras: "Selaras / simpul",
-  surplus: "Surplus kapasitas",
-  "beban-rendah": "Beban rendah",
+  kesenjangan: "Senjang",
+  selaras: "Selaras",
+  surplus: "Berlebih",
+  "beban-rendah": "Relevan",
   menengah: "Menengah",
 };

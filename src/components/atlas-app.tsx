@@ -6,7 +6,7 @@ import { ControlPanel } from "@/components/control-panel";
 import { BivariateLegend } from "@/components/bivariate-legend";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
-import { scoreProvinces, QUADRANT_LABEL, getProvince } from "@/lib/scoring";
+import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { useMapStore } from "@/lib/store";
 import { HAZARD_LABEL, VIEW_LABEL } from "@/lib/weights";
 import { formatNumber } from "@/lib/utils";
@@ -110,7 +110,7 @@ export function AtlasApp() {
       <footer className="hidden max-w-full overflow-hidden border-t border-line bg-surface md:block">
         <div className="flex items-center gap-4 overflow-x-auto px-4 py-2 text-[12px]">
           <span className="shrink-0 font-medium text-muted">
-            Prioritas kesenjangan
+            Prioritas senjang
           </span>
           {gaps.map((g, i) => {
             const p = getProvince(g.provinceId);
@@ -126,7 +126,7 @@ export function AtlasApp() {
             );
           })}
           <span className="ml-auto hidden shrink-0 text-muted lg:block">
-            {QUADRANT_LABEL.kesenjangan} dihitung dari risiko − IDPKI
+            Senjang dihitung dari risiko − IDPKI
             (ternormalisasi).
           </span>
         </div>
