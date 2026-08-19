@@ -167,7 +167,11 @@ export function MapCanvas({ geo, scores }: Props) {
         >
           <strong>{hover.name}</strong>
           <br />
-          Risiko {formatNumber(hover.risk)} · IDPKI {formatNumber(hover.idpki)}
+          {viewMode === "keselarasan"
+            ? `Risiko ${formatNumber(hover.risk)} · Pendidikan ${formatNumber(hover.idpki)}`
+            : viewMode === "risiko"
+              ? `Risiko ${formatNumber(hover.risk)}`
+              : `Pendidikan ${formatNumber(hover.idpki)}`}
         </div>
       ) : null}
     </div>

@@ -126,7 +126,7 @@ export function AtlasApp() {
             );
           })}
           <span className="ml-auto hidden shrink-0 text-muted lg:block">
-            Senjang dihitung dari risiko − IDPKI (ternormalisasi).
+            Senjang dihitung dari risiko − pendidikan (ternormalisasi).
           </span>
         </div>
       </footer>
