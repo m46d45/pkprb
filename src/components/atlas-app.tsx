@@ -14,11 +14,12 @@ import { cn } from "@/lib/utils";
 export function AtlasApp() {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
-  const enabled = useMapStore((s) => s.enabled);
   const weights = useMapStore((s) => s.weights);
-  const includeCenters = useMapStore((s) => s.includeCenters);
-  const includeIabee = useMapStore((s) => s.includeIabee);
-  const includeSpillover = useMapStore((s) => s.includeSpillover);
+  const strataWeights = useMapStore((s) => s.strataWeights);
+  const accWeights = useMapStore((s) => s.accWeights);
+  const centerWeight = useMapStore((s) => s.centerWeight);
+  const kepakaranWeight = useMapStore((s) => s.kepakaranWeight);
+  const spilloverWeight = useMapStore((s) => s.spilloverWeight);
   const selectedId = useMapStore((s) => s.selectedId);
   const panelOpen = useMapStore((s) => s.panelOpen);
   const setPanelOpen = useMapStore((s) => s.setPanelOpen);
@@ -29,12 +30,21 @@ export function AtlasApp() {
       scoreProvinces({
         hazard,
         weights: weights[hazard],
-        enabled,
-        includeCenters,
-        includeIabee,
-        includeSpillover,
+        strataWeights,
+        accWeights,
+        centerWeight,
+        kepakaranWeight,
+        spilloverWeight,
       }),
-    [hazard, weights, enabled, includeCenters, includeIabee, includeSpillover],
+    [
+      hazard,
+      weights,
+      strataWeights,
+      accWeights,
+      centerWeight,
+      kepakaranWeight,
+      spilloverWeight,
+    ],
   );
 
   const selected = scores.find((s) => s.provinceId === selectedId) ?? null;

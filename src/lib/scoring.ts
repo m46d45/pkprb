@@ -1,71 +1,73 @@
 import { centers } from "@/data/centers";
 import { programs } from "@/data/programs";
 import { provinces } from "@/data/provinces";
+import { ptAccreditation } from "@/data/universities";
 import type {
+  AccLevel,
   DisciplineId,
   HazardId,
-  IabeeStatus,
   Program,
   ProvinceScore,
   Quadrant,
+  StrataLevel,
 } from "@/lib/types";
 
 export type ScoringOptions = {
   hazard: HazardId;
   weights: Record<DisciplineId, number>;
-  enabled: Record<DisciplineId, boolean>;
-  includeCenters: boolean;
-  includeIabee: boolean;
-  includeSpillover: boolean;
+  strataWeights: Record<StrataLevel, number>;
+  accWeights: Record<AccLevel, number>;
+  centerWeight: number;
+  kepakaranWeight: number;
+  spilloverWeight: number;
 };
 
-const STRATA: Record<string, number> = { S3: 1, S2: 0.75, S1: 0.5, D4: 0.4 };
-
-function accreditationQ(label: string) {
-  const p = label.toLowerCase();
-  if (p.includes("unggul") || p === "a") return 1;
-  if (p.includes("baik sekali") || p === "b") return 0.8;
-  if (p === "baik" || p === "c") return 0.6;
-  return 0.4;
+export function prodiAccLevel(p: Program): AccLevel {
+  if (p.iabee === "general" || p.iabee === "provisional") return "internasional";
+  const a = p.accreditation.toLowerCase();
+  if (a.includes("unggul") || a === "a") return "unggul";
+  if (a.includes("baik sekali") || a === "b") return "baik-sekali";
+  return "baik";
 }
 
-function iabeeBonus(status: IabeeStatus, include: boolean) {
-  if (!include) return 0;
-  if (status === "general") return 0.25;
-  if (status === "provisional") return 0.1;
-  return 0;
+function strataKey(strata: Program["strata"]): StrataLevel {
+  if (strata === "S3") return "S3";
+  if (strata === "S2") return "S2";
+  return "S1";
 }
-
-const NATIONAL_PT = new Set([
-  "Institut Teknologi Bandung",
-  "Universitas Indonesia",
-  "Universitas Gadjah Mada",
-  "Institut Teknologi Sepuluh Nopember",
-]);
 
 function programScore(p: Program, opt: ScoringOptions) {
-  if (!opt.enabled[p.discipline]) return 0;
   const w = opt.weights[p.discipline] ?? 0;
   if (w <= 0) return 0;
-  return (
-    w *
-    (STRATA[p.strata] ?? 0.5) *
-    accreditationQ(p.accreditation) *
-    (1 + iabeeBonus(p.iabee, opt.includeIabee))
-  );
+  const st = opt.strataWeights[strataKey(p.strata)] ?? 0;
+  if (st <= 0) return 0;
+  const acc = opt.accWeights[prodiAccLevel(p)] ?? 0;
+  if (acc <= 0) return 0;
+  return w * st * acc;
 }
 
-function centerScore(hazard: HazardId, c: (typeof centers)[number]) {
+function centerResearchScore(hazard: HazardId, c: (typeof centers)[number]) {
   const maturity = c.maturity === "anchor" ? 1.35 : c.maturity === "pui" ? 1.2 : 1;
   const match =
-    hazard === "composite"
-      ? 1
-      : c.hazards.includes(hazard)
-        ? 1
-        : 0.2;
+    hazard === "composite" ? 1 : c.hazards.includes(hazard) ? 1 : 0.2;
   const national = c.national ? 1.2 : 1;
-  const pkm = c.pkm ? 1.1 : 1;
-  return 1.35 * maturity * match * national * pkm;
+  return 1.35 * maturity * match * national;
+}
+
+function centerKepakaranScore(hazard: HazardId, c: (typeof centers)[number]) {
+  if (!c.pkm) return 0;
+  const maturity = c.maturity === "anchor" ? 1.2 : c.maturity === "pui" ? 1.1 : 1;
+  const match =
+    hazard === "composite" ? 1 : c.hazards.includes(hazard) ? 1 : 0.2;
+  return 1.1 * maturity * match;
+}
+
+/** Share of source score added to each other province, at spilloverWeight = 1. */
+function spillShares(acc: AccLevel) {
+  if (acc === "internasional") return { island: 0.12, nation: 0.06 };
+  if (acc === "unggul") return { island: 0.08, nation: 0.03 };
+  if (acc === "baik-sekali") return { island: 0.04, nation: 0 };
+  return { island: 0, nation: 0 };
 }
 
 function quantile(sorted: number[], q: number) {
@@ -106,30 +108,44 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   const capacity = new Map<string, number>();
   const education = new Map<string, number>();
   const research = new Map<string, number>();
+  const service = new Map<string, number>();
   for (const p of provinces) {
     capacity.set(p.id, 0);
     education.set(p.id, 0);
     research.set(p.id, 0);
+    service.set(p.id, 0);
   }
 
-  const add = (provName: string, amount: number, bucket: "edu" | "res") => {
+  const add = (
+    provName: string,
+    amount: number,
+    bucket: "edu" | "res" | "svc",
+  ) => {
     const prov = byName.get(provName);
     if (!prov || amount <= 0) return;
     capacity.set(prov.id, (capacity.get(prov.id) ?? 0) + amount);
     if (bucket === "edu") education.set(prov.id, (education.get(prov.id) ?? 0) + amount);
-    else research.set(prov.id, (research.get(prov.id) ?? 0) + amount);
+    else if (bucket === "res") research.set(prov.id, (research.get(prov.id) ?? 0) + amount);
+    else service.set(prov.id, (service.get(prov.id) ?? 0) + amount);
   };
 
-  const spill = (homeName: string, amount: number, national: boolean, bucket: "edu" | "res") => {
-    if (!opt.includeSpillover || amount <= 0) return;
+  const spill = (
+    homeName: string,
+    amount: number,
+    university: string,
+    bucket: "edu" | "res" | "svc",
+  ) => {
+    if (opt.spilloverWeight <= 0 || amount <= 0) return;
     const home = byName.get(homeName);
     if (!home) return;
-    const islandShare = national ? 0.1 : 0.06;
-    const nationShare = national ? 0.05 : 0;
+    const { island, nation } = spillShares(ptAccreditation(university));
+    const islandShare = island * opt.spilloverWeight;
+    const nationShare = nation * opt.spilloverWeight;
+    if (islandShare <= 0 && nationShare <= 0) return;
     for (const p of provinces) {
       if (p.id === home.id) continue;
       if (p.island === home.island) add(p.name, amount * islandShare, bucket);
-      else if (nationShare) add(p.name, amount * nationShare, bucket);
+      else if (nationShare > 0) add(p.name, amount * nationShare, bucket);
     }
   };
 
@@ -137,20 +153,28 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
     const s = programScore(prog, opt);
     if (s <= 0) continue;
     add(prog.province, s, "edu");
-    const national = NATIONAL_PT.has(prog.university) || prog.iabee === "general";
-    spill(prog.province, s, national, "edu");
+    spill(prog.province, s, prog.university, "edu");
   }
 
-  if (opt.includeCenters) {
+  if (opt.centerWeight > 0) {
     for (const c of centers) {
-      const s = centerScore(opt.hazard, c);
+      const s = opt.centerWeight * centerResearchScore(opt.hazard, c);
       add(c.province, s, "res");
-      spill(c.province, s, c.national, "res");
+      spill(c.province, s, c.university, "res");
     }
   }
 
-  const rows: Omit<ProvinceScore, "riskClass" | "eduClass" | "quadrant" | "gap">[] = provinces.map(
-    (p) => {
+  if (opt.kepakaranWeight > 0) {
+    for (const c of centers) {
+      const s = opt.kepakaranWeight * centerKepakaranScore(opt.hazard, c);
+      if (s <= 0) continue;
+      add(c.province, s, "svc");
+      spill(c.province, s, c.university, "svc");
+    }
+  }
+
+  const rows: Omit<ProvinceScore, "riskClass" | "eduClass" | "quadrant" | "gap">[] =
+    provinces.map((p) => {
       const cap = capacity.get(p.id) ?? 0;
       const popM = p.population / 1_000_000;
       const idpki = popM > 0 ? cap / popM : 0;
@@ -162,9 +186,9 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
         capacity: cap,
         education: education.get(p.id) ?? 0,
         research: research.get(p.id) ?? 0,
+        service: service.get(p.id) ?? 0,
       };
-    },
-  );
+    });
 
   const risks = rows.map((r) => r.risk);
   const edus = rows.map((r) => r.idpki);
@@ -194,7 +218,11 @@ export function getProvince(id: string) {
 
 export function programsIn(provinceName: string, opt: ScoringOptions) {
   return programs.filter(
-    (p) => p.province === provinceName && opt.enabled[p.discipline] && (opt.weights[p.discipline] ?? 0) > 0,
+    (p) =>
+      p.province === provinceName &&
+      (opt.weights[p.discipline] ?? 0) > 0 &&
+      (opt.strataWeights[strataKey(p.strata)] ?? 0) > 0 &&
+      (opt.accWeights[prodiAccLevel(p)] ?? 0) > 0,
   );
 }
 

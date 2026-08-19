@@ -52,47 +52,40 @@ function Metodologi() {
         <section>
           <h2 className="font-display text-2xl">1. Skor prodi</h2>
           <p className="mt-3">
-            Setiap program studi yang aktif (toggle menyala dan bobot
-            {` > 0`}) menyumbang:
+            Tidak ada toggle. Bobot 0 berarti prodi, jenjang, atau akreditasi
+            itu tidak dihitung. Setiap program studi menyumbang:
           </p>
           <Formula>
             {`E_prodi = w(disiplin, bahaya)
-        × strata
-        × mutu_akreditasi
-        × (1 + bonus_IABEE)`}
+        × w(jenjang)
+        × w(akreditasi_prodi)`}
           </Formula>
-          <h3 className="mt-6 font-display text-xl">Strata</h3>
-          <SimpleTable
-            head={["Strata", "Nilai"]}
-            rows={[
-              ["S3", "1,00"],
-              ["S2", "0,75"],
-              ["S1", "0,50"],
-              ["D4", "0,40"],
-              ["lainnya (default)", "0,50"],
-            ]}
-          />
-          <h3 className="mt-6 font-display text-xl">Mutu akreditasi</h3>
-          <SimpleTable
-            head={["Peringkat", "Nilai"]}
-            rows={[
-              ["Unggul atau A", "1,00"],
-              ["Baik Sekali atau B", "0,80"],
-              ["Baik atau C", "0,60"],
-              ["Terakreditasi / lainnya", "0,40"],
-            ]}
-          />
-          <h3 className="mt-6 font-display text-xl">Bonus IABEE</h3>
+          <h3 className="mt-6 font-display text-xl">Jenjang</h3>
           <p className="mt-3">
-            Hanya jika pengali IABEE dinyalakan. Diterapkan pada prodi teknik
-            yang tercatat IABEE di data.
+            Default sementara sama (1,00) agar sensitivitas disiplin lebih
+            mudah dibaca. D4 memakai bobot S1. Geser sliders untuk membedakan
+            S2/S3.
           </p>
           <SimpleTable
-            head={["Status", "Bonus"]}
+            head={["Jenjang", "Default"]}
             rows={[
-              ["General", "+0,25"],
-              ["Provisional", "+0,10"],
-              ["Tidak ada / dimatikan", "0"],
+              ["S1 (dan D4)", "1,00"],
+              ["S2", "1,00"],
+              ["S3", "1,00"],
+            ]}
+          />
+          <h3 className="mt-6 font-display text-xl">Akreditasi prodi</h3>
+          <p className="mt-3">
+            IABEE (General atau Provisional) dipetakan ke Internasional —
+            bukan bonus terpisah, agar tidak dihitung dua kali di atas Unggul.
+          </p>
+          <SimpleTable
+            head={["Peringkat prodi", "Default"]}
+            rows={[
+              ["Internasional (IABEE)", "1,00"],
+              ["Unggul atau A", "0,90"],
+              ["Baik Sekali atau B", "0,80"],
+              ["Baik, C, atau terakreditasi lain", "0,70"],
             ]}
           />
         </section>
@@ -102,7 +95,7 @@ function Metodologi() {
           <p className="mt-3">
             <em>w</em> adalah prior Delphi (0–1). Nilai default mengikuti jenis
             bahaya yang dipilih; sliders di peta menimpa nilai ini secara
-            langsung. Sipil tinggi pada gempa dan likuefaksi; PWK lebih tinggi
+            langsung. Sipil tinggi pada gempa dan likuefaksi; Planologi lebih tinggi
             pada tsunami dan banjir; geologi tinggi pada longsor dan gunung api;
             kelautan tinggi pada tsunami.
           </p>
@@ -135,16 +128,13 @@ function Metodologi() {
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">3. Skor pusat studi / PkM</h2>
+          <h2 className="font-display text-2xl">3. Penelitian: pusat studi</h2>
           <p className="mt-3">
-            Jika pengali pusat studi dinyalakan, setiap pusat menambah:
+            Slider “Keberadaan pusat studi” (w_pusat, default 1) mengali seluruh
+            kontribusi penelitian. Nol berarti pusat studi tidak dihitung.
           </p>
           <Formula>
-            {`R_pusat = 1,35
-        × kematangan
-        × kesesuaian_bahaya
-        × nasional
-        × PkM`}
+            {`R_pusat = w_pusat × 1,35 × kematangan × kesesuaian × nasional`}
           </Formula>
           <SimpleTable
             head={["Faktor", "Nilai"]}
@@ -156,37 +146,57 @@ function Metodologi() {
               ["Bahaya tidak tercantum di fokus pusat", "0,20"],
               ["Pusat berjejaring nasional", "1,20"],
               ["Pusat lokal", "1,00"],
-              ["Ada PkM", "1,10"],
-              ["Tanpa PkM", "1,00"],
             ]}
           />
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">4. Spillover antarprovinsi</h2>
+          <h2 className="font-display text-2xl">4. Pengabdian: layanan kepakaran</h2>
           <p className="mt-3">
-            Jika spillover dinyalakan, sebagian skor “tumpah” ke provinsi lain.
-            Kampus dianggap nasional jika termasuk ITB, UI, UGM, ITS, atau
-            memiliki IABEE General. Pusat studi memakai bendera nasional di
-            data.
+            Dipisah dari penelitian. Hanya pusat yang punya rekam PkM /
+            layanan kepakaran. Slider w_kepakaran default 1.
           </p>
           <Formula>
-            {`pulau yang sama, sumber nasional : 10% × skor sumber
-pulau yang sama, sumber lokal    :  6% × skor sumber
-pulau lain, sumber nasional      :  5% × skor sumber
-pulau lain, sumber lokal         :  0`}
+            {`K_kepakaran = w_kepakaran × 1,10 × kematangan × kesesuaian`}
           </Formula>
-          <p className="mt-3 text-sm text-muted">
-            Provinsi asal tetap menerima 100% skornya; spillover bersifat
-            tambahan ke tetangga, bukan redistribusi.
-          </p>
+          <SimpleTable
+            head={["Kematangan", "Pengali"]}
+            rows={[
+              ["Anchor", "1,20"],
+              ["PUI", "1,10"],
+              ["Standar", "1,00"],
+            ]}
+          />
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">5. Kapasitas dan IDPKI</h2>
+          <h2 className="font-display text-2xl">5. Spillover antarprovinsi</h2>
+          <p className="mt-3">
+            Mengikuti <strong>akreditasi perguruan tinggi</strong>, bukan
+            peringkat prodi. Prodi Unggul di kampus Baik tidak memancar ke
+            pulau lain. Slider w_spill (default 1) menaik-turunkan semua
+            persentase. Provinsi asal tetap menerima 100% skornya.
+          </p>
+          <p className="mt-3">
+            Prototipe institusi internasional: ITB, UI, UGM, ITS. Unggul
+            institusi dikurasi; lainnya diinfer dari peringkat program.
+          </p>
           <Formula>
-            {`Kapasitas_provinsi = Σ E_prodi (termasuk spillover)
-                    + Σ R_pusat (termasuk spillover)
+            {`pulau sama, PT internasional : 12% × w_spill × skor
+pulau sama, PT unggul         :  8% × w_spill × skor
+pulau sama, PT baik sekali    :  4% × w_spill × skor
+pulau sama, PT baik           :  0
+pulau lain, PT internasional  :  6% × w_spill × skor
+pulau lain, PT unggul         :  3% × w_spill × skor
+pulau lain, selain itu        :  0`}
+          </Formula>
+        </section>
+
+        <section>
+          <h2 className="font-display text-2xl">6. Kapasitas dan IDPKI</h2>
+          <Formula>
+            {`Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran
+           (masing-masing termasuk spillover)
 
 IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
           </Formula>
@@ -198,7 +208,7 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">6. Risiko</h2>
+          <h2 className="font-display text-2xl">7. Risiko</h2>
           <p className="mt-3">
             Skor komposit dikalibrasi ke angka publik IRBI 2024: Maluku 161,5;
             Maluku Utara 145,09; DKI Jakarta 59,29. Skor per bahaya (gempabumi,
@@ -212,7 +222,7 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">7. Tertil dan matriks 3×3</h2>
+          <h2 className="font-display text-2xl">8. Tertil dan matriks 3×3</h2>
           <p className="mt-3">
             Kelas 0 / 1 / 2 dihitung ulang setiap kali parameter berubah, dari
             kuantil empiris 38 provinsi:
@@ -239,7 +249,7 @@ IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">8. Indeks senjang (prioritas)</h2>
+          <h2 className="font-display text-2xl">9. Indeks senjang (prioritas)</h2>
           <p className="mt-3">
             Footer peta mengurutkan enam provinsi dengan senjang terbesar.
             Risiko dan IDPKI dinormalisasi min–maks ke 0–1, lalu:
@@ -263,13 +273,18 @@ senjang = risiko_norm − IDPKI_norm`}
             <li>90 prodi S1 Teknik Sipil (BAN-PT / LAM Teknik).</li>
             <li>14 prodi kebencanaan (BAN-PT).</li>
             <li>
-              Kurasi awal: 13 PWK, 10 geologi, 8 arsitektur, 8 lingkungan, 8
-              kelautan — bukan direktori BAN-PT lengkap; dapat dimatikan di
-              panel.
+              Kurasi awal: 13 Planologi, 10 geologi, 8 arsitektur, 8
+              lingkungan, 8 kelautan, 9 multidisiplin — bukan direktori BAN-PT
+              lengkap; geser bobot ke 0 untuk mematikannya.
             </li>
             <li>
-              13 pusat studi kebencanaan (antara lain TDMRC USK, PSB Unand, PSBA
-              UGM, RCDM ITB, PUI Gambut Unri, Nalodo Untad).
+              13 pusat studi kebencanaan, sekaligus proxy layanan kepakaran
+              (TDMRC USK, PSB Unand, PSBA UGM, RCDM ITB, PUI Gambut Unri,
+              Nalodo Untad, dan lainnya).
+            </li>
+            <li>
+              Akreditasi institusi: prototipe (4 internasional; sisanya Unggul /
+              Baik Sekali / Baik).
             </li>
             <li>Penduduk: angka prototipe per provinsi (38, termasuk pemekaran Papua).</li>
             <li>Batas administrasi GeoJSON 38 provinsi.</li>

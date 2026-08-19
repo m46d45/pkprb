@@ -1,11 +1,12 @@
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { DISCIPLINES, HAZARDS, VIEW_MODES } from "@/lib/types";
+import { ACC_LEVELS, DISCIPLINES, HAZARDS, STRATA_LEVELS, VIEW_MODES } from "@/lib/types";
 import {
+  ACC_LABEL,
   DISCIPLINE_LABEL,
   HAZARD_LABEL,
+  STRATA_LABEL,
   VIEW_LABEL,
 } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
@@ -14,22 +15,24 @@ import { cn } from "@/lib/utils";
 export function ControlPanel() {
   const hazard = useMapStore((s) => s.hazard);
   const viewMode = useMapStore((s) => s.viewMode);
-  const enabled = useMapStore((s) => s.enabled);
   const weights = useMapStore((s) => s.weights);
-  const includeCenters = useMapStore((s) => s.includeCenters);
-  const includeIabee = useMapStore((s) => s.includeIabee);
-  const includeSpillover = useMapStore((s) => s.includeSpillover);
+  const strataWeights = useMapStore((s) => s.strataWeights);
+  const accWeights = useMapStore((s) => s.accWeights);
+  const centerWeight = useMapStore((s) => s.centerWeight);
+  const kepakaranWeight = useMapStore((s) => s.kepakaranWeight);
+  const spilloverWeight = useMapStore((s) => s.spilloverWeight);
   const setHazard = useMapStore((s) => s.setHazard);
   const setViewMode = useMapStore((s) => s.setViewMode);
-  const toggleDiscipline = useMapStore((s) => s.toggleDiscipline);
   const setWeight = useMapStore((s) => s.setWeight);
-  const setIncludeCenters = useMapStore((s) => s.setIncludeCenters);
-  const setIncludeIabee = useMapStore((s) => s.setIncludeIabee);
-  const setIncludeSpillover = useMapStore((s) => s.setIncludeSpillover);
+  const setStrataWeight = useMapStore((s) => s.setStrataWeight);
+  const setAccWeight = useMapStore((s) => s.setAccWeight);
+  const setCenterWeight = useMapStore((s) => s.setCenterWeight);
+  const setKepakaranWeight = useMapStore((s) => s.setKepakaranWeight);
+  const setSpilloverWeight = useMapStore((s) => s.setSpilloverWeight);
   const resetWeights = useMapStore((s) => s.resetWeights);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       <section>
         <p className="mb-2 text-[11px] font-medium tracking-wide text-muted uppercase">
           Tampilan
@@ -79,87 +82,112 @@ export function ControlPanel() {
       <section>
         <div className="mb-3 flex items-center justify-between">
           <p className="text-[11px] font-medium tracking-wide text-muted uppercase">
-            Bobot prodi
+            Pendidikan
           </p>
           <Button variant="ghost" size="sm" onClick={resetWeights}>
             <RotateCcw className="size-3.5" />
             Reset
           </Button>
         </div>
+        <p className="mb-2 text-[11px] text-muted">Prodi</p>
         <div className="space-y-3">
           {DISCIPLINES.map((d) => (
-            <div key={d} className="space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <label className="flex items-center gap-2 text-[13px]">
-                  <Switch
-                    checked={enabled[d]}
-                    onCheckedChange={() => toggleDiscipline(d)}
-                    aria-label={`Toggle ${DISCIPLINE_LABEL[d]}`}
-                  />
-                  {DISCIPLINE_LABEL[d]}
-                </label>
-                <span className="tabular-nums text-[12px] text-muted">
-                  {enabled[d] ? weights[hazard][d].toFixed(2) : "off"}
-                </span>
-              </div>
-              <Slider
-                min={0}
-                max={1}
-                step={0.05}
-                disabled={!enabled[d]}
-                value={[weights[hazard][d]]}
-                onValueChange={([v]) => setWeight(d, v ?? 0)}
-              />
-            </div>
+            <WeightRow
+              key={d}
+              label={DISCIPLINE_LABEL[d]}
+              value={weights[hazard][d]}
+              onChange={(v) => setWeight(d, v)}
+            />
           ))}
         </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-muted">
-          Bobot mengikuti jenis bahaya yang dipilih. Matriks default: sipil
-          tinggi di gempa, PWK lebih tinggi di tsunami/banjir.
-        </p>
+        <p className="mt-5 mb-2 text-[11px] text-muted">Jenjang</p>
+        <div className="space-y-3">
+          {STRATA_LEVELS.map((s) => (
+            <WeightRow
+              key={s}
+              label={STRATA_LABEL[s]}
+              value={strataWeights[s]}
+              onChange={(v) => setStrataWeight(s, v)}
+            />
+          ))}
+        </div>
+        <p className="mt-5 mb-2 text-[11px] text-muted">Akreditasi prodi</p>
+        <div className="space-y-3">
+          {ACC_LEVELS.map((a) => (
+            <WeightRow
+              key={a}
+              label={ACC_LABEL[a]}
+              value={accWeights[a]}
+              onChange={(v) => setAccWeight(a, v)}
+            />
+          ))}
+        </div>
       </section>
 
-      <section className="space-y-3">
-        <p className="text-[11px] font-medium tracking-wide text-muted uppercase">
-          Pengali mutu
+      <section>
+        <p className="mb-3 text-[11px] font-medium tracking-wide text-muted uppercase">
+          Penelitian
         </p>
-        <ToggleRow
-          label="Pusat studi & PkM"
-          checked={includeCenters}
-          onChange={setIncludeCenters}
+        <WeightRow
+          label="Keberadaan pusat studi"
+          value={centerWeight}
+          onChange={setCenterWeight}
         />
-        <ToggleRow
-          label="Bonus IABEE"
-          checked={includeIabee}
-          onChange={setIncludeIabee}
+      </section>
+
+      <section>
+        <p className="mb-3 text-[11px] font-medium tracking-wide text-muted uppercase">
+          Pengabdian masyarakat
+        </p>
+        <WeightRow
+          label="Keberadaan layanan kepakaran"
+          value={kepakaranWeight}
+          onChange={setKepakaranWeight}
         />
-        <ToggleRow
+      </section>
+
+      <section>
+        <p className="mb-3 text-[11px] font-medium tracking-wide text-muted uppercase">
+          Spillover
+        </p>
+        <WeightRow
           label="Spillover antarprovinsi"
-          checked={includeSpillover}
-          onChange={setIncludeSpillover}
+          value={spilloverWeight}
+          onChange={setSpilloverWeight}
         />
-        <p className="text-[11px] leading-relaxed text-muted">
-          IABEE hanya untuk prodi teknik. Spillover: kampus Unggul/IABEE dan
-          pusat studi nasional menyumbang ke pulau yang sama.
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">
+          Mengikuti akreditasi perguruan tinggi, bukan prodi. Institusi
+          internasional memancar lebih jauh daripada Unggul; Baik tetap lokal.
         </p>
       </section>
     </div>
   );
 }
 
-function ToggleRow({
+function WeightRow({
   label,
-  checked,
+  value,
   onChange,
 }: {
   label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
+  value: number;
+  onChange: (v: number) => void;
 }) {
   return (
-    <label className="flex items-center justify-between gap-3 text-[13px]">
-      {label}
-      <Switch checked={checked} onCheckedChange={onChange} />
-    </label>
+    <div className={cn("space-y-1.5", value <= 0 && "opacity-45")}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[13px]">{label}</span>
+        <span className="tabular-nums text-[12px] text-muted">
+          {value.toFixed(2)}
+        </span>
+      </div>
+      <Slider
+        min={0}
+        max={1}
+        step={0.05}
+        value={[value]}
+        onValueChange={([v]) => onChange(v ?? 0)}
+      />
+    </div>
   );
 }

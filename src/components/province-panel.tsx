@@ -1,12 +1,13 @@
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { centersIn, programsIn, QUADRANT_LABEL } from "@/lib/scoring";
+import { centersIn, programsIn, prodiAccLevel, QUADRANT_LABEL } from "@/lib/scoring";
 import type { ProvinceScore } from "@/lib/types";
-import { DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
+import { ACC_LABEL, DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatInt, formatNumber } from "@/lib/utils";
 import { bivariateColor } from "@/lib/palette";
 import { getProvince } from "@/lib/scoring";
+import { ptAccreditation } from "@/data/universities";
 
 export function ProvincePanel({
   score,
@@ -14,9 +15,12 @@ export function ProvincePanel({
   score: ProvinceScore;
 }) {
   const hazard = useMapStore((s) => s.hazard);
-  const enabled = useMapStore((s) => s.enabled);
   const weights = useMapStore((s) => s.weights);
-  const includeIabee = useMapStore((s) => s.includeIabee);
+  const strataWeights = useMapStore((s) => s.strataWeights);
+  const accWeights = useMapStore((s) => s.accWeights);
+  const centerWeight = useMapStore((s) => s.centerWeight);
+  const kepakaranWeight = useMapStore((s) => s.kepakaranWeight);
+  const spilloverWeight = useMapStore((s) => s.spilloverWeight);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
   const p = getProvince(score.provinceId);
   if (!p) return null;
@@ -24,10 +28,11 @@ export function ProvincePanel({
   const list = programsIn(p.name, {
     hazard,
     weights: weights[hazard],
-    enabled,
-    includeCenters: true,
-    includeIabee,
-    includeSpillover: true,
+    strataWeights,
+    accWeights,
+    centerWeight,
+    kepakaranWeight,
+    spilloverWeight,
   });
   const cs = centersIn(p.name);
 
@@ -67,6 +72,9 @@ export function ProvincePanel({
             label="Senjang (norm)"
             value={formatNumber(score.gap)}
           />
+          <Stat label="Pendidikan" value={formatNumber(score.education)} />
+          <Stat label="Penelitian" value={formatNumber(score.research)} />
+          <Stat label="Pengabdian" value={formatNumber(score.service)} />
         </dl>
         <p className="text-[11px] leading-relaxed text-muted">{p.riskNote}</p>
 
@@ -85,8 +93,8 @@ export function ProvincePanel({
                   {pr.program} · {pr.strata} · {DISCIPLINE_LABEL[pr.discipline]}
                 </p>
                 <p className="text-[11px] text-muted">
-                  {pr.accreditation}
-                  {pr.iabee !== "none" ? ` · IABEE ${pr.iabee}` : ""}
+                  {ACC_LABEL[prodiAccLevel(pr)]}
+                  {` · PT ${ACC_LABEL[ptAccreditation(pr.university)]}`}
                 </p>
               </li>
             ))}

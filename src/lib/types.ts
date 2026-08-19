@@ -13,12 +13,13 @@ export type HazardId = (typeof HAZARDS)[number];
 
 export const DISCIPLINES = [
   "sipil",
-  "bencana",
+  "arsitektur",
   "pwk",
   "geologi",
-  "arsitektur",
   "lingkungan",
   "kelautan",
+  "bencana",
+  "multidisiplin",
 ] as const;
 
 export type DisciplineId = (typeof DISCIPLINES)[number];
@@ -28,6 +29,17 @@ export type ViewMode = (typeof VIEW_MODES)[number];
 
 export type IabeeStatus = "none" | "provisional" | "general";
 export type StrataId = "S1" | "S2" | "S3" | "D4";
+
+export const STRATA_LEVELS = ["S1", "S2", "S3"] as const;
+export type StrataLevel = (typeof STRATA_LEVELS)[number];
+
+export const ACC_LEVELS = [
+  "internasional",
+  "unggul",
+  "baik-sekali",
+  "baik",
+] as const;
+export type AccLevel = (typeof ACC_LEVELS)[number];
 
 export type RiskScores = Record<HazardId, number>;
 
@@ -82,6 +94,7 @@ export type ProvinceScore = {
   capacity: number;
   education: number;
   research: number;
+  service: number;
   riskClass: 0 | 1 | 2;
   eduClass: 0 | 1 | 2;
   quadrant: Quadrant;
