@@ -1,4 +1,5 @@
 import { centers } from "@/data/centers";
+import { events } from "@/data/events";
 import { programs } from "@/data/programs";
 import { provinces } from "@/data/provinces";
 import { ptAccreditation } from "@/data/universities";
@@ -9,6 +10,7 @@ import type {
   Program,
   ProvinceScore,
   Quadrant,
+  ResponsQuadrant,
   StrataLevel,
 } from "@/lib/types";
 
@@ -93,6 +95,19 @@ function klass(values: number[], v: number): 0 | 1 | 2 {
   return 2;
 }
 
+function halfKlass(values: number[], v: number): 0 | 1 {
+  if (values.length === 0) return 0;
+  const t = quantile([...values].sort((a, b) => a - b), 0.5);
+  return v > t ? 1 : 0;
+}
+
+function responsOf(h: 0 | 1, p: 0 | 1): ResponsQuadrant {
+  if (h === 1 && p === 1) return "responsif";
+  if (h === 1 && p === 0) return "tidak-melembaga";
+  if (h === 0 && p === 1) return "antisipatif";
+  return "belum-terespons";
+}
+
 function quadrantOf(r: 0 | 1 | 2, e: 0 | 1 | 2): Quadrant {
   if (r === 2 && e === 0) return "kesenjangan";
   if (r === 2 && e === 2) return "selaras";
@@ -110,18 +125,22 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   const research = new Map<string, number>();
   const service = new Map<string, number>();
   const imported = new Map<string, number>();
+  const localPusat = new Map<string, number>();
   for (const p of provinces) {
     capacity.set(p.id, 0);
     education.set(p.id, 0);
     research.set(p.id, 0);
     service.set(p.id, 0);
     imported.set(p.id, 0);
+    localPusat.set(p.id, 0);
   }
 
   const add = (
     provName: string,
     amount: number,
     bucket: "edu" | "res" | "svc",
+    fromSpill = false,
+    toPusat = true,
   ) => {
     const prov = byName.get(provName);
     if (!prov || amount <= 0) return;
@@ -129,6 +148,9 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
     if (bucket === "edu") education.set(prov.id, (education.get(prov.id) ?? 0) + amount);
     else if (bucket === "res") research.set(prov.id, (research.get(prov.id) ?? 0) + amount);
     else service.set(prov.id, (service.get(prov.id) ?? 0) + amount);
+    if (!fromSpill && toPusat && (bucket === "res" || bucket === "svc")) {
+      localPusat.set(prov.id, (localPusat.get(prov.id) ?? 0) + amount);
+    }
   };
 
   const spill = (
@@ -154,11 +176,11 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
     const nationEach =
       nationOthers.length > 0 ? nationPool / nationOthers.length : 0;
     for (const p of islandOthers) {
-      add(p.name, islandEach, bucket);
+      add(p.name, islandEach, bucket, true);
       imported.set(p.id, (imported.get(p.id) ?? 0) + islandEach);
     }
     for (const p of nationOthers) {
-      add(p.name, nationEach, bucket);
+      add(p.name, nationEach, bucket, true);
       imported.set(p.id, (imported.get(p.id) ?? 0) + nationEach);
     }
   };
@@ -173,7 +195,9 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   if (opt.centerWeight > 0) {
     for (const c of centers) {
       const s = opt.centerWeight * centerResearchScore(opt.hazard, c);
-      add(c.province, s, "res");
+      const matched =
+        opt.hazard === "composite" || c.hazards.includes(opt.hazard);
+      add(c.province, s, "res", false, matched);
       spill(c.province, s, c.university, "res");
     }
   }
@@ -182,12 +206,17 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
     for (const c of centers) {
       const s = opt.kepakaranWeight * centerKepakaranScore(opt.hazard, c);
       if (s <= 0) continue;
-      add(c.province, s, "svc");
+      const matched =
+        opt.hazard === "composite" || c.hazards.includes(opt.hazard);
+      add(c.province, s, "svc", false, matched);
       spill(c.province, s, c.university, "svc");
     }
   }
 
-  const rows: Omit<ProvinceScore, "riskClass" | "eduClass" | "quadrant" | "gap">[] =
+  const rows: Omit<
+    ProvinceScore,
+    "riskClass" | "eduClass" | "quadrant" | "gap" | "historisClass" | "pusatClass" | "respons"
+  >[] =
     provinces.map((p) => {
       const cap = capacity.get(p.id) ?? 0;
       const popM = p.population / 1_000_000;
@@ -196,6 +225,8 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
       // tanpa membuat 1 prodi di provinsi kecil tampak setara ITB.
       const idpki = Math.log(1 + cap);
       const risk = p.risk[opt.hazard];
+      const deaths = historisDeaths(p.name, opt.hazard);
+      const pusat = localPusat.get(p.id) ?? 0;
       return {
         provinceId: p.id,
         risk,
@@ -206,11 +237,15 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
         research: research.get(p.id) ?? 0,
         service: service.get(p.id) ?? 0,
         spillover: imported.get(p.id) ?? 0,
+        deaths,
+        pusat,
       };
     });
 
   const risks = rows.map((r) => r.risk);
   const edus = rows.map((r) => r.idpki);
+  const deathVals = rows.map((r) => r.deaths);
+  const pusatVals = rows.map((r) => r.pusat);
   const minR = Math.min(...risks);
   const maxR = Math.max(...risks);
   const minE = Math.min(...edus);
@@ -219,12 +254,17 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   return rows.map((r) => {
     const riskClass = klass(risks, r.risk);
     const eduClass = klass(edus, r.idpki);
+    const historisClass = halfKlass(deathVals, r.deaths);
+    const pusatClass = halfKlass(pusatVals, r.pusat);
     const riskN = maxR === minR ? 0.5 : (r.risk - minR) / (maxR - minR);
     const eduN = maxE === minE ? 0.5 : (r.idpki - minE) / (maxE - minE);
     return {
       ...r,
       riskClass,
       eduClass,
+      historisClass,
+      pusatClass,
+      respons: responsOf(historisClass, pusatClass),
       quadrant: quadrantOf(riskClass, eduClass),
       gap: riskN - eduN,
     };
@@ -233,6 +273,26 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
 
 export function getProvince(id: string) {
   return byId.get(id);
+}
+
+export function historisDeaths(provinceName: string, hazard: HazardId) {
+  return events
+    .filter(
+      (e) =>
+        e.province === provinceName &&
+        (hazard === "composite" || e.hazards.includes(hazard)),
+    )
+    .reduce((sum, e) => sum + e.deaths, 0);
+}
+
+export function eventsIn(provinceName: string, hazard: HazardId) {
+  return events
+    .filter(
+      (e) =>
+        e.province === provinceName &&
+        (hazard === "composite" || e.hazards.includes(hazard)),
+    )
+    .sort((a, b) => b.year - a.year || b.deaths - a.deaths);
 }
 
 export function programsIn(provinceName: string, opt: ScoringOptions) {
@@ -248,6 +308,13 @@ export function programsIn(provinceName: string, opt: ScoringOptions) {
 export function centersIn(provinceName: string) {
   return centers.filter((c) => c.province === provinceName);
 }
+
+export const RESPONS_LABEL: Record<ResponsQuadrant, string> = {
+  responsif: "Responsif",
+  "tidak-melembaga": "Tidak melembaga",
+  antisipatif: "Antisipatif",
+  "belum-terespons": "Belum terespons",
+};
 
 export const QUADRANT_LABEL: Record<Quadrant, string> = {
   kesenjangan: "Senjang",

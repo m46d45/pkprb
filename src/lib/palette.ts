@@ -10,6 +10,7 @@ export const EDU_RAMP = ["#e7eef0", "#b9d0d6", "#7eafbc", "#3d7f92", "#1b4f5c"];
 
 /** Absolute caps so univariate maps are comparable, not stretched to 38 provinces. */
 export const EDU_CAP = 4;
+export const PUSAT_CAP = 3;
 export const RISK_CAP_HAZARD = 100;
 export const RISK_CAP_COMPOSITE = 200;
 export const DISPLAY_MIN = 1;
@@ -28,6 +29,21 @@ export function toScale10(raw: number, cap: number) {
 
 export function bivariateColor(riskClass: 0 | 1 | 2, eduClass: 0 | 1 | 2) {
   return BIVARIATE[riskClass][eduClass];
+}
+
+/** 2×2: historis (row) × pusat (col). High-risk empty cell is darker. */
+export const RESPONS: string[][] = [
+  ["#e8e2d6", "#3d7f92"],
+  ["#c45c48", "#2f4a58"],
+];
+
+export function responsColor(
+  historisClass: 0 | 1,
+  pusatClass: 0 | 1,
+  riskClass: 0 | 1 | 2,
+) {
+  if (historisClass === 0 && pusatClass === 0 && riskClass === 2) return "#9a3f32";
+  return RESPONS[historisClass][pusatClass];
 }
 
 export function rampColor(ramp: string[], t: number) {

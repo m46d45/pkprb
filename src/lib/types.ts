@@ -24,7 +24,14 @@ export const DISCIPLINES = [
 
 export type DisciplineId = (typeof DISCIPLINES)[number];
 
-export const VIEW_MODES = ["idpki", "risiko", "keselarasan"] as const;
+export const VIEW_MODES = [
+  "idpki",
+  "risiko",
+  "keselarasan",
+  "historis",
+  "pusat",
+  "respons",
+] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
 export type IabeeStatus = "none" | "provisional" | "general";
@@ -87,6 +94,12 @@ export type Quadrant =
   | "beban-rendah"
   | "menengah";
 
+export type ResponsQuadrant =
+  | "responsif"
+  | "tidak-melembaga"
+  | "antisipatif"
+  | "belum-terespons";
+
 export type ProvinceScore = {
   provinceId: string;
   risk: number;
@@ -97,6 +110,11 @@ export type ProvinceScore = {
   research: number;
   service: number;
   spillover: number;
+  deaths: number;
+  pusat: number;
+  historisClass: 0 | 1;
+  pusatClass: 0 | 1;
+  respons: ResponsQuadrant;
   riskClass: 0 | 1 | 2;
   eduClass: 0 | 1 | 2;
   quadrant: Quadrant;

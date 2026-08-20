@@ -6,6 +6,8 @@ import { ControlPanel } from "@/components/control-panel";
 import { ViewToolbar } from "@/components/view-toolbar";
 import { BivariateLegend } from "@/components/bivariate-legend";
 import { RampLegend } from "@/components/ramp-legend";
+import { ResponsLegend } from "@/components/respons-legend";
+import { BubbleLegend } from "@/components/bubble-legend";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
@@ -52,6 +54,11 @@ export function AtlasApp() {
 
   const selected = scores.find((s) => s.provinceId === selectedId) ?? null;
   const gaps = [...scores].sort((a, b) => b.gap - a.gap).slice(0, 6);
+  const roadmap = [...scores]
+    .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
+    .sort((a, b) => b.risk - a.risk)
+    .slice(0, 6);
+  const maxDeaths = Math.max(...scores.map((s) => s.deaths), 1);
 
   return (
     <div className="flex h-dvh max-w-[100vw] flex-col overflow-hidden bg-paper text-ink">
@@ -91,6 +98,10 @@ export function AtlasApp() {
           <div className="absolute bottom-3 left-3 z-10 max-w-sm rounded-lg border border-line bg-surface/95 p-3 shadow-sm">
             {viewMode === "keselarasan" ? (
               <BivariateLegend />
+            ) : viewMode === "respons" ? (
+              <ResponsLegend />
+            ) : viewMode === "historis" ? (
+              <BubbleLegend maxDeaths={maxDeaths} />
             ) : viewMode === "risiko" ? (
               <RampLegend
                 title="Risiko"
@@ -102,6 +113,14 @@ export function AtlasApp() {
                     : "skala 1–10 (dari skor bahaya 0–100)"
                 }
                 ramp={RISK_RAMP}
+              />
+            ) : viewMode === "pusat" ? (
+              <RampLegend
+                title="Pusat & PkM"
+                min={1}
+                max={10}
+                unit="skala 1–10 dari ln(1 + penelitian + pengabdian)"
+                ramp={EDU_RAMP}
               />
             ) : (
               <RampLegend
@@ -128,9 +147,9 @@ export function AtlasApp() {
       <footer className="hidden max-w-full overflow-hidden border-t border-line bg-surface md:block">
         <div className="flex items-center gap-4 overflow-x-auto px-4 py-2 text-[12px]">
           <span className="shrink-0 font-medium text-muted">
-            Prioritas senjang
+            {viewMode === "respons" ? "Roadmap (belum terespons)" : "Prioritas senjang"}
           </span>
-          {gaps.map((g, i) => {
+          {(viewMode === "respons" ? roadmap : gaps).map((g, i) => {
             const p = getProvince(g.provinceId);
             return (
               <button
@@ -139,12 +158,17 @@ export function AtlasApp() {
                 onClick={() => setSelectedId(g.provinceId)}
                 className="shrink-0 rounded-md border border-line px-2 py-1 hover:border-ink"
               >
-                {i + 1}. {p?.name} · {formatNumber(g.gap)}
+                {i + 1}. {p?.name}
+                {viewMode === "respons"
+                  ? ` · risiko ${formatNumber(g.risk, 0)}`
+                  : ` · ${formatNumber(g.gap)}`}
               </button>
             );
           })}
           <span className="ml-auto hidden shrink-0 text-muted lg:block">
-            Senjang dihitung dari risiko − pendidikan (ternormalisasi).
+            {viewMode === "respons"
+              ? "Risiko tinggi, historis rendah, pusat rendah — celah agenda riset."
+              : "Senjang dihitung dari risiko − pendidikan (ternormalisasi)."}
           </span>
         </div>
       </footer>

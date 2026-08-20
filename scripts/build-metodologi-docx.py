@@ -341,6 +341,18 @@ def build():
                 ("Keselarasan", True, False),
                 (" — matriks 3×3 tertil risiko × tertil pendidikan di antara 38 provinsi. Tidak dipaksa jadi satu angka. Tooltip memakai kedua nilai 1–10.", False, False),
             ],
+            [
+                ("Historis", True, False),
+                (" — bubble korban jiwa kejadian signifikan sejak 2000 (kurasi, bukan DIBI lengkap).", False, False),
+            ],
+            [
+                ("Pusat", True, False),
+                (" — massa pusat studi + PkM di provinsi itu (tanpa prodi, tanpa spillover). Skala 1–10.", False, False),
+            ],
+            [
+                ("Respons", True, False),
+                (" — matriks 2×2 historis × pusat. Belum terespons + risiko tinggi = celah roadmap.", False, False),
+            ],
         ],
         numbered=True,
     )
@@ -540,6 +552,41 @@ def build():
         "pendidikan relatif lebih tinggi daripada risiko.",
     )
 
+    heading(doc, "10. Historis, pusat, dan respons")
+    body(
+        doc,
+        "Tiga tampilan ini memilah penelitian/PkM yang mengikuti luka dari yang "
+        "mendahului kejadian — bahan roadmap riset, bukan preparedness. Prodi tetap "
+        "di Pendidikan/Keselarasan. Pusat di peta Respons = stok lokal (spillover tidak dihitung).",
+    )
+    body(
+        doc,
+        "Historis: korban jiwa kejadian signifikan 2000–kini, kurasi publik (bukan DIBI lengkap). "
+        "Satu peristiwa dihitung sekali pada komposit; pada bahaya tunggal jika tercantum di "
+        "daftar bahayanya. Karhutla understated (korban langsung, bukan excess death haze).",
+    )
+    formula(
+        doc,
+        "kelas_historis = 1 jika korban > median 38 provinsi, else 0\n"
+        "kelas_pusat    = 1 jika (R_pusat + K_kepakaran)_lokal > median, else 0",
+    )
+    table(
+        doc,
+        ["Historis", "Pusat", "Kuadran", "Arti"],
+        [
+            ["tinggi", "tinggi", "Responsif", "Kapasitas setelah peristiwa (TDMRC, PSBA, Nalodo)"],
+            ["rendah", "tinggi", "Antisipatif", "Pusat tanpa pemicu lokal — yang ingin ditiru"],
+            ["tinggi", "rendah", "Tidak melembaga", "Terjadi, kelembagaan tidak menempel"],
+            ["rendah", "rendah", "Belum terespons", "Jika risiko tinggi: celah roadmap"],
+        ],
+    )
+    body(
+        doc,
+        "Footer pada tab Respons mengurutkan “belum terespons + risiko tinggi”. "
+        "Ini bukan peta kesiapan; ini daftar wilayah yang risikonya tinggi, memorinya "
+        "kosong, dan pusatnya belum ada.",
+    )
+
     heading(doc, "Sumber data prototipe")
     bullets(
         doc,
@@ -550,6 +597,7 @@ def build():
             "13 pusat studi, sekaligus proxy layanan kepakaran (daftar di bawah).",
             "Akreditasi institusi: prototipe. Internasional = ITB, UI, UGM, ITS; Unggul dikurasi; sisanya diinfer dari peringkat program.",
             "Penduduk: angka prototipe, 38 provinsi termasuk pemekaran Papua.",
+            "Katalog 45 kejadian signifikan 2000–2024 (korban jiwa, kurasi BNPB/EM-DAT/laporan publik) — bukan unduhan DIBI.",
             "Batas administrasi GeoJSON 38 provinsi.",
         ],
     )

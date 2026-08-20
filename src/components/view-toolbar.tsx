@@ -15,14 +15,14 @@ export function ViewToolbar() {
         <p className="hidden shrink-0 text-[11px] font-medium tracking-wide text-muted uppercase sm:block">
           Tampilan
         </p>
-        <div className="grid w-full max-w-sm grid-cols-3 gap-1 rounded-lg bg-paper p-1 sm:w-72">
+        <div className="flex w-full flex-wrap gap-1 rounded-lg bg-paper p-1 sm:w-auto">
           {VIEW_MODES.map((m) => (
             <button
               key={m}
               type="button"
               onClick={() => setViewMode(m)}
               className={cn(
-                "h-8 rounded-md px-1 text-[11px] font-medium transition-colors",
+                "h-8 rounded-md px-2.5 text-[11px] font-medium transition-colors",
                 viewMode === m
                   ? "bg-surface text-ink shadow-sm"
                   : "text-muted hover:text-ink",

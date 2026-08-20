@@ -27,6 +27,9 @@ export const VIEW_LABEL = {
   idpki: "Pendidikan",
   risiko: "Risiko",
   keselarasan: "Keselarasan",
+  historis: "Historis",
+  pusat: "Pusat",
+  respons: "Respons",
 } as const;
 
 export const STRATA_LABEL: Record<StrataLevel, string> = {

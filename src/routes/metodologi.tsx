@@ -151,6 +151,19 @@ function Metodologi() {
               pendidikan di antara 38 provinsi. Tidak dipaksa jadi satu angka.
               Tooltip memakai kedua nilai 1–10.
             </li>
+            <li>
+              <strong>Historis</strong> — bubble korban jiwa kejadian
+              signifikan sejak 2000 (kurasi, bukan DIBI lengkap). Besar–kecil
+              mengikuti ln(korban).
+            </li>
+            <li>
+              <strong>Pusat</strong> — massa pusat studi + PkM di provinsi
+              itu (tanpa prodi, tanpa spillover). Skala 1–10.
+            </li>
+            <li>
+              <strong>Respons</strong> — matriks 2×2 historis × pusat.
+              Belum terespons + risiko tinggi = celah roadmap.
+            </li>
           </ol>
           <p className="mt-3">
             Contoh pada bahaya gempabumi, bobot default (dibulatkan):
@@ -393,6 +406,40 @@ senjang = risiko_norm − P_norm`}
         </section>
 
         <section>
+          <h2 className="font-display text-2xl">10. Historis, pusat, dan respons</h2>
+          <p className="mt-3">
+            Tiga tampilan ini memilah penelitian/PkM yang <em>mengikuti
+            luka</em> dari yang <em>mendahului kejadian</em> — bahan roadmap
+            riset, bukan preparedness. Prodi tetap di Pendidikan/Keselarasan.
+            Pusat di peta Respons = stok lokal (spillover tidak dihitung).
+          </p>
+          <p className="mt-3">
+            Historis: korban jiwa kejadian signifikan 2000–kini, kurasi
+            publik (bukan DIBI lengkap). Satu peristiwa dihitung sekali pada
+            komposit; pada bahaya tunggal jika tercantum di daftar bahayanya.
+            Karhutla understated (korban langsung, bukan excess death haze).
+          </p>
+          <Formula>
+            {`kelas_historis = 1 jika korban > median 38 provinsi, else 0
+kelas_pusat    = 1 jika (R_pusat + K_kepakaran)_lokal > median, else 0`}
+          </Formula>
+          <SimpleTable
+            head={["Historis", "Pusat", "Kuadran", "Arti"]}
+            rows={[
+              ["tinggi", "tinggi", "Responsif", "Kapasitas setelah peristiwa (TDMRC, PSBA, Nalodo)"],
+              ["rendah", "tinggi", "Antisipatif", "Pusat tanpa pemicu lokal — yang ingin ditiru"],
+              ["tinggi", "rendah", "Tidak melembaga", "Terjadi, kelembagaan tidak menempel"],
+              ["rendah", "rendah", "Belum terespons", "Jika risiko tinggi: celah roadmap"],
+            ]}
+          />
+          <p className="mt-3">
+            Footer pada tab Respons mengurutkan “belum terespons + risiko
+            tinggi”. Ini bukan peta kesiapan; ini daftar wilayah yang
+            risikonya tinggi, memorinya kosong, dan pusatnya belum ada.
+          </p>
+        </section>
+
+        <section>
           <h2 className="font-display text-2xl">Sumber data prototipe</h2>
           <ul className="mt-3 list-disc space-y-1 pl-5">
             <li>90 prodi S1 Teknik Sipil (BAN-PT / LAM Teknik).</li>
@@ -410,6 +457,10 @@ senjang = risiko_norm − P_norm`}
               ITS; Unggul dikurasi; sisanya diinfer dari peringkat program.
             </li>
             <li>Penduduk: angka prototipe, 38 provinsi termasuk pemekaran Papua.</li>
+            <li>
+              Katalog 45 kejadian signifikan 2000–2024 (korban jiwa, kurasi
+              BNPB/EM-DAT/laporan publik) — bukan unduhan DIBI.
+            </li>
             <li>Batas administrasi GeoJSON 38 provinsi.</li>
           </ul>
           <h3 className="mt-6 font-display text-xl">Pusat studi dalam basis</h3>

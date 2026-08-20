@@ -3,10 +3,12 @@ import { geoMercator, geoPath } from "d3-geo";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
-import { bivariateColor, EDU_CAP, EDU_RAMP, rampColor, RISK_RAMP, riskCap, toScale10 } from "@/lib/palette";
+import { bivariateColor, EDU_CAP, EDU_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
-import { formatNumber } from "@/lib/utils";
+import { formatInt, formatNumber } from "@/lib/utils";
+import { RESPONS_LABEL } from "@/lib/scoring";
+import { bubbleRadius } from "@/components/bubble-legend";
 
 type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
 
@@ -93,8 +95,7 @@ export function MapCanvas({ geo, scores }: Props) {
     name: string;
     x: number;
     y: number;
-    risk: number;
-    idpki: number;
+    line: string;
   } | null>(null);
 
   const nameToId = useMemo(
@@ -103,6 +104,10 @@ export function MapCanvas({ geo, scores }: Props) {
   );
   const scoreMap = useMemo(
     () => new Map(scores.map((s) => [s.provinceId, s])),
+    [scores],
+  );
+  const maxDeaths = useMemo(
+    () => Math.max(...scores.map((s) => s.deaths), 1),
     [scores],
   );
 
@@ -150,29 +155,48 @@ export function MapCanvas({ geo, scores }: Props) {
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  function colorFor(name: string) {
-    const id = nameToId.get(name);
-    const s = id ? scoreMap.get(id) : undefined;
-    if (!s) return "#cfc6b8";
+  function colorFor(s: ProvinceScore) {
     if (viewMode === "keselarasan") return bivariateColor(s.riskClass, s.eduClass);
-    if (viewMode === "risiko") {
-      return rampColor(RISK_RAMP, s.risk / riskCap(hazard));
+    if (viewMode === "risiko") return rampColor(RISK_RAMP, s.risk / riskCap(hazard));
+    if (viewMode === "idpki") return rampColor(EDU_RAMP, s.idpki / EDU_CAP);
+    if (viewMode === "pusat") {
+      return rampColor(EDU_RAMP, Math.log(1 + s.pusat) / PUSAT_CAP);
     }
-    return rampColor(EDU_RAMP, s.idpki / EDU_CAP);
+    if (viewMode === "historis") return "#efe8dc";
+    if (viewMode === "respons") {
+      return responsColor(s.historisClass, s.pusatClass, s.riskClass);
+    }
+    return "#cfc6b8";
   }
 
-  function placeHover(
-    e: MouseEvent,
-    name: string,
-    s: { risk: number; idpki: number },
-  ) {
+  function hoverLine(s: ProvinceScore) {
+    if (viewMode === "keselarasan") {
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))} · Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
+    }
+    if (viewMode === "risiko") {
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))}`;
+    }
+    if (viewMode === "idpki") {
+      return `Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
+    }
+    if (viewMode === "historis") {
+      return s.deaths > 0
+        ? `${formatInt(s.deaths)} korban jiwa sejak 2000`
+        : "Tidak ada kejadian signifikan dalam katalog";
+    }
+    if (viewMode === "pusat") {
+      return `Pusat ${formatNumber(toScale10(Math.log(1 + s.pusat), PUSAT_CAP))}`;
+    }
+    return RESPONS_LABEL[s.respons];
+  }
+
+  function placeHover(e: MouseEvent, name: string, s: ProvinceScore) {
     const r = wrapRef.current?.getBoundingClientRect();
     setHover({
       name,
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
-      risk: toScale10(s.risk, riskCap(hazard)),
-      idpki: toScale10(s.idpki, EDU_CAP),
+      line: hoverLine(s),
     });
   }
 
@@ -281,7 +305,7 @@ export function MapCanvas({ geo, scores }: Props) {
                 key={`${name}-${String(f.id ?? "")}`}
                 d={d}
                 style={{
-                  fill: colorFor(name),
+                  fill: s ? colorFor(s) : "#cfc6b8",
                   stroke: selected ? "#1f1a16" : "#fffaf3",
                   strokeWidth: selected ? strokeSel : stroke,
                 }}
@@ -300,6 +324,30 @@ export function MapCanvas({ geo, scores }: Props) {
               />
             );
           })}
+          {viewMode === "historis"
+            ? drawn.features.map((f: Feature<Geometry, { PROVINSI: string }>) => {
+                const name = f.properties?.PROVINSI ?? "";
+                const id = nameToId.get(name);
+                const s = id ? scoreMap.get(id) : undefined;
+                if (!s || s.deaths <= 0) return null;
+                const c = pathGen.centroid(f as Feature);
+                if (!Number.isFinite(c[0]) || !Number.isFinite(c[1])) return null;
+                const r = bubbleRadius(s.deaths, maxDeaths);
+                return (
+                  <circle
+                    key={`b-${name}`}
+                    cx={c[0]}
+                    cy={c[1]}
+                    r={r}
+                    fill="#c45c48"
+                    fillOpacity={0.72}
+                    stroke="#fffaf3"
+                    strokeWidth={Math.max(0.4, 0.8 / t.k)}
+                    pointerEvents="none"
+                  />
+                );
+              })
+            : null}
         </g>
       </svg>
       {hover ? (
@@ -315,11 +363,7 @@ export function MapCanvas({ geo, scores }: Props) {
         >
           <strong>{hover.name}</strong>
           <br />
-          {viewMode === "keselarasan"
-            ? `Risiko ${formatNumber(hover.risk)} · Pendidikan ${formatNumber(hover.idpki)}`
-            : viewMode === "risiko"
-              ? `Risiko ${formatNumber(hover.risk)}`
-              : `Pendidikan ${formatNumber(hover.idpki)}`}
+          {hover.line}
         </div>
       ) : null}
       <div className="absolute right-3 top-3 z-10 flex flex-col overflow-hidden rounded-md border border-line bg-surface/95 shadow-sm">
