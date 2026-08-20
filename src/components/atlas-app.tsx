@@ -106,7 +106,7 @@ export function AtlasApp() {
               <RampLegend
                 title="Pendidikan"
                 max={EDU_CAP}
-                unit="kapasitas / √(juta penduduk), 0–5; di atas 5 menempel di ujung"
+                unit="ln(1 + kapasitas), 0–4; penduduk tidak dibagi"
                 ramp={EDU_RAMP}
               />
             )}

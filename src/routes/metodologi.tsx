@@ -123,7 +123,7 @@ function Metodologi() {
             </li>
             <li>
               Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
-              0–5 (kapasitas / √juta penduduk). Yogya menempel di ujung; terlalu agresif?
+              0–4 = ln(1+kapasitas), tanpa bagi penduduk. Jabar ≈ Yogya?
             </li>
             <li>
               Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan,
@@ -139,9 +139,8 @@ function Metodologi() {
           <h2 className="font-display text-2xl">Cara membaca peta</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
-              <strong>Pendidikan</strong> — kapasitas akademik / √(juta
-              penduduk), skala warna mutlak 0–5. Nilai di atas 5 menempel di
-              ujung (Yogya). Bukan per juta murni.
+              <strong>Pendidikan</strong> — ln(1 + kapasitas), skala 0–4.
+              Penduduk tidak dibagi. Per juta tetap di panel.
             </li>
             <li>
               <strong>Risiko</strong> — komposit bergaya IRBI atau satu jenis
@@ -299,17 +298,15 @@ function Metodologi() {
             {`Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran
            + spillover masuk (kolam sumber ÷ jumlah penerima)
 
-IDPKI = Kapasitas / √(jumlah penduduk / 1.000.000)
-per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (disimpan, bukan warna peta)`}
+IDPKI = ln(1 + Kapasitas)
+per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)`}
           </Formula>
           <p className="mt-3">
-            Elastisitas penduduk 0,5. Dua kali penduduk memotong indeks √2,
-            bukan setengah. Per juta murni membuat Jawa Barat (ITB, UI, 50 juta
-            jiwa, kapasitas ≈ Yogya) tampak kosong di samping Papua Selatan
-            (satu S1 Musamus, 0,52 juta). Kapasitas mentah sebaliknya membuat
-            Jawa otomatis gelap. Akar adalah kompromi: kepadatan tetap dihitung,
-            massa kampus tidak dihapus. Tab Pendidikan: 0–5 mutlak; pencilan
-            (Yogya ≈ 12,6) menempel di ujung teal supaya Jabar–Papua terpisah.
+            Peta Pendidikan mewarnai massa akademik, bukan kepadatan per
+            kapita. ln meredam pencilan tanpa membuang urutan: Yogya ≈ Jabar
+            (kapasitas ~24), Papua Selatan (satu S1) tetap rendah. Per juta
+            dan kapasitas mentah tetap di panel provinsi. Tab Pendidikan:
+            0–4 mutlak.
           </p>
         </section>
 

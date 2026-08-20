@@ -192,10 +192,9 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
       const cap = capacity.get(p.id) ?? 0;
       const popM = p.population / 1_000_000;
       const perJuta = popM > 0 ? cap / popM : 0;
-      // Elastisitas 0,5: dua kali penduduk memotong indeks √2, bukan setengah.
-      // Per juta membuat Jabar (ITB/UI, 50 juta jiwa) tampak kosong di samping
-      // Papua Selatan (1 prodi, 0,5 juta).
-      const idpki = popM > 0 ? cap / Math.sqrt(popM) : 0;
+      // Massa akademik, bukan kepadatan. ln meredam Yogya vs Jabar (keduanya ~24)
+      // tanpa membuat 1 prodi di provinsi kecil tampak setara ITB.
+      const idpki = Math.log(1 + cap);
       const risk = p.risk[opt.hazard];
       return {
         provinceId: p.id,
