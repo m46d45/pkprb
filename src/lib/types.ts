@@ -1,16 +1,4 @@
-export type ProvinceId = string;
-
-export type HazardId =
-  | "gempa"
-  | "tsunami"
-  | "banjir"
-  | "longsor"
-  | "likuefaksi"
-  | "gunungapi"
-  | "cuaca"
-  | "composite";
-
-export const HAZARDS: HazardId[] = [
+export const HAZARDS = [
   "composite",
   "gempa",
   "tsunami",
@@ -18,18 +6,23 @@ export const HAZARDS: HazardId[] = [
   "longsor",
   "likuefaksi",
   "gunungapi",
-  "cuaca",
-];
+  "karhutla",
+] as const;
 
-export type DisciplineId =
-  | "sipil"
-  | "arsitektur"
-  | "pwk"
-  | "geologi"
-  | "lingkungan"
-  | "kelautan"
-  | "bencana"
-  | "multidisiplin";
+export type HazardId = (typeof HAZARDS)[number];
+
+export const DISCIPLINES = [
+  "sipil",
+  "arsitektur",
+  "pwk",
+  "geologi",
+  "lingkungan",
+  "kelautan",
+  "bencana",
+  "multidisiplin",
+] as const;
+
+export type DisciplineId = (typeof DISCIPLINES)[number];
 
 export const VIEW_MODES = [
   "risiko",
@@ -55,47 +48,51 @@ export const ACC_LEVELS = [
 ] as const;
 export type AccLevel = (typeof ACC_LEVELS)[number];
 
-export type WeightMap = Record<HazardId, Record<DisciplineId, number>>;
+export type RiskScores = Record<HazardId, number>;
+
+export type Province = {
+  id: string;
+  name: string;
+  geoName: string;
+  kode: string;
+  island: string;
+  population: number;
+  risk: RiskScores;
+  riskNote: string;
+};
 
 export type Program = {
   id: string;
-  name: string;
   university: string;
-  provinceId: ProvinceId;
+  program: string;
   discipline: DisciplineId;
   strata: StrataId;
-  accreditation: AccLevel | "none";
+  accreditation: string;
+  city: string;
+  province: string;
   iabee: IabeeStatus;
-  notes?: string;
+  source: string;
 };
 
-export type Center = {
+export type ResearchCenter = {
   id: string;
-  name: string;
   university: string;
-  provinceId: ProvinceId;
-  focus: string[];
-  year?: number;
-};
-
-export type HistEvent = {
-  id: string;
-  year: number;
   name: string;
-  provinceId: ProvinceId;
-  hazard: HazardId;
-  deaths: number;
-  notes?: string;
+  province: string;
+  hazards: HazardId[];
+  maturity: "anchor" | "pui" | "standard";
+  national: boolean;
+  pkm: boolean;
+  url: string;
+  focus: string;
 };
 
-export type Province = {
-  id: ProvinceId;
-  name: string;
-  irbi: Record<Exclude<HazardId, "composite">, number>;
-  population?: number;
-};
-
-export type Klass = 1 | 2 | 3;
+export type Quadrant =
+  | "kesenjangan"
+  | "selaras"
+  | "surplus"
+  | "beban-rendah"
+  | "menengah";
 
 export type ResponsQuadrant =
   | "responsif"
@@ -104,15 +101,24 @@ export type ResponsQuadrant =
   | "belum-terespons"
   | "menengah";
 
-export type ScoredProvince = Province & {
+export type ProvinceScore = {
+  provinceId: string;
+  risk: number;
   idpki: number;
-  risiko: number;
-  keselarasan: number;
-  historis: number;
+  perJuta: number;
+  capacity: number;
+  education: number;
+  research: number;
+  service: number;
+  spillover: number;
+  deaths: number;
   pusat: number;
-  klassIdpki: Klass;
-  klassRisiko: Klass;
-  klassHistoris: Klass;
-  klassPusat: Klass;
+  historisClass: 0 | 1 | 2;
+  pusatClass: 0 | 1 | 2;
+  historisLn: number;
   respons: ResponsQuadrant;
+  riskClass: 0 | 1 | 2;
+  eduClass: 0 | 1 | 2;
+  quadrant: Quadrant;
+  gap: number;
 };
