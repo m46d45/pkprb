@@ -1,4 +1,4 @@
-import { RESPONS, responsColor } from "@/lib/palette";
+import { RESPONS } from "@/lib/palette";
 import { cn } from "@/lib/utils";
 
 export function ResponsLegend({ className }: { className?: string }) {
@@ -48,17 +48,6 @@ export function ResponsLegend({ className }: { className?: string }) {
         <li className="flex items-center gap-2">
           <i className="size-2.5" style={{ background: RESPONS[0][0] }} />
           Belum terespons
-        </li>
-        <li className="flex items-center gap-2">
-          <i className="size-2.5" style={{ background: RESPONS[1][1] }} />
-          Menengah
-        </li>
-        <li className="flex items-center gap-2">
-          <i
-            className="size-2.5"
-            style={{ background: responsColor(0, 0, 2) }}
-          />
-          Belum terespons + risiko tinggi
         </li>
       </ul>
     </div>
