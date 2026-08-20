@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite dev --host 0.0.0.0 --port 8080",
-    "build": "python3 scripts/write-og.py && vite build && npm run db:migrate && node scripts/copy-pglite-assets.mjs",
+    "build": "node scripts/write-og.mjs && vite build && npm run db:migrate && node scripts/copy-pglite-assets.mjs",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
@@ -16,7 +16,7 @@
     "test": "node --test 'scripts/**/*.test.mjs'",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "write-og": "python3 scripts/write-og.py"
+    "write-og": "node scripts/write-og.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
