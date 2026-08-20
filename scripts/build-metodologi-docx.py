@@ -317,8 +317,8 @@ def build():
             "Jenjang S1/S2/S3 default semua 1,00. Perlukah S2/S3 lebih tinggi?",
             "IABEE dipetakan ke akreditasi Internasional, bukan bonus di atas Unggul. Setuju?",
             "Hanya ITB, UI, UGM, ITS yang disebut PT internasional untuk spillover. Tambah IPB, Unpad, Unhas, atau lainnya?",
-            "Besaran spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau. Terlalu besar, terlalu kecil, atau arahnya salah?",
-            "Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan 0–15 per juta. Cap 15 terlalu ketat?",
+            "Besaran kolam spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?",
+            "Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan 0–4 = ln(1+kapasitas), tanpa bagi penduduk. Jabar ≈ Yogya?",
             "Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan, multidisiplin masih kurasi awal — bukan direktori BAN-PT lengkap.",
             "Label kuadran: Senjang, Selaras, Berlebih, Relevan.",
         ],
@@ -331,7 +331,7 @@ def build():
         [
             [
                 ("Pendidikan", True, False),
-                (" — indeks per juta penduduk (IDPKI), skala warna mutlak 0–15.", False, False),
+                (" — ln(1 + kapasitas), skala 0–4. Penduduk tidak dibagi. Per juta tetap di panel.", False, False),
             ],
             [
                 ("Risiko", True, False),
@@ -425,17 +425,21 @@ def build():
         [
             ("Mengikuti ", False, False),
             ("akreditasi perguruan tinggi", True, False),
-            (", bukan peringkat prodi. Provinsi asal tetap 100% skornya; tetangganya "
-             "mendapat tambahan. Slider w_spill (default 1) menaik-turunkan semua persentase.", False, False),
+            (", bukan peringkat prodi. Provinsi asal tetap 100% skornya. "
+             "Sebagian kecil dipancarkan sebagai kolam lalu dibagi rata ke penerima — "
+             "tidak dikloning ke setiap provinsi. (Kloning membuat Papua Selatan "
+             "tampak “tinggi” hanya karena penduduknya 522 ribu, padahal hampir "
+             "seluruh angkanya impor dari ITB/UI/UGM/ITS.) Slider w_spill "
+             "(default 1) menaik-turunkan kolam.", False, False),
         ],
     )
     table(
         doc,
         ["Akreditasi PT", "Pulau yang sama", "Pulau lain"],
         [
-            ["Internasional (ITB, UI, UGM, ITS)", "12% × w_spill", "6% × w_spill"],
-            ["Unggul", "8% × w_spill", "3% × w_spill"],
-            ["Baik Sekali", "4% × w_spill", "0"],
+            ["Internasional (ITB, UI, UGM, ITS)", "12% kolam ÷ n sepulau", "6% kolam ÷ n pulau lain"],
+            ["Unggul", "8% kolam ÷ n sepulau", "3% kolam ÷ n pulau lain"],
+            ["Baik Sekali", "4% kolam ÷ n sepulau", "0"],
             ["Baik", "0", "0"],
         ],
     )
@@ -444,14 +448,16 @@ def build():
     formula(
         doc,
         "Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran\n"
-        "            (masing-masing termasuk spillover)\n\n"
-        "IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)",
+        "            + spillover masuk (kolam sumber ÷ jumlah penerima)\n\n"
+        "IDPKI = ln(1 + Kapasitas)\n"
+        "per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)",
     )
     body(
         doc,
-        "Per juta penduduk, supaya Jawa tidak otomatis “tinggi” hanya karena jumlah "
-        "kampus. Tab Pendidikan mewarnai skala mutlak 0–15. Nilai di atas 15 tetap "
-        "dihitung, warnanya menempel di ujung teal.",
+        "Peta Pendidikan mewarnai massa akademik, bukan kepadatan per kapita. "
+        "ln meredam pencilan tanpa membuang urutan: Yogya ≈ Jabar (kapasitas ~24), "
+        "Papua Selatan (satu S1) tetap rendah. Per juta dan kapasitas mentah tetap "
+        "di panel provinsi. Tab Pendidikan: 0–4 mutlak.",
     )
 
     heading(doc, "7. Risiko")

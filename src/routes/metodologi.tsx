@@ -119,7 +119,6 @@ function Metodologi() {
             <li>
               Besaran kolam spillover 12 / 8 / 4% sepulau dan 6 / 3%
               antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?
-
             </li>
             <li>
               Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
