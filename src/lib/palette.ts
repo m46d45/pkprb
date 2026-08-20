@@ -9,7 +9,7 @@ export const RISK_RAMP = ["#f3ebe3", "#e8c4b0", "#d4896a", "#c45c48", "#8f2f22"]
 export const EDU_RAMP = ["#e7eef0", "#b9d0d6", "#7eafbc", "#3d7f92", "#1b4f5c"];
 
 /** Absolute caps so univariate maps are comparable, not stretched to 38 provinces. */
-export const EDU_CAP = 15;
+export const EDU_CAP = 5;
 export const RISK_CAP_HAZARD = 100;
 export const RISK_CAP_COMPOSITE = 200;
 

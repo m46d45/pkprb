@@ -123,7 +123,7 @@ function Metodologi() {
             </li>
             <li>
               Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
-              0–15 (kapasitas / √juta penduduk). Cap 15 terlalu ketat?
+              0–5 (kapasitas / √juta penduduk). Yogya menempel di ujung; terlalu agresif?
             </li>
             <li>
               Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan,
@@ -140,7 +140,8 @@ function Metodologi() {
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
               <strong>Pendidikan</strong> — kapasitas akademik / √(juta
-              penduduk), skala warna mutlak 0–15. Bukan per juta murni.
+              penduduk), skala warna mutlak 0–5. Nilai di atas 5 menempel di
+              ujung (Yogya). Bukan per juta murni.
             </li>
             <li>
               <strong>Risiko</strong> — komposit bergaya IRBI atau satu jenis
@@ -307,7 +308,8 @@ per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (disimpan, bukan warna pe
             jiwa, kapasitas ≈ Yogya) tampak kosong di samping Papua Selatan
             (satu S1 Musamus, 0,52 juta). Kapasitas mentah sebaliknya membuat
             Jawa otomatis gelap. Akar adalah kompromi: kepadatan tetap dihitung,
-            massa kampus tidak dihapus. Tab Pendidikan: 0–15 mutlak.
+            massa kampus tidak dihapus. Tab Pendidikan: 0–5 mutlak; pencilan
+            (Yogya ≈ 12,6) menempel di ujung teal supaya Jabar–Papua terpisah.
           </p>
         </section>
 
