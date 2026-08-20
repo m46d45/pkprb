@@ -91,6 +91,7 @@ export type ProvinceScore = {
   provinceId: string;
   risk: number;
   idpki: number;
+  perJuta: number;
   capacity: number;
   education: number;
   research: number;

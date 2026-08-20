@@ -123,7 +123,7 @@ function Metodologi() {
             </li>
             <li>
               Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
-              0–15 per juta. Cap 15 terlalu ketat?
+              0–15 (kapasitas / √juta penduduk). Cap 15 terlalu ketat?
             </li>
             <li>
               Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan,
@@ -139,8 +139,8 @@ function Metodologi() {
           <h2 className="font-display text-2xl">Cara membaca peta</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
-              <strong>Pendidikan</strong> — indeks per juta penduduk (IDPKI),
-              skala warna mutlak 0–15.
+              <strong>Pendidikan</strong> — kapasitas akademik / √(juta
+              penduduk), skala warna mutlak 0–15. Bukan per juta murni.
             </li>
             <li>
               <strong>Risiko</strong> — komposit bergaya IRBI atau satu jenis
@@ -298,12 +298,16 @@ function Metodologi() {
             {`Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran
            + spillover masuk (kolam sumber ÷ jumlah penerima)
 
-IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
+IDPKI = Kapasitas / √(jumlah penduduk / 1.000.000)
+per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (disimpan, bukan warna peta)`}
           </Formula>
           <p className="mt-3">
-            Per juta penduduk, supaya Jawa tidak otomatis “tinggi” hanya
-            karena jumlah kampus. Tab Pendidikan mewarnai skala mutlak 0–15.
-            Nilai di atas 15 tetap dihitung, warnanya menempel di ujung teal.
+            Elastisitas penduduk 0,5. Dua kali penduduk memotong indeks √2,
+            bukan setengah. Per juta murni membuat Jawa Barat (ITB, UI, 50 juta
+            jiwa, kapasitas ≈ Yogya) tampak kosong di samping Papua Selatan
+            (satu S1 Musamus, 0,52 juta). Kapasitas mentah sebaliknya membuat
+            Jawa otomatis gelap. Akar adalah kompromi: kepadatan tetap dihitung,
+            massa kampus tidak dihapus. Tab Pendidikan: 0–15 mutlak.
           </p>
         </section>
 

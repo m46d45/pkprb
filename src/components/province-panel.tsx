@@ -67,6 +67,8 @@ export function ProvincePanel({
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <Stat label="Risiko" value={formatNumber(score.risk)} />
           <Stat label="Pendidikan" value={formatNumber(score.idpki)} />
+          <Stat label="Per juta" value={formatNumber(score.perJuta)} />
+          <Stat label="Kapasitas" value={formatNumber(score.capacity)} />
           <Stat label="Penduduk" value={formatInt(p.population)} />
           <Stat
             label="Senjang (norm)"
