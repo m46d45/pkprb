@@ -62,7 +62,7 @@ function centerKepakaranScore(hazard: HazardId, c: (typeof centers)[number]) {
   return 1.1 * maturity * match;
 }
 
-/** Share of source score added to each other province, at spilloverWeight = 1. */
+/** Pool radiated from the source, split among recipients (not cloned). */
 function spillShares(acc: AccLevel) {
   if (acc === "internasional") return { island: 0.12, nation: 0.06 };
   if (acc === "unggul") return { island: 0.08, nation: 0.03 };
@@ -109,11 +109,13 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   const education = new Map<string, number>();
   const research = new Map<string, number>();
   const service = new Map<string, number>();
+  const imported = new Map<string, number>();
   for (const p of provinces) {
     capacity.set(p.id, 0);
     education.set(p.id, 0);
     research.set(p.id, 0);
     service.set(p.id, 0);
+    imported.set(p.id, 0);
   }
 
   const add = (
@@ -139,13 +141,25 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
     const home = byName.get(homeName);
     if (!home) return;
     const { island, nation } = spillShares(ptAccreditation(university));
-    const islandShare = island * opt.spilloverWeight;
-    const nationShare = nation * opt.spilloverWeight;
-    if (islandShare <= 0 && nationShare <= 0) return;
-    for (const p of provinces) {
-      if (p.id === home.id) continue;
-      if (p.island === home.island) add(p.name, amount * islandShare, bucket);
-      else if (nationShare > 0) add(p.name, amount * nationShare, bucket);
+    const islandPool = amount * island * opt.spilloverWeight;
+    const nationPool = amount * nation * opt.spilloverWeight;
+    const islandOthers = provinces.filter(
+      (p) => p.id !== home.id && p.island === home.island,
+    );
+    const nationOthers = provinces.filter(
+      (p) => p.id !== home.id && p.island !== home.island,
+    );
+    const islandEach =
+      islandOthers.length > 0 ? islandPool / islandOthers.length : 0;
+    const nationEach =
+      nationOthers.length > 0 ? nationPool / nationOthers.length : 0;
+    for (const p of islandOthers) {
+      add(p.name, islandEach, bucket);
+      imported.set(p.id, (imported.get(p.id) ?? 0) + islandEach);
+    }
+    for (const p of nationOthers) {
+      add(p.name, nationEach, bucket);
+      imported.set(p.id, (imported.get(p.id) ?? 0) + nationEach);
     }
   };
 
@@ -187,6 +201,7 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
         education: education.get(p.id) ?? 0,
         research: research.get(p.id) ?? 0,
         service: service.get(p.id) ?? 0,
+        spillover: imported.get(p.id) ?? 0,
       };
     });
 

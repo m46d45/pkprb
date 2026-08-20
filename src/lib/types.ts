@@ -95,6 +95,7 @@ export type ProvinceScore = {
   education: number;
   research: number;
   service: number;
+  spillover: number;
   riskClass: 0 | 1 | 2;
   eduClass: 0 | 1 | 2;
   quadrant: Quadrant;

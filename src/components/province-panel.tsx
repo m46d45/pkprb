@@ -75,6 +75,10 @@ export function ProvincePanel({
           <Stat label="Prodi" value={formatNumber(score.education)} />
           <Stat label="Penelitian" value={formatNumber(score.research)} />
           <Stat label="Pengabdian" value={formatNumber(score.service)} />
+          <Stat
+            label="Spillover masuk"
+            value={formatNumber(score.spillover)}
+          />
         </dl>
         <p className="text-[11px] leading-relaxed text-muted">{p.riskNote}</p>
 

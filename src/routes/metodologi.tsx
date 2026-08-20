@@ -117,8 +117,9 @@ function Metodologi() {
               spillover. Tambah IPB, Unpad, Unhas, atau lainnya?
             </li>
             <li>
-              Besaran spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau.
-              Terlalu besar, terlalu kecil, atau arahnya salah?
+              Besaran kolam spillover 12 / 8 / 4% sepulau dan 6 / 3%
+              antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?
+
             </li>
             <li>
               Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
@@ -273,16 +274,19 @@ function Metodologi() {
           <h2 className="font-display text-2xl">5. Spillover antarprovinsi</h2>
           <p className="mt-3">
             Mengikuti <strong>akreditasi perguruan tinggi</strong>, bukan
-            peringkat prodi. Provinsi asal tetap 100% skornya; tetangganya
-            mendapat tambahan. Slider w_spill (default 1) menaik-turunkan
-            semua persentase.
+            peringkat prodi. Provinsi asal tetap 100% skornya. Sebagian kecil
+            dipancarkan sebagai <em>kolam</em> lalu dibagi rata ke penerima —
+            tidak dikloning ke setiap provinsi. (Kloning membuat Papua Selatan
+            tampak “tinggi” hanya karena penduduknya 522 ribu, padahal hampir
+            seluruh angkanya impor dari ITB/UI/UGM/ITS.) Slider w_spill
+            (default 1) menaik-turunkan kolam.
           </p>
           <SimpleTable
             head={["Akreditasi PT", "Pulau yang sama", "Pulau lain"]}
             rows={[
-              ["Internasional (ITB, UI, UGM, ITS)", "12% × w_spill", "6% × w_spill"],
-              ["Unggul", "8% × w_spill", "3% × w_spill"],
-              ["Baik Sekali", "4% × w_spill", "0"],
+              ["Internasional (ITB, UI, UGM, ITS)", "12% kolam ÷ n sepulau", "6% kolam ÷ n pulau lain"],
+              ["Unggul", "8% kolam ÷ n sepulau", "3% kolam ÷ n pulau lain"],
+              ["Baik Sekali", "4% kolam ÷ n sepulau", "0"],
               ["Baik", "0", "0"],
             ]}
           />
@@ -292,7 +296,7 @@ function Metodologi() {
           <h2 className="font-display text-2xl">6. Kapasitas dan IDPKI</h2>
           <Formula>
             {`Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran
-           (masing-masing termasuk spillover)
+           + spillover masuk (kolam sumber ÷ jumlah penerima)
 
 IDPKI = Kapasitas / (jumlah penduduk / 1.000.000)`}
           </Formula>
