@@ -7,11 +7,10 @@ import { ViewToolbar } from "@/components/view-toolbar";
 import { BivariateLegend } from "@/components/bivariate-legend";
 import { RampLegend } from "@/components/ramp-legend";
 import { ResponsLegend } from "@/components/respons-legend";
-import { BubbleLegend } from "@/components/bubble-legend";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
-import { EDU_RAMP, RISK_RAMP } from "@/lib/palette";
+import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -58,7 +57,6 @@ export function AtlasApp() {
     .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
     .sort((a, b) => b.risk - a.risk)
     .slice(0, 6);
-  const maxDeaths = Math.max(...scores.map((s) => s.deaths), 1);
 
   return (
     <div className="flex h-dvh max-w-[100vw] flex-col overflow-hidden bg-paper text-ink">
@@ -101,7 +99,13 @@ export function AtlasApp() {
             ) : viewMode === "respons" ? (
               <ResponsLegend />
             ) : viewMode === "historis" ? (
-              <BubbleLegend maxDeaths={maxDeaths} />
+              <RampLegend
+                title="Historis"
+                min={1}
+                max={10}
+                unit="skala 1–10 dari ln(1 + korban absolut sejak 2000)"
+                ramp={HIST_RAMP}
+              />
             ) : viewMode === "risiko" ? (
               <RampLegend
                 title="Risiko"

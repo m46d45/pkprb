@@ -3,12 +3,11 @@ import { geoMercator, geoPath } from "d3-geo";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
-import { bivariateColor, EDU_CAP, EDU_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
+import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
 import { formatInt, formatNumber } from "@/lib/utils";
 import { RESPONS_LABEL } from "@/lib/scoring";
-import { bubbleRadius } from "@/components/bubble-legend";
 
 type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
 
@@ -106,10 +105,6 @@ export function MapCanvas({ geo, scores }: Props) {
     () => new Map(scores.map((s) => [s.provinceId, s])),
     [scores],
   );
-  const maxDeaths = useMemo(
-    () => Math.max(...scores.map((s) => s.deaths), 1),
-    [scores],
-  );
 
   const drawn = useMemo(() => rewindGeo(geo), [geo]);
 
@@ -162,7 +157,7 @@ export function MapCanvas({ geo, scores }: Props) {
     if (viewMode === "pusat") {
       return rampColor(EDU_RAMP, Math.log(1 + s.pusat) / PUSAT_CAP);
     }
-    if (viewMode === "historis") return "#efe8dc";
+    if (viewMode === "historis") return rampColor(HIST_RAMP, s.historisLn / HIST_CAP);
     if (viewMode === "respons") {
       return responsColor(s.historisClass, s.pusatClass, s.riskClass);
     }
@@ -324,30 +319,6 @@ export function MapCanvas({ geo, scores }: Props) {
               />
             );
           })}
-          {viewMode === "historis"
-            ? drawn.features.map((f: Feature<Geometry, { PROVINSI: string }>) => {
-                const name = f.properties?.PROVINSI ?? "";
-                const id = nameToId.get(name);
-                const s = id ? scoreMap.get(id) : undefined;
-                if (!s || s.deaths <= 0) return null;
-                const c = pathGen.centroid(f as Feature);
-                if (!Number.isFinite(c[0]) || !Number.isFinite(c[1])) return null;
-                const r = bubbleRadius(s.deaths, maxDeaths);
-                return (
-                  <circle
-                    key={`b-${name}`}
-                    cx={c[0]}
-                    cy={c[1]}
-                    r={r}
-                    fill="#c45c48"
-                    fillOpacity={0.72}
-                    stroke="#fffaf3"
-                    strokeWidth={Math.max(0.4, 0.8 / t.k)}
-                    pointerEvents="none"
-                  />
-                );
-              })
-            : null}
         </g>
       </svg>
       {hover ? (
