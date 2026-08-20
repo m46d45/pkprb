@@ -1,7 +1,25 @@
-import { HAZARDS, VIEW_MODES } from "@/lib/types";
+import { HAZARDS, type ViewMode } from "@/lib/types";
 import { HAZARD_LABEL, VIEW_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+
+/** Dua kelompok tampilan: keselarasan (bahaya × kapasitas) vs roadmap respons. */
+const VIEW_GROUPS: {
+  id: string;
+  label: string;
+  modes: ViewMode[];
+}[] = [
+  {
+    id: "kapasitas",
+    label: "Bahaya & Kapasitas",
+    modes: ["risiko", "idpki", "keselarasan"],
+  },
+  {
+    id: "respons",
+    label: "Historis & Respons",
+    modes: ["historis", "pusat", "respons"],
+  },
+];
 
 export function ViewToolbar() {
   const viewMode = useMapStore((s) => s.viewMode);
@@ -11,28 +29,43 @@ export function ViewToolbar() {
 
   return (
     <div className="flex shrink-0 flex-col gap-2 border-b border-line bg-surface px-4 py-2 lg:flex-row lg:items-center lg:gap-8">
-      <div className="flex min-w-0 items-center gap-3">
-        <p className="hidden shrink-0 text-[11px] font-medium tracking-wide text-muted uppercase sm:block">
-          Tampilan
-        </p>
-        <div className="flex w-full flex-wrap gap-1 rounded-lg bg-paper p-1 sm:w-auto">
-          {VIEW_MODES.map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setViewMode(m)}
-              className={cn(
-                "h-8 rounded-md px-2.5 text-[11px] font-medium transition-colors",
-                viewMode === m
-                  ? "bg-surface text-ink shadow-sm"
-                  : "text-muted hover:text-ink",
-              )}
-            >
-              {VIEW_LABEL[m]}
-            </button>
-          ))}
-        </div>
+      {/* Kelompok tampilan */}
+      <div className="flex min-w-0 flex-wrap items-end gap-3">
+        {VIEW_GROUPS.map((group, gi) => (
+          <div key={group.id} className="flex items-end gap-3">
+            {gi > 0 && (
+              <div
+                className="hidden h-8 w-px shrink-0 bg-line sm:block"
+                aria-hidden
+              />
+            )}
+            <div className="flex flex-col gap-1">
+              <p className="text-[10px] font-medium tracking-wide text-muted uppercase">
+                {group.label}
+              </p>
+              <div className="flex flex-wrap gap-1 rounded-lg bg-paper p-1">
+                {group.modes.map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setViewMode(m)}
+                    className={cn(
+                      "h-8 rounded-md px-2.5 text-[11px] font-medium transition-colors",
+                      viewMode === m
+                        ? "bg-surface text-ink shadow-sm"
+                        : "text-muted hover:text-ink",
+                    )}
+                  >
+                    {VIEW_LABEL[m]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {/* Filter bahaya (tetap global) */}
       <div className="flex min-w-0 flex-1 items-start gap-3 lg:items-center">
         <p className="hidden shrink-0 text-[11px] font-medium tracking-wide text-muted uppercase sm:block">
           Bahaya
