@@ -11,12 +11,12 @@ const VIEW_GROUPS: {
 }[] = [
   {
     id: "kapasitas",
-    label: "Keselarasan",
+    label: "Bahaya & Kapasitas",
     modes: ["risiko", "idpki", "keselarasan"],
   },
   {
     id: "respons",
-    label: "Roadmap",
+    label: "Historis & Respons",
     modes: ["historis", "pusat", "respons"],
   },
 ];
