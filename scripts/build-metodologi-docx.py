@@ -344,6 +344,19 @@ def build():
         ],
         numbered=True,
     )
+    body(doc, "Contoh pada bahaya gempabumi, bobot default (dibulatkan):")
+    table(
+        doc,
+        ["Provinsi", "Pendidikan (1–10)", "Risiko gempa (1–10)", "Catatan"],
+        [
+            ["DI Yogyakarta", "8,3", "8,6", "Kapasitas ~24; selaras"],
+            ["Jawa Barat", "8,2", "7,5", "Kapasitas hampir sama dengan Yogya"],
+            ["Aceh", "6,6", "9,1", "TDMRC + banyak prodi"],
+            ["Papua", "3,3", "7,8", "Sedikit prodi"],
+            ["Papua Selatan", "2,5", "6,0", "Satu S1 Musamus"],
+            ["Maluku", "2,7", "8,9", "Risiko tinggi, pendidikan rendah"],
+        ],
+    )
 
     heading(doc, "1. Skor prodi")
     body(doc, "Tidak ada toggle. Bobot 0 = tidak dihitung. Setiap program studi:")
@@ -444,14 +457,14 @@ def build():
         ],
     )
 
-    heading(doc, "6. Kapasitas dan IDPKI")
+    heading(doc, "6. Kapasitas dan indeks Pendidikan")
     formula(
         doc,
         "Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran\n"
         "            + spillover masuk (kolam sumber ÷ jumlah penerima)\n\n"
-        "IDPKI = ln(1 + Kapasitas)\n"
+        "P_ln = ln(1 + Kapasitas)\n"
         "per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)\n\n"
-        "Pendidikan_tampil = 1 + 9 × min(1, IDPKI / 4)",
+        "Pendidikan_tampil = 1 + 9 × min(1, P_ln / 4)",
     )
     body(
         doc,
@@ -471,10 +484,13 @@ def build():
     )
     body(
         doc,
-        "Warna dan angka Risiko di peta: skala 1–10. "
-        "Risiko_tampil = 1 + 9 × min(1, R / R_cap), R_cap = 100 untuk bahaya tunggal, "
-        "200 untuk komposit. Skor mentah IRBI tetap di panel. Tidak distretch ke "
-        "provinsi terendah–tertinggi.",
+        "Warna dan angka Risiko di peta memakai skala 1–10. Skor mentah IRBI tetap di panel.",
+    )
+    formula(
+        doc,
+        "Risiko_tampil = 1 + 9 × min(1, R / R_cap)\n"
+        "R_cap = 100  (bahaya tunggal)\n"
+        "      = 200  (komposit)",
     )
 
     heading(doc, "8. Tertil dan matriks 3×3")
@@ -509,13 +525,14 @@ def build():
     body(
         doc,
         "Footer peta mengurutkan enam provinsi dengan senjang terbesar. Untuk ranking "
-        "ini, risiko dan IDPKI dinormalisasi min–maks 38 provinsi ke 0–1:",
+        "ini, risiko dan pendidikan (nilai internal: skor bahaya dan P_ln) dinormalisasi "
+        "min–maks 38 provinsi ke 0–1. Skala 1–10 monoton terhadap nilai itu, jadi urutan sama.",
     )
     formula(
         doc,
         "risiko_norm = (R − min R) / (max R − min R)\n"
-        "IDPKI_norm  = (E − min E) / (max E − min E)\n\n"
-        "senjang = risiko_norm − IDPKI_norm",
+        "P_norm      = (P_ln − min P_ln) / (max P_ln − min P_ln)\n\n"
+        "senjang = risiko_norm − P_norm",
     )
     body(
         doc,

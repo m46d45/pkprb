@@ -152,6 +152,20 @@ function Metodologi() {
               Tooltip memakai kedua nilai 1–10.
             </li>
           </ol>
+          <p className="mt-3">
+            Contoh pada bahaya gempabumi, bobot default (dibulatkan):
+          </p>
+          <SimpleTable
+            head={["Provinsi", "Pendidikan (1–10)", "Risiko gempa (1–10)", "Catatan"]}
+            rows={[
+              ["DI Yogyakarta", "8,3", "8,6", "Kapasitas ~24; selaras"],
+              ["Jawa Barat", "8,2", "7,5", "Kapasitas hampir sama dengan Yogya"],
+              ["Aceh", "6,6", "9,1", "TDMRC + banyak prodi"],
+              ["Papua", "3,3", "7,8", "Sedikit prodi"],
+              ["Papua Selatan", "2,5", "6,0", "Satu S1 Musamus"],
+              ["Maluku", "2,7", "8,9", "Risiko tinggi, pendidikan rendah"],
+            ]}
+          />
         </section>
 
         <section>
@@ -293,15 +307,15 @@ function Metodologi() {
         </section>
 
         <section>
-          <h2 className="font-display text-2xl">6. Kapasitas dan IDPKI</h2>
+          <h2 className="font-display text-2xl">6. Kapasitas dan indeks Pendidikan</h2>
           <Formula>
             {`Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran
            + spillover masuk (kolam sumber ÷ jumlah penerima)
 
-IDPKI = ln(1 + Kapasitas)
+P_ln = ln(1 + Kapasitas)
 per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)
 
-Pendidikan_tampil = 1 + 9 × min(1, IDPKI / 4)`}
+Pendidikan_tampil = 1 + 9 × min(1, P_ln / 4)`}
           </Formula>
           <p className="mt-3">
             Peta Pendidikan mewarnai massa akademik, bukan kepadatan per
@@ -362,14 +376,15 @@ R_cap = 100  (bahaya tunggal)
           <h2 className="font-display text-2xl">9. Indeks senjang</h2>
           <p className="mt-3">
             Footer peta mengurutkan enam provinsi dengan senjang terbesar.
-            Untuk ranking ini, risiko dan IDPKI dinormalisasi min–maks 38
-            provinsi ke 0–1:
+            Untuk ranking ini, risiko dan pendidikan (nilai internal: skor
+            bahaya dan P_ln) dinormalisasi min–maks 38 provinsi ke 0–1.
+            Skala 1–10 monoton terhadap nilai itu, jadi urutan sama.
           </p>
           <Formula>
             {`risiko_norm = (R − min R) / (max R − min R)
-IDPKI_norm  = (E − min E) / (max E − min E)
+P_norm      = (P_ln − min P_ln) / (max P_ln − min P_ln)
 
-senjang = risiko_norm − IDPKI_norm`}
+senjang = risiko_norm − P_norm`}
           </Formula>
           <p className="mt-3">
             Mendekati +1: risiko relatif tinggi, pendidikan relatif rendah.
