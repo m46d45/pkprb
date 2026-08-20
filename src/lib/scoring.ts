@@ -95,17 +95,12 @@ function klass(values: number[], v: number): 0 | 1 | 2 {
   return 2;
 }
 
-function halfKlass(values: number[], v: number): 0 | 1 {
-  if (values.length === 0) return 0;
-  const t = quantile([...values].sort((a, b) => a - b), 0.5);
-  return v > t ? 1 : 0;
-}
-
-function responsOf(h: 0 | 1, p: 0 | 1): ResponsQuadrant {
-  if (h === 1 && p === 1) return "responsif";
-  if (h === 1 && p === 0) return "tidak-melembaga";
-  if (h === 0 && p === 1) return "antisipatif";
-  return "belum-terespons";
+function responsOf(h: 0 | 1 | 2, p: 0 | 1 | 2): ResponsQuadrant {
+  if (h === 2 && p === 2) return "responsif";
+  if (h === 2 && p === 0) return "tidak-melembaga";
+  if (h === 0 && p === 2) return "antisipatif";
+  if (h === 0 && p === 0) return "belum-terespons";
+  return "menengah";
 }
 
 function quadrantOf(r: 0 | 1 | 2, e: 0 | 1 | 2): Quadrant {
@@ -221,11 +216,10 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
       const cap = capacity.get(p.id) ?? 0;
       const popM = p.population / 1_000_000;
       const perJuta = popM > 0 ? cap / popM : 0;
-      // Massa akademik, bukan kepadatan. ln meredam Yogya vs Jabar (keduanya ~24)
-      // tanpa membuat 1 prodi di provinsi kecil tampak setara ITB.
       const idpki = Math.log(1 + cap);
       const risk = p.risk[opt.hazard];
       const deaths = historisDeaths(p.name, opt.hazard);
+      const historisLn = Math.log(1 + deaths);
       const pusat = localPusat.get(p.id) ?? 0;
       return {
         provinceId: p.id,
@@ -238,13 +232,13 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
         service: service.get(p.id) ?? 0,
         spillover: imported.get(p.id) ?? 0,
         deaths,
+        historisLn,
         pusat,
       };
     });
 
   const risks = rows.map((r) => r.risk);
   const edus = rows.map((r) => r.idpki);
-  const deathVals = rows.map((r) => r.deaths);
   const pusatVals = rows.map((r) => r.pusat);
   const minR = Math.min(...risks);
   const maxR = Math.max(...risks);
@@ -254,8 +248,11 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
   return rows.map((r) => {
     const riskClass = klass(risks, r.risk);
     const eduClass = klass(edus, r.idpki);
-    const historisClass = halfKlass(deathVals, r.deaths);
-    const pusatClass = halfKlass(pusatVals, r.pusat);
+    const historisClass = klass(
+      rows.map((x) => x.historisLn),
+      r.historisLn,
+    );
+    const pusatClass = klass(pusatVals, r.pusat);
     const riskN = maxR === minR ? 0.5 : (r.risk - minR) / (maxR - minR);
     const eduN = maxE === minE ? 0.5 : (r.idpki - minE) / (maxE - minE);
     return {
@@ -314,6 +311,7 @@ export const RESPONS_LABEL: Record<ResponsQuadrant, string> = {
   "tidak-melembaga": "Tidak melembaga",
   antisipatif: "Antisipatif",
   "belum-terespons": "Belum terespons",
+  menengah: "Menengah",
 };
 
 export const QUADRANT_LABEL: Record<Quadrant, string> = {
