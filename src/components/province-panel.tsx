@@ -5,7 +5,7 @@ import type { ProvinceScore } from "@/lib/types";
 import { ACC_LABEL, DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatInt, formatNumber } from "@/lib/utils";
-import { bivariateColor } from "@/lib/palette";
+import { bivariateColor, EDU_CAP, riskCap, toScale10 } from "@/lib/palette";
 import { getProvince } from "@/lib/scoring";
 import { ptAccreditation } from "@/data/universities";
 
@@ -65,10 +65,20 @@ export function ProvincePanel({
           {QUADRANT_LABEL[score.quadrant]}
         </div>
         <dl className="grid grid-cols-2 gap-3 text-sm">
-          <Stat label="Risiko" value={formatNumber(score.risk)} />
-          <Stat label="Pendidikan" value={formatNumber(score.idpki)} />
+          <Stat
+            label="Risiko (1–10)"
+            value={formatNumber(toScale10(score.risk, riskCap(hazard)))}
+          />
+          <Stat
+            label="Pendidikan (1–10)"
+            value={formatNumber(toScale10(score.idpki, EDU_CAP))}
+          />
           <Stat label="Per juta" value={formatNumber(score.perJuta)} />
           <Stat label="Kapasitas" value={formatNumber(score.capacity)} />
+          <Stat
+            label={hazard === "composite" ? "IRBI (mentah)" : "Bahaya (mentah)"}
+            value={formatNumber(score.risk)}
+          />
           <Stat label="Penduduk" value={formatInt(p.population)} />
           <Stat
             label="Senjang (norm)"

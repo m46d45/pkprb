@@ -9,7 +9,7 @@ import { RampLegend } from "@/components/ramp-legend";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
-import { EDU_CAP, EDU_RAMP, RISK_RAMP, riskCap } from "@/lib/palette";
+import { EDU_RAMP, RISK_RAMP } from "@/lib/palette";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -94,19 +94,21 @@ export function AtlasApp() {
             ) : viewMode === "risiko" ? (
               <RampLegend
                 title="Risiko"
-                max={riskCap(hazard)}
+                min={1}
+                max={10}
                 unit={
                   hazard === "composite"
-                    ? "skor IRBI, 0–200"
-                    : "skor bahaya, 0–100"
+                    ? "skala 1–10 (dari IRBI 0–200)"
+                    : "skala 1–10 (dari skor bahaya 0–100)"
                 }
                 ramp={RISK_RAMP}
               />
             ) : (
               <RampLegend
                 title="Pendidikan"
-                max={EDU_CAP}
-                unit="ln(1 + kapasitas), 0–4; penduduk tidak dibagi"
+                min={1}
+                max={10}
+                unit="skala 1–10 (dari ln(1 + kapasitas))"
                 ramp={EDU_RAMP}
               />
             )}

@@ -318,7 +318,7 @@ def build():
             "IABEE dipetakan ke akreditasi Internasional, bukan bonus di atas Unggul. Setuju?",
             "Hanya ITB, UI, UGM, ITS yang disebut PT internasional untuk spillover. Tambah IPB, Unpad, Unhas, atau lainnya?",
             "Besaran kolam spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?",
-            "Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan 0–4 = ln(1+kapasitas), tanpa bagi penduduk. Jabar ≈ Yogya?",
+            "Skala tampilan 1–10 untuk Pendidikan dan Risiko (bukan min–maks 38 provinsi). Keselarasan tetap 3×3. Cukup intuitif?",
             "Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan, multidisiplin masih kurasi awal — bukan direktori BAN-PT lengkap.",
             "Label kuadran: Senjang, Selaras, Berlebih, Relevan.",
         ],
@@ -331,15 +331,15 @@ def build():
         [
             [
                 ("Pendidikan", True, False),
-                (" — ln(1 + kapasitas), skala 0–4. Penduduk tidak dibagi. Per juta tetap di panel.", False, False),
+                (" — skala tampilan 1–10 dari ln(1 + kapasitas). Penduduk tidak dibagi. 1 = kapasitas nol; 10 = ln(1+kapasitas) ≥ 4.", False, False),
             ],
             [
                 ("Risiko", True, False),
-                (" — komposit bergaya IRBI atau satu jenis bahaya. Skala mutlak 0–100 (0–200 untuk komposit).", False, False),
+                (" — skala tampilan 1–10. Bahaya tunggal dari skor 0–100; komposit dari IRBI 0–200.", False, False),
             ],
             [
                 ("Keselarasan", True, False),
-                (" — matriks 3×3 tertil risiko × tertil pendidikan di antara 38 provinsi. Ini satu-satunya tampilan yang memang relatif antarprovinsi.", False, False),
+                (" — matriks 3×3 tertil risiko × tertil pendidikan di antara 38 provinsi. Tidak dipaksa jadi satu angka. Tooltip memakai kedua nilai 1–10.", False, False),
             ],
         ],
         numbered=True,
@@ -450,14 +450,15 @@ def build():
         "Kapasitas = Σ E_prodi + Σ R_pusat + Σ K_kepakaran\n"
         "            + spillover masuk (kolam sumber ÷ jumlah penerima)\n\n"
         "IDPKI = ln(1 + Kapasitas)\n"
-        "per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)",
+        "per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)\n\n"
+        "Pendidikan_tampil = 1 + 9 × min(1, IDPKI / 4)",
     )
     body(
         doc,
         "Peta Pendidikan mewarnai massa akademik, bukan kepadatan per kapita. "
-        "ln meredam pencilan tanpa membuang urutan: Yogya ≈ Jabar (kapasitas ~24), "
-        "Papua Selatan (satu S1) tetap rendah. Per juta dan kapasitas mentah tetap "
-        "di panel provinsi. Tab Pendidikan: 0–4 mutlak.",
+        "ln meredam pencilan tanpa membuang urutan: Yogya ≈ Jabar (kapasitas ~24 → "
+        "sekitar 8 dari 10), Papua Selatan (satu S1 → sekitar 2). Per juta, kapasitas, "
+        "dan skor bahaya mentah tetap di panel. Warna dan tooltip memakai skala 1–10.",
     )
 
     heading(doc, "7. Risiko")
@@ -470,8 +471,10 @@ def build():
     )
     body(
         doc,
-        "Warna Risiko: 0–100 untuk bahaya tunggal, 0–200 untuk komposit. Tidak "
-        "distretch ke provinsi terendah–tertinggi.",
+        "Warna dan angka Risiko di peta: skala 1–10. "
+        "Risiko_tampil = 1 + 9 × min(1, R / R_cap), R_cap = 100 untuk bahaya tunggal, "
+        "200 untuk komposit. Skor mentah IRBI tetap di panel. Tidak distretch ke "
+        "provinsi terendah–tertinggi.",
     )
 
     heading(doc, "8. Tertil dan matriks 3×3")

@@ -3,7 +3,7 @@ import { geoMercator, geoPath } from "d3-geo";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
-import { bivariateColor, EDU_CAP, EDU_RAMP, rampColor, RISK_RAMP, riskCap } from "@/lib/palette";
+import { bivariateColor, EDU_CAP, EDU_RAMP, rampColor, RISK_RAMP, riskCap, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
@@ -171,8 +171,8 @@ export function MapCanvas({ geo, scores }: Props) {
       name,
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
-      risk: s.risk,
-      idpki: s.idpki,
+      risk: toScale10(s.risk, riskCap(hazard)),
+      idpki: toScale10(s.idpki, EDU_CAP),
     });
   }
 

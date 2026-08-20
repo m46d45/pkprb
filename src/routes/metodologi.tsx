@@ -121,8 +121,8 @@ function Metodologi() {
               antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?
             </li>
             <li>
-              Skala warna mutlak: risiko 0–100 (komposit 0–200), pendidikan
-              0–4 = ln(1+kapasitas), tanpa bagi penduduk. Jabar ≈ Yogya?
+              Skala tampilan 1–10 untuk Pendidikan dan Risiko (bukan min–maks
+              38 provinsi). Keselarasan tetap 3×3. Cukup intuitif?
             </li>
             <li>
               Inventaris Planologi, geologi, arsitektur, lingkungan, kelautan,
@@ -138,17 +138,18 @@ function Metodologi() {
           <h2 className="font-display text-2xl">Cara membaca peta</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
-              <strong>Pendidikan</strong> — ln(1 + kapasitas), skala 0–4.
-              Penduduk tidak dibagi. Per juta tetap di panel.
+              <strong>Pendidikan</strong> — skala tampilan 1–10 dari
+              ln(1 + kapasitas). Penduduk tidak dibagi. 1 = kapasitas nol;
+              10 = ln(1+kapasitas) ≥ 4.
             </li>
             <li>
-              <strong>Risiko</strong> — komposit bergaya IRBI atau satu jenis
-              bahaya. Skala mutlak 0–100 (0–200 untuk komposit).
+              <strong>Risiko</strong> — skala tampilan 1–10. Bahaya tunggal
+              dari skor 0–100; komposit dari IRBI 0–200.
             </li>
             <li>
               <strong>Keselarasan</strong> — matriks 3×3 tertil risiko × tertil
-              pendidikan di antara 38 provinsi. Ini satu-satunya tampilan yang
-              memang relatif antarprovinsi.
+              pendidikan di antara 38 provinsi. Tidak dipaksa jadi satu angka.
+              Tooltip memakai kedua nilai 1–10.
             </li>
           </ol>
         </section>
@@ -298,14 +299,16 @@ function Metodologi() {
            + spillover masuk (kolam sumber ÷ jumlah penerima)
 
 IDPKI = ln(1 + Kapasitas)
-per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)`}
+per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)
+
+Pendidikan_tampil = 1 + 9 × min(1, IDPKI / 4)`}
           </Formula>
           <p className="mt-3">
             Peta Pendidikan mewarnai massa akademik, bukan kepadatan per
             kapita. ln meredam pencilan tanpa membuang urutan: Yogya ≈ Jabar
-            (kapasitas ~24), Papua Selatan (satu S1) tetap rendah. Per juta
-            dan kapasitas mentah tetap di panel provinsi. Tab Pendidikan:
-            0–4 mutlak.
+            (kapasitas ~24 → sekitar 8 dari 10), Papua Selatan (satu S1 →
+            sekitar 2). Per juta, kapasitas, dan skor bahaya mentah tetap di
+            panel. Warna dan tooltip memakai skala 1–10.
           </p>
         </section>
 
@@ -318,9 +321,14 @@ per_juta = Kapasitas / (jumlah penduduk / 1.000.000)   (panel, bukan warna peta)
             profil relatif prototipe — bukan sel resmi IRBI/BNPB.
           </p>
           <p className="mt-3">
-            Warna Risiko: 0–100 untuk bahaya tunggal, 0–200 untuk komposit.
-            Tidak distretch ke provinsi terendah–tertinggi.
+            Warna dan angka Risiko di peta memakai skala 1–10. Skor mentah
+            IRBI tetap di panel.
           </p>
+          <Formula>
+            {`Risiko_tampil = 1 + 9 × min(1, R / R_cap)
+R_cap = 100  (bahaya tunggal)
+      = 200  (komposit)`}
+          </Formula>
         </section>
 
         <section>

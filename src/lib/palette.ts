@@ -12,9 +12,18 @@ export const EDU_RAMP = ["#e7eef0", "#b9d0d6", "#7eafbc", "#3d7f92", "#1b4f5c"];
 export const EDU_CAP = 4;
 export const RISK_CAP_HAZARD = 100;
 export const RISK_CAP_COMPOSITE = 200;
+export const DISPLAY_MIN = 1;
+export const DISPLAY_MAX = 10;
 
 export function riskCap(hazard: string) {
   return hazard === "composite" ? RISK_CAP_COMPOSITE : RISK_CAP_HAZARD;
+}
+
+/** Map a raw score onto the shared 1–10 display scale. 0 raw → 1; cap → 10. */
+export function toScale10(raw: number, cap: number) {
+  if (cap <= 0) return DISPLAY_MIN;
+  const t = Math.min(1, Math.max(0, raw / cap));
+  return DISPLAY_MIN + (DISPLAY_MAX - DISPLAY_MIN) * t;
 }
 
 export function bivariateColor(riskClass: 0 | 1 | 2, eduClass: 0 | 1 | 2) {
