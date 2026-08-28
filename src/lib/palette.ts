@@ -23,7 +23,7 @@ export const PUSAT_CAP = 3;
 /** ln(1+5000) ≈ 8.52 — Aceh/Palu clip to 10; Cianjur ≈ 6. */
 export const HIST_CAP = Math.log(1 + 5000);
 export const RISK_CAP_HAZARD = 100;
-export const RISK_CAP_COMPOSITE = 200;
+export const RISK_CAP_COMPOSITE = 250;
 export const DISPLAY_MIN = 1;
 export const DISPLAY_MAX = 10;
 
