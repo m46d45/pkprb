@@ -190,13 +190,19 @@ function Header() {
           Peta Keselarasan Pendidikan dan Risiko Bencana
         </span>
       </Link>
-      <nav className="ml-auto flex items-center gap-3 text-[13px]">
+      <nav className="ml-auto flex items-center gap-2 text-[13px]">
         <Link
           to="/metodologi"
           className="rounded-md border border-line px-3 py-1.5 hover:border-ink"
         >
           Metodologi
         </Link>
+        <a
+          href="/kuesioner.html"
+          className="rounded-md border border-line px-3 py-1.5 hover:border-ink"
+        >
+          Validasi
+        </a>
       </nav>
     </header>
   );
