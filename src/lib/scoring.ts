@@ -217,7 +217,7 @@ export function scoreProvinces(opt: ScoringOptions): ProvinceScore[] {
       const popM = p.population / 1_000_000;
       const perJuta = popM > 0 ? cap / popM : 0;
       const idpki = Math.log(1 + cap);
-      const risk = p.risk[opt.hazard];
+      const risk = p.risk.composite;
       const deaths = historisDeaths(p.name, opt.hazard);
       const historisLn = Math.log(1 + deaths);
       const pusat = localPusat.get(p.id) ?? 0;
