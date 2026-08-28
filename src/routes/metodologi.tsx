@@ -30,6 +30,12 @@ function MetodologiPage() {
             Kembali ke peta
           </Link>
           <span className="font-display text-lg">Metodologi PKPRB</span>
+          <a
+            href="/kuesioner.html"
+            className="ml-auto rounded-md border border-line px-2.5 py-1.5 text-sm hover:border-ink"
+          >
+            Validasi
+          </a>
         </div>
       </header>
 
@@ -49,7 +55,7 @@ function MetodologiPage() {
           </p>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2">
+        <section className="grid gap-3 sm:grid-cols-3">
           <a
             href="/Template-Data-PKPRB.xlsx"
             download
@@ -57,10 +63,9 @@ function MetodologiPage() {
           >
             <FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-teal" />
             <div>
-              <p className="font-medium">Template data (Excel)</p>
+              <p className="font-medium">Template data</p>
               <p className="mt-0.5 text-sm text-muted">
-                204 prodi, 17 pusat, 50 peristiwa, IRBI 2025 komposit + 7
-                ancaman.
+                204 prodi, 17 pusat, IRBI 2025.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .xlsx
@@ -74,14 +79,26 @@ function MetodologiPage() {
           >
             <FileText className="mt-0.5 size-5 shrink-0 text-teal" />
             <div>
-              <p className="font-medium">Metodologi lengkap (Word)</p>
+              <p className="font-medium">Metodologi Word</p>
               <p className="mt-0.5 text-sm text-muted">
-                IRBI komposit vs rata-rata kabupaten, rumus kapasitas, batas
-                klaim.
+                Rumus, cap, batas klaim.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .docx
               </p>
+            </div>
+          </a>
+          <a
+            href="/kuesioner.html"
+            className="flex items-start gap-3 rounded-lg border border-line bg-surface p-4 transition hover:border-ink"
+          >
+            <FileText className="mt-0.5 size-5 shrink-0 text-teal" />
+            <div>
+              <p className="font-medium">Validasi</p>
+              <p className="mt-0.5 text-sm text-muted">
+                Kuesioner bobot untuk ahli.
+              </p>
+              <p className="mt-2 text-sm font-medium text-teal">Isi formulir →</p>
             </div>
           </a>
         </section>
@@ -219,6 +236,10 @@ function MetodologiPage() {
             <Link to="/" className="text-teal underline-offset-2 hover:underline">
               ← Kembali ke peta interaktif
             </Link>
+            {" · "}
+            <a href="/kuesioner.html" className="text-teal underline-offset-2 hover:underline">
+              Validasi bobot
+            </a>
           </p>
         </footer>
       </main>
