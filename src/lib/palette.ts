@@ -27,8 +27,9 @@ export const RISK_CAP_COMPOSITE = 250;
 export const DISPLAY_MIN = 1;
 export const DISPLAY_MAX = 10;
 
-export function riskCap(hazard: string) {
-  return hazard === "composite" ? RISK_CAP_COMPOSITE : RISK_CAP_HAZARD;
+export function riskCap(_hazard?: string) {
+  // Opsi 1: koropleth Risiko selalu IRBI 2025 komposit (cap 250).
+  return RISK_CAP_COMPOSITE;
 }
 
 /** Map a raw score onto the shared 1–10 display scale. 0 raw → 1; cap → 10. */
@@ -47,7 +48,6 @@ export function responsColor(
   pusatClass: 0 | 1 | 2,
   riskClass: 0 | 1 | 2 = 1,
 ) {
-  // Belum terespons (historis rendah × pusat rendah) + risiko tinggi → darker alert
   if (historisClass === 0 && pusatClass === 0 && riskClass === 2) return "#9a3f32";
   return RESPONS[historisClass][pusatClass];
 }
