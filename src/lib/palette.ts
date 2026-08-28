@@ -22,14 +22,13 @@ export const EDU_CAP = 4;
 export const PUSAT_CAP = 3;
 /** ln(1+5000) ≈ 8.52 — Aceh/Palu clip to 10; Cianjur ≈ 6. */
 export const HIST_CAP = Math.log(1 + 5000);
-export const RISK_CAP_HAZARD = 100;
+export const RISK_CAP_HAZARD = 40;
 export const RISK_CAP_COMPOSITE = 250;
 export const DISPLAY_MIN = 1;
 export const DISPLAY_MAX = 10;
 
-export function riskCap(_hazard?: string) {
-  // Opsi 1: koropleth Risiko selalu IRBI 2025 komposit (cap 250).
-  return RISK_CAP_COMPOSITE;
+export function riskCap(hazard?: string) {
+  return hazard === "composite" ? RISK_CAP_COMPOSITE : RISK_CAP_HAZARD;
 }
 
 /** Map a raw score onto the shared 1–10 display scale. 0 raw → 1; cap → 10. */
