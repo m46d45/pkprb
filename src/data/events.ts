@@ -57,4 +57,9 @@ export const events: HistEvent[] = [
   { id: "e43", year: 2003, name: "Gempa Alor", province: "Nusa Tenggara Timur", hazards: ["gempa"], deaths: 51, source: "USGS / BNPB" },
   { id: "e44", year: 2018, name: "Banjir–longsor NTT", province: "Nusa Tenggara Timur", hazards: ["banjir", "longsor"], deaths: 64, source: "BNPB" },
   { id: "e45", year: 2023, name: "Banjir bandang Luwu", province: "Sulawesi Selatan", hazards: ["banjir", "longsor"], deaths: 15, source: "BNPB" },
+  { id: "e46", year: 2026, name: "Gempa Flores M7,7", province: "Nusa Tenggara Timur", hazards: ["gempa"], deaths: 111, source: "BNPB / berita resmi 2026" },
+  { id: "e47", year: 2025, name: "Banjir–longsor Aceh November–Desember 2025", province: "Aceh", hazards: ["banjir", "longsor"], deaths: 503, source: "BNPB / laporan publik 2025" },
+  { id: "e48", year: 2025, name: "Banjir–longsor Sumatera Utara November–Desember 2025", province: "Sumatera Utara", hazards: ["banjir", "longsor"], deaths: 371, source: "BNPB / laporan publik 2025" },
+  { id: "e49", year: 2025, name: "Banjir–longsor Sumatera Barat November–Desember 2025", province: "Sumatera Barat", hazards: ["banjir", "longsor"], deaths: 261, source: "BNPB / laporan publik 2025" },
+  { id: "e50", year: 2022, name: "Gempa Pasaman Barat", province: "Sumatera Barat", hazards: ["gempa"], deaths: 27, source: "BNPB" },
 ];
