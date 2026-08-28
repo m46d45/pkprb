@@ -11,7 +11,7 @@ export const Route = createFileRoute("/metodologi")({
       {
         name: "description",
         content:
-          "Rumus skor, skala tampilan, matriks 3×3, dan sumber data Peta Keselarasan Pendidikan dan Risiko Bencana.",
+          "Rumus skor, IRBI 2025 komposit, matriks 3×3, dan sumber data Peta Keselarasan Pendidikan dan Risiko Bencana.",
       },
     ],
   }),
@@ -36,20 +36,19 @@ function MetodologiPage() {
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8">
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">
-            Prototipe · 20 Agustus 2026 · P2MI Multidisiplin FTSL ITB
+            28 Agustus 2026 · P2MI Multidisiplin FTSL ITB
           </p>
           <h1 className="font-display text-3xl leading-tight">
             Peta Keselarasan Pendidikan dan Risiko Bencana
           </h1>
           <p className="text-[15px] leading-relaxed text-muted">
-            Dokumen ini menjelaskan rumus yang dijalankan peta. Bukan peta
-            kesiapan, ketangguhan, atau kapasitas kelembagaan daerah — hanya
-            keselarasan antara profil risiko dan dukungan pendidikan tinggi
-            yang relevan bagi ketangguhan infrastruktur.
+            PKPRB memetakan keselarasan antara risiko bencana provinsi dan
+            dukungan perguruan tinggi (prodi, pusat studi, pengabdian
+            terlembaga). Bukan peta kesiapan BPBD, stok insinyur, atau mutu
+            lulusan di lapangan.
           </p>
         </section>
 
-        {/* Download cards */}
         <section className="grid gap-3 sm:grid-cols-2">
           <a
             href="/Template-Data-PKPRB.xlsx"
@@ -60,8 +59,7 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Template data (Excel)</p>
               <p className="mt-0.5 text-sm text-muted">
-                Form isian prodi, pusat studi, historis bencana, dll. Termasuk
-                45 peristiwa sejak 2000.
+                204 prodi, 17 pusat, 50 peristiwa, 38 komposit IRBI 2025.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .xlsx
@@ -77,8 +75,7 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Metodologi lengkap (Word)</p>
               <p className="mt-0.5 text-sm text-muted">
-                Rumus skor, matriks bobot disiplin × bahaya, spillover, dan
-                catatan asumsi.
+                Rumus, IRBI 2025 komposit saja, bobot, spillover, dan batas klaim.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .docx
@@ -91,102 +88,126 @@ function MetodologiPage() {
           <h2 className="font-display text-xl">Cara membaca peta</h2>
           <ul className="space-y-3 text-[15px] leading-relaxed">
             <li>
-              <strong>Pendidikan</strong> — skala tampilan 1–10 dari{" "}
+              <strong>Risiko / Bahaya</strong> — koropleth dari{" "}
+              <em>satu</em> angka: indeks komposit IRBI 2025 BNPB (buku
+              InaRISK). Skala tampilan 1–10 dengan cap 250 (Papua Barat Daya
+              230,78 tidak terpotong). Filter jenis bahaya{" "}
+              <em>tidak</em> mengganti warna risiko.
+            </li>
+            <li>
+              <strong>Pendidikan</strong> — 1–10 dari{" "}
               <code className="rounded bg-line/60 px-1 text-[13px]">
                 ln(1 + kapasitas)
               </code>
-              . Penduduk tidak dibagi. 1 = kapasitas nol; 10 = kapasitas tertinggi
-              pada set data.
+              . Kapasitas = Σ skor prodi + pusat + kepakaran (bendera PkM) +
+              spillover. Penduduk tidak dibagi pada skala ini.
             </li>
             <li>
-              <strong>Risiko</strong> — skala tampilan 1–10. Bahaya tunggal dari
-              skor 0–100; komposit dikalibrasi IRBI 2024 (rentang ≈ 0–200).
+              <strong>Keselarasan</strong> — matriks 3×3 tertil risiko komposit
+              × tertil pendidikan di 38 provinsi. Label: Senjang, Selaras,
+              Berlebih, Relevan, Menengah.
             </li>
             <li>
-              <strong>Keselarasan</strong> — matriks 3×3 tertil risiko × tertil
-              pendidikan di antara 38 provinsi. Label kuadran: Senjang, Selaras,
-              Berlebih, Relevan.
-            </li>
-            <li>
-              <strong>Historis</strong> — choropleth 1–10 dari{" "}
+              <strong>Historis</strong> — 1–10 dari{" "}
               <code className="rounded bg-line/60 px-1 text-[13px]">
-                ln(1 + total korban jiwa absolut)
+                ln(1 + korban jiwa absolut)
               </code>{" "}
-              sejak 2000 (kurasi, bukan DIBI lengkap). Bukan bubble.
+              sejak 2000 (katalog kurasi, bukan DIBI). Cap visual{" "}
+              <code className="rounded bg-line/60 px-1 text-[13px]">ln(1+5000)</code>.
             </li>
             <li>
-              <strong>Pusat</strong> — massa pusat studi + layanan kepakaran di
-              provinsi itu (tanpa prodi, tanpa spillover). Skala 1–10.
+              <strong>Pusat</strong> — massa pusat studi + kepakaran di
+              provinsi itu, tanpa prodi dan tanpa spillover.
             </li>
             <li>
-              <strong>Respons</strong> — matriks 3×3 penuh (historis × pusat)
-              dengan kategori: responsif, antisipatif, tidak melembaga, belum
-              terespons, dan menengah. Dipakai untuk membaca celah roadmap
-              penelitian/pengabdian.
+              <strong>Respons</strong> — 3×3 historis × pusat: responsif,
+              antisipatif, tidak melembaga, belum terespons, menengah.
             </li>
           </ul>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="font-display text-xl">Filter jenis bahaya</h2>
+          <p className="text-[15px] leading-relaxed">
+            Filter gempa, tsunami, banjir, dan seterusnya adalah{" "}
+            <strong>lensa kapasitas</strong>, bukan lensa IRBI. Yang berubah:
+            matriks bobot disiplin, kecocokan bahaya pusat studi, dan daftar
+            peristiwa historis. Yang tidak berubah: warna layer Risiko dan
+            sumbu risiko pada Keselarasan — keduanya tetap komposit IRBI 2025.
+          </p>
+          <p className="text-[15px] leading-relaxed text-muted">
+            Buku IRBI 2025 tidak menerbitkan skor ancaman tingkat provinsi.
+            Rincian per jenis hanya ada di peringkat kabupaten (hlm. 212–375).
+            Kolom per-bahaya di template Excel adalah sisa prototipe dan tidak
+            dipakai peta.
+          </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="font-display text-xl">Ringkasan rumus</h2>
           <div className="space-y-3 text-[15px] leading-relaxed">
             <p>
-              <strong>1. Skor prodi</strong> = bobot disiplin (matriks bahaya) ×
-              bobot jenjang (S1/S2/S3) × bobot akreditasi (termasuk IABEE →
-              Internasional).
+              <strong>1. Skor prodi</strong> = bobot disiplin (matriks bahaya
+              yang sedang dipilih) × bobot jenjang × bobot akreditasi. IABEE
+              General atau Provisional dihitung sebagai Internasional, tidak
+              ditumpuk di atas Unggul.
             </p>
             <p>
-              <strong>2. Kapasitas provinsi</strong> = Σ skor prodi + skor pusat
-              studi + skor layanan kepakaran + spillover dari PT sepulau /
-              nasional (kolam dibagi rata, tidak digandakan).
+              <strong>2. Pusat</strong> = bobot pusat × kematangan (anchor 1,35 /
+              PUI 1,20 / standard 1,00) × jejaring nasional 1,20 × kecocokan
+              bahaya (1,00 cocok; 0,20 jika filter bahaya lain).
             </p>
             <p>
-              <strong>3. Skala tampilan</strong> = 1–10 dari ln(1 + nilai), agar
-              perbedaan kecil di kapasitas rendah tetap terbaca.
+              <strong>3. Kepakaran</strong> = bobot kepakaran × bendera PkM pada
+              baris pusat. Sheet layanan aktivitas (04) ditunda — tidak masuk
+              skor.
             </p>
             <p>
-              <strong>4. Klasifikasi 3 kelas</strong> = tertil (33% / 67%) di
-              antara 38 provinsi. Dipakai untuk Keselarasan dan Respons.
+              <strong>4. Spillover</strong> mengikuti akreditasi institusi, bukan
+              prodi. Kolam sepulau / nasional dibagi rata ke penerima, tidak
+              digandakan. PT dengan akreditasi Baik tidak memancar.
             </p>
             <p>
-              <strong>5. Historis</strong> = Σ korban jiwa absolut per provinsi
-              (dan filter bahaya). Skala dibatasi di sekitar{" "}
-              <code className="rounded bg-line/60 px-1 text-[13px]">
-                ln(1+5000)
-              </code>{" "}
-              untuk stabilitas visual.
+              <strong>5. Tertil</strong> dihitung di antara 38 provinsi (33% /
+              67%) untuk Keselarasan dan Respons.
             </p>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl">Sumber data (prototipe)</h2>
+          <h2 className="font-display text-xl">Isi basis saat ini</h2>
           <ul className="list-inside list-disc space-y-1.5 text-[15px] text-muted">
-            <li>IRBI 2024 publik (komposit dikalibrasi; skor per bahaya masih prototipe)</li>
-            <li>Inventaris prodi: kurasi BAN-PT / PDDikti / IABEE (bukan direktori lengkap)</li>
-            <li>Pusat studi & PkM: laman LPPM, PUI-PT, dan direktori kebencanaan</li>
+            <li>38 komposit IRBI 2025 (buku InaRISK); cap tampilan 250.</li>
             <li>
-              Historis: kurasi kejadian signifikan 2000–sekarang (BNPB / EM-DAT /
-              USGS). Karhutla sering understated (hanya korban langsung).
+              204 program studi (BAN-PT / LAM Teknik–SAKTI / IABEE / laman PT).
+              Prioritas S2/S3 luar Jawa pada sipil, planologi, geologi,
+              lingkungan, kebencanaan.
+            </li>
+            <li>
+              17 pusat studi terverifikasi nama. Lubang disengaja: Papua
+              (kecuali Uncen sebagai prodi, bukan pusat), NTT, Malut, sebagian
+              besar Kalimantan.
+            </li>
+            <li>
+              50 peristiwa historis dengan korban jiwa (BNPB / EM-DAT / berita
+              resmi), termasuk Flores 2026 dan banjir Sumatera 2025.
             </li>
           </ul>
         </section>
 
         <section className="rounded-lg border border-line bg-surface p-4 text-[14px] leading-relaxed text-muted">
-          <p className="font-medium text-ink">Catatan penting</p>
+          <p className="font-medium text-ink">Batas klaim</p>
           <p className="mt-1">
-            Hubungan disiplin–bahaya adalah matriks kerja (prior Delphi), bukan
-            hasil regresi. Skor risiko prototipe dikalibrasi ke angka publik IRBI
-            2024 tetapi bukan salinan resmi per sel. Data perlu validasi berkala
-            — akreditasi berubah, prodi baru muncul, pusat studi berubah status.
-            Untuk tahap perencanaan dan roadmap saat ini, update data masih
-            manual melalui template Excel.
+            Matriks disiplin–bahaya adalah prior kerja, bukan regresi. Inventaris
+            bukan direktori nasional lengkap. Historis bukan DIBI. Karhutla
+            understated (hanya korban langsung). Akreditasi dan pusat berubah;
+            pemutakhiran masih lewat template Excel.
           </p>
         </section>
 
         <footer className="border-t border-line pt-6 pb-10 text-sm text-muted">
           <p>
-            Proyek terkait P2MI Multidisiplin FTSL ITB 2026 —{" "}
+            P2MI Multidisiplin FTSL ITB 2026 —{" "}
             <em>Mainstreaming Disaster Resiliency in Infrastructure Systems</em>.
           </p>
           <p className="mt-2">
