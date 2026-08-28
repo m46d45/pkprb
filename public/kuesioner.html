@@ -1,1 +1,314 @@
-<placeholder>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Validasi bobot — PKPRB</title>
+  <style>
+    :root {
+      --ink: #1f1a16;
+      --muted: #5c564e;
+      --teal: #1b4f5c;
+      --line: #d4cfc5;
+      --paper: #f7f1e8;
+      --surface: #efe8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.5 Calibri, "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    header {
+      position: sticky; top: 0; z-index: 2;
+      background: color-mix(in srgb, var(--surface) 92%, white);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+    header .bar {
+      max-width: 760px; margin: 0 auto;
+      padding: 12px 16px;
+      display: flex; gap: 12px; align-items: center;
+    }
+    header a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; font-size: 14px; }
+    main { max-width: 760px; margin: 0 auto; padding: 28px 16px 80px; }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    .lede { color: var(--muted); margin: 0 0 20px; }
+    .note {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 8px; padding: 14px 16px; margin: 0 0 28px;
+    }
+    section { margin: 32px 0; }
+    h2 { font-size: 20px; margin: 0 0 12px; }
+    label.block { display: block; font-weight: 600; margin: 14px 0 6px; }
+    input[type=text], input[type=email], input[type=number], textarea, select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+      border-radius: 6px; background: #fff; font: inherit; color: var(--ink);
+    }
+    textarea { min-height: 72px; }
+    .choices { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 10px; }
+    .choices label { font-weight: 400; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
+    th, td { border: 1px solid var(--line); padding: 6px; text-align: center; }
+    th { background: var(--teal); color: #fff; font-weight: 600; }
+    td:first-child, th:first-child { text-align: left; white-space: nowrap; }
+    td input { width: 52px; padding: 4px; text-align: center; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } table { font-size: 12px; } }
+    .actions {
+      position: sticky; bottom: 0;
+      background: var(--surface); border-top: 1px solid var(--line);
+      padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    button {
+      border: 0; border-radius: 6px; padding: 10px 14px;
+      background: var(--teal); color: #fff; font: inherit; cursor: pointer;
+    }
+    button.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    #status { font-size: 14px; color: var(--muted); align-self: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a href="/">← Peta</a>
+      <a href="/metodologi">Metodologi</a>
+      <strong>Validasi PKPRB</strong>
+    </div>
+  </header>
+  <main>
+    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">P2MI Multidisiplin FTSL ITB · 28 Agustus 2026</p>
+    <h1>Permintaan penilaian ahli</h1>
+    <p class="lede">Bapak/Ibu diminta menilai bobot yang dipakai peta ini — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Perkiraan 20–25 menit. Disarankan membuka peta dan halaman metodologi sebelum mengisi.</p>
+    <div class="note">
+      <p style="margin:0 0 8px;"><strong>Apa yang dinilai.</strong> Bobot jenjang, akreditasi, pusat studi, pancaran (spillover), dan matriks disiplin × jenis bahaya. Sel atau kotak yang dikosongkan artinya Bapak/Ibu menyetujui nilai bawaan.</p>
+      <p style="margin:0 0 8px;"><strong>Cara membaca peta.</strong> Filter Komposit memakai indeks resmi IRBI 2025 tingkat provinsi. Filter gempa, tsunami, banjir, dan seterusnya memakai rata-rata skor kabupaten pada tabel ancaman IRBI yang sama. Angka 0 berarti tidak ada baris kabupaten di tabel itu — bukan sertifikat bahwa daerah aman.</p>
+      <p style="margin:0;"><strong>Yang tidak masuk hitungan peta.</strong> Daftar kegiatan layanan (workshop, laboratorium uji, penyusunan dokumen) dicatat terpisah. Yang dihitung sebagai kepakaran hanya tanda pengabdian (PkM) pada pusat studi.</p>
+    </div>
+    <form id="q">
+      <section>
+        <h2>0. Identitas</h2>
+        <div class="row2">
+          <div><label class="block">Nama (boleh inisial)</label><input name="nama" /></div>
+          <div><label class="block">Institusi / unit</label><input name="institusi" /></div>
+        </div>
+        <label class="block">Jabatan atau peran</label><input name="peran" />
+        <label class="block">Keahlian (boleh lebih dari satu)</label>
+        <div class="choices">
+          <label><input type="checkbox" name="ahli" value="pendidikan" /> Pendidikan tinggi</label>
+          <label><input type="checkbox" name="ahli" value="kebencanaan" /> Kebencanaan / IRBI</label>
+          <label><input type="checkbox" name="ahli" value="sipil" /> Sipil / geoteknik</label>
+          <label><input type="checkbox" name="ahli" value="pwk" /> PWK</label>
+          <label><input type="checkbox" name="ahli" value="geologi" /> Geologi</label>
+          <label><input type="checkbox" name="ahli" value="lingkungan" /> Lingkungan</label>
+          <label><input type="checkbox" name="ahli" value="bpbd" /> BPBD / pemda</label>
+        </div>
+        <label class="block">Pernah membuka peta?</label>
+        <div class="choices">
+          <label><input type="radio" name="lihat_peta" value="lama" /> Ya, cukup lama</label>
+          <label><input type="radio" name="lihat_peta" value="sekilas" /> Ya, sekilas</label>
+          <label><input type="radio" name="lihat_peta" value="belum" /> Belum</label>
+        </div>
+      </section>
+      <section>
+        <h2>2. Angka risiko</h2>
+        <label class="block">A1. Cara merangkum skor kabupaten menjadi satu angka provinsi</label>
+        <select name="a1">
+          <option value="">— pilih —</option>
+          <option value="mean">Rata-rata sederhana (yang dipakai peta sekarang)</option>
+          <option value="max">Nilai maksimum</option>
+          <option value="wpop">Rata-rata tertimbang penduduk</option>
+          <option value="lain">Lain</option>
+        </select>
+        <label class="block">Alasan singkat</label><textarea name="a1_alasan"></textarea>
+        <label class="block">A2. Jika suatu provinsi tidak muncul di tabel ancaman IRBI</label>
+        <select name="a2">
+          <option value="">— pilih —</option>
+          <option value="tetap0">Biarkan bernilai 0</option>
+          <option value="isi_ahli">Isi menurut pertimbangan ahli / wilayah tetangga</option>
+          <option value="sembunyi">Jangan tampilkan filter itu untuk provinsi tersebut</option>
+        </select>
+      </section>
+      <section>
+        <h2>3. Bobot jenjang</h2>
+        <p class="lede">Kosong = menyetujui nilai bawaan 1,00.</p>
+        <div class="row2">
+          <div><label class="block">S1 / D4</label><input type="number" min="0" max="1" step="0.05" name="s1" placeholder="1,00" /></div>
+          <div><label class="block">S2</label><input type="number" min="0" max="1" step="0.05" name="s2" placeholder="1,00" /></div>
+        </div>
+        <label class="block">S3</label><input type="number" min="0" max="1" step="0.05" name="s3" placeholder="1,00" />
+        <label class="block">B1. Haruskah S3 lebih tinggi daripada S1 untuk ketangguhan bencana?</label>
+        <select name="b1">
+          <option value="">— pilih —</option>
+          <option value="ya">Ya</option>
+          <option value="tidak">Tidak</option>
+          <option value="bergantung">Bergantung disiplin</option>
+        </select>
+      </section>
+      <section>
+        <h2>4. Akreditasi</h2>
+        <p class="lede">Kosong = menyetujui nilai bawaan.</p>
+        <div class="row2">
+          <div><label class="block">Internasional / IABEE (1,00)</label><input type="number" min="0" max="1" step="0.05" name="acc_int" /></div>
+          <div><label class="block">Unggul / A (0,90)</label><input type="number" min="0" max="1" step="0.05" name="acc_unggul" /></div>
+          <div><label class="block">Baik Sekali / B (0,80)</label><input type="number" min="0" max="1" step="0.05" name="acc_bs" /></div>
+          <div><label class="block">Baik / C (0,70)</label><input type="number" min="0" max="1" step="0.05" name="acc_baik" /></div>
+        </div>
+        <label class="block">C1. IABEE General/Provisional disetarakan dengan Internasional</label>
+        <select name="c1">
+          <option value="">— pilih —</option>
+          <option value="setuju">Setuju</option>
+          <option value="tinggi">Terlalu tinggi</option>
+          <option value="tumpuk">Boleh ditambahkan di atas peringkat Unggul</option>
+        </select>
+        <label class="block">C2. Program studi yang belum punya peringkat terbit</label>
+        <select name="c2">
+          <option value="">— pilih —</option>
+          <option value="070">Dihitung 0,70</option>
+          <option value="0">Tidak dihitung</option>
+          <option value="tampil">Tampil di peta tanpa skor</option>
+        </select>
+      </section>
+      <section>
+        <h2>5. Pusat studi dan kepakaran</h2>
+        <label class="block">D1. Kepakaran dihitung dari tanda pengabdian (PkM) pada pusat studi</label>
+        <select name="d1">
+          <option value="">— pilih —</option>
+          <option value="setuju">Setuju untuk versi ini</option>
+          <option value="kegiatan">Harus ada daftar kegiatan agar dihitung</option>
+          <option value="hapus">Komponen kepakaran dihapus saja</option>
+        </select>
+        <label class="block">D2. Beberapa provinsi belum punya pusat studi terverifikasi (Papua Barat Daya, NTT, Maluku Utara, sebagian Kalimantan)</label>
+        <select name="d2">
+          <option value="">— pilih —</option>
+          <option value="biarkan">Biarkan kosong apa adanya</option>
+          <option value="cari">Lengkapi inventaris pusat dulu</option>
+          <option value="proxy">Pakai nilai pulau tetangga</option>
+        </select>
+      </section>
+      <section>
+        <h2>6. Pancaran kapasitas (spillover)</h2>
+        <label class="block">E1. Sebagian skor perguruan tinggi memancar ke provinsi lain</label>
+        <select name="e1">
+          <option value="">— pilih —</option>
+          <option value="tahan">Pertahankan</option>
+          <option value="kecil">Kecilkan</option>
+          <option value="besar">Besarkan</option>
+          <option value="hapus">Hapus</option>
+        </select>
+        <label class="block">E2. Cara membagi pancaran itu</label>
+        <select name="e2">
+          <option value="">— pilih —</option>
+          <option value="rata">Rata ke provinsi sepulau / nasional</option>
+          <option value="tetangga">Hanya ke provinsi tetangga</option>
+          <option value="penerima">Hanya ke perguruan tinggi atau kota penerima</option>
+        </select>
+      </section>
+      <section>
+        <h2>7. Matriks disiplin × jenis bahaya</h2>
+        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat.</p>
+        <label class="block">F1. Kesan terhadap nilai bawaan</label>
+        <select name="f1">
+          <option value="">— pilih —</option>
+          <option value="ok">Masuk akal</option>
+          <option value="rata">Terlalu merata</option>
+          <option value="sipil">Terlalu condong ke teknik sipil</option>
+          <option value="lain">Lain</option>
+        </select>
+        <div style="overflow-x:auto;margin-top:12px">
+          <table id="matriks"></table>
+        </div>
+      </section>
+      <section>
+        <h2>8. Catatan terbuka</h2>
+        <label class="block">G1. Satu hal yang sebaiknya diubah</label><textarea name="g1"></textarea>
+        <label class="block">G2. Satu hal yang sebaiknya tidak diubah</label><textarea name="g2"></textarea>
+        <label class="block">G3. Catatan lain</label><textarea name="g3"></textarea>
+      </section>
+      <section>
+        <h2>9. Persetujuan</h2>
+        <div class="choices">
+          <label><input type="checkbox" name="setuju_bukan_kesiapan" /> Saya memahami PKPRB bukan peta kesiapan daerah</label>
+          <label><input type="checkbox" name="setuju_ringkas" /> Penilaian ini boleh dipakai menyesuaikan bobot bawaan peta</label>
+          <label><input type="checkbox" name="setuju_institusi" /> Nama institusi boleh dicantumkan pada daftar validator</label>
+        </div>
+        <p class="lede" style="margin-top:16px">Terima kasih. Penilaian Bapak/Ibu akan diringkas untuk menyetel bobot bawaan, bukan dikutip nama per orang kecuali izin di atas diberikan.</p>
+      </section>
+    </form>
+  </main>
+  <div class="actions">
+    <button type="button" id="save">Simpan dulu</button>
+    <button type="button" class="ghost" id="dl">Unduh jawaban</button>
+    <button type="button" class="ghost" id="mail">Kirim lewat surel</button>
+    <span id="status"></span>
+  </div>
+  <script>
+    const HAZ = ["Gempabumi","Tsunami","Banjir","Longsor","Likuefaksi","Gunung api","Karhutla","Komposit"];
+    const DISC = ["Sipil","Arsitektur","PWK","Geologi","Lingkungan","Kelautan","Kebencanaan","Multidisiplin"];
+    const DEF = {
+      "Gempabumi":[1,.55,.4,.9,.25,.25,.85,.7],
+      "Tsunami":[.7,.35,.8,.65,.4,.9,.9,.75],
+      "Banjir":[.85,.3,.85,.35,.75,.35,.85,.8],
+      "Longsor":[.9,.25,.55,.95,.4,.15,.8,.7],
+      "Likuefaksi":[1,.25,.35,.9,.2,.15,.7,.55],
+      "Gunung api":[.55,.3,.5,.95,.4,.1,.85,.7],
+      "Karhutla":[.25,.15,.45,.25,.7,.05,.8,.75],
+      "Komposit":[.85,.4,.55,.7,.45,.4,.85,.8]
+    };
+    const tb = document.getElementById("matriks");
+    tb.innerHTML = "<tr><th>Bahaya</th>" + DISC.map(d => "<th>"+d+"</th>").join("") + "</tr>" +
+      HAZ.map(h => "<tr><th>"+h+"</th>" + DISC.map((d,i) =>
+        "<td><input type='number' min='0' max='1' step='0.05' data-h='"+h+"' data-d='"+d+"' placeholder='"+DEF[h][i]+"' /></td>"
+      ).join("") + "</tr>").join("");
+    function collect() {
+      const fd = new FormData(document.getElementById("q"));
+      const o = { versi: "2026-08-28", waktu: new Date().toISOString() };
+      for (const [k,v] of fd.entries()) {
+        if (k === "ahli") { (o.ahli ||= []).push(v); continue; }
+        o[k] = v;
+      }
+      o.matriks = {};
+      document.querySelectorAll("#matriks input").forEach(inp => {
+        if (inp.value === "") return;
+        (o.matriks[inp.dataset.h] ||= {})[inp.dataset.d] = Number(inp.value);
+      });
+      return o;
+    }
+    function apply(o) {
+      if (!o) return;
+      const f = document.getElementById("q");
+      for (const el of f.elements) {
+        if (!el.name || el.name === "ahli") continue;
+        if (el.type === "checkbox") el.checked = !!o[el.name];
+        else if (el.type === "radio") el.checked = o[el.name] === el.value;
+        else if (o[el.name] != null) el.value = o[el.name];
+      }
+      document.querySelectorAll("input[name=ahli]").forEach(c => { c.checked = (o.ahli||[]).includes(c.value); });
+      document.querySelectorAll("#matriks input").forEach(inp => {
+        const v = o.matriks && o.matriks[inp.dataset.h] && o.matriks[inp.dataset.h][inp.dataset.d];
+        if (v != null) inp.value = v;
+      });
+    }
+    const KEY = "pkprb-kuesioner-v1";
+    const status = document.getElementById("status");
+    document.getElementById("save").onclick = () => {
+      localStorage.setItem(KEY, JSON.stringify(collect()));
+      status.textContent = "Tersimpan di perangkat ini. Boleh dilanjutkan nanti.";
+    };
+    document.getElementById("dl").onclick = () => {
+      const blob = new Blob([JSON.stringify(collect(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "pkprb-kuesioner-" + (collect().nama || "responden").replace(/\s+/g,"-") + ".json";
+      a.click();
+      status.textContent = "Berkas jawaban terunduh. Lampirkan pada surel ke tim PKPRB.";
+    };
+    document.getElementById("mail").onclick = () => {
+      const body = encodeURIComponent("Yth. tim PKPRB,\n\nTerlampir penilaian bobot dari formulir validasi.\n\n" + JSON.stringify(collect(), null, 2).slice(0, 1600));
+      location.href = "mailto:25025029@mahasiswa.itb.ac.id?subject=" + encodeURIComponent("Penilaian ahli bobot PKPRB") + "&body=" + body;
+    };
+    try { apply(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) {}
+  </script>
+</body>
+</html>
