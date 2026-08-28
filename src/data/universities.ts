@@ -101,6 +101,14 @@ export const universities: Record<string, UniversityRecord> = {
   "Universitas Trisakti": { province: "DKI Jakarta", accreditation: "unggul" },
   "Universitas Udayana": { province: "Bali", accreditation: "unggul" },
   "Universitas Warmadewa": { province: "Bali", accreditation: "unggul" },
+  "Institut Teknologi Padang": { province: "Sumatera Barat", accreditation: "baik" },
+  "Universitas 17 Agustus 1945 Samarinda": { province: "Kalimantan Timur", accreditation: "baik" },
+  "Universitas Indo Global Mandiri": { province: "Sumatera Selatan", accreditation: "baik" },
+  "Universitas Islam Riau": { province: "Riau", accreditation: "baik" },
+  "Universitas Muhammadiyah Pare-pare": { province: "Sulawesi Selatan", accreditation: "baik" },
+  "Universitas Muslim Indonesia": { province: "Sulawesi Selatan", accreditation: "baik" },
+  "Universitas Mahasaraswati Denpasar": { province: "Bali", accreditation: "baik" },
+  "Universitas Muhammadiyah Palu": { province: "Sulawesi Tengah", accreditation: "baik" },
 };
 
 export function ptAccreditation(name: string): AccLevel {
