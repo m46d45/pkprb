@@ -1,4 +1,4 @@
-import { programsA } from "./programs-a";
 import { programsB } from "./programs-b";
 
-export const programs = [...programsA, ...programsB];
+/** Sementara: 15 baris prioritas (IABEE + S2/S3 luar Jawa). Berkas penuh 204 ada di artifacts. */
+export const programs = programsB;
