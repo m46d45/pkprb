@@ -11,7 +11,7 @@ export const Route = createFileRoute("/metodologi")({
       {
         name: "description",
         content:
-          "Rumus skor, IRBI 2025 komposit, matriks 3×3, dan sumber data Peta Keselarasan Pendidikan dan Risiko Bencana.",
+          "Rumus skor, IRBI 2025 komposit dan rata-rata kabupaten per ancaman, matriks 3×3, dan sumber data PKPRB.",
       },
     ],
   }),
@@ -59,7 +59,8 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Template data (Excel)</p>
               <p className="mt-0.5 text-sm text-muted">
-                204 prodi, 17 pusat, 50 peristiwa, 38 komposit IRBI 2025.
+                204 prodi, 17 pusat, 50 peristiwa, IRBI 2025 komposit + 7
+                ancaman.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .xlsx
@@ -75,7 +76,8 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Metodologi lengkap (Word)</p>
               <p className="mt-0.5 text-sm text-muted">
-                Rumus, IRBI 2025 komposit saja, bobot, spillover, dan batas klaim.
+                IRBI komposit vs rata-rata kabupaten, rumus kapasitas, batas
+                klaim.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .docx
@@ -88,11 +90,12 @@ function MetodologiPage() {
           <h2 className="font-display text-xl">Cara membaca peta</h2>
           <ul className="space-y-3 text-[15px] leading-relaxed">
             <li>
-              <strong>Risiko / Bahaya</strong> — koropleth dari{" "}
-              <em>satu</em> angka: indeks komposit IRBI 2025 BNPB (buku
-              InaRISK). Skala tampilan 1–10 dengan cap 250 (Papua Barat Daya
-              230,78 tidak terpotong). Filter jenis bahaya{" "}
-              <em>tidak</em> mengganti warna risiko.
+              <strong>Risiko / Bahaya</strong> — bergantung filter.{" "}
+              <em>Komposit</em>: indeks resmi IRBI 2025 tingkat provinsi (buku
+              InaRISK), cap tampilan 250. <em>Gempa, tsunami, banjir, longsor,
+              likuefaksi, gunung api, karhutla</em>: rata-rata skor kabupaten
+              pada tabel ancaman yang sama, cap 40. Dua skala ini tidak
+              dibanding silang.
             </li>
             <li>
               <strong>Pendidikan</strong> — 1–10 dari{" "}
@@ -100,20 +103,23 @@ function MetodologiPage() {
                 ln(1 + kapasitas)
               </code>
               . Kapasitas = Σ skor prodi + pusat + kepakaran (bendera PkM) +
-              spillover. Penduduk tidak dibagi pada skala ini.
+              spillover.
             </li>
             <li>
-              <strong>Keselarasan</strong> — matriks 3×3 tertil risiko komposit
-              × tertil pendidikan di 38 provinsi. Label: Senjang, Selaras,
-              Berlebih, Relevan, Menengah.
+              <strong>Keselarasan</strong> — matriks 3×3 tertil risiko (sesuai
+              filter) × tertil pendidikan di 38 provinsi. Label: Senjang,
+              Selaras, Berlebih, Relevan, Menengah.
             </li>
             <li>
               <strong>Historis</strong> — 1–10 dari{" "}
               <code className="rounded bg-line/60 px-1 text-[13px]">
                 ln(1 + korban jiwa absolut)
               </code>{" "}
-              sejak 2000 (katalog kurasi, bukan DIBI). Cap visual{" "}
-              <code className="rounded bg-line/60 px-1 text-[13px]">ln(1+5000)</code>.
+              sejak 2000 (katalog kurasi, bukan DIBI). Cap{" "}
+              <code className="rounded bg-line/60 px-1 text-[13px]">
+                ln(1+5000)
+              </code>
+              .
             </li>
             <li>
               <strong>Pusat</strong> — massa pusat studi + kepakaran di
@@ -127,19 +133,25 @@ function MetodologiPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-display text-xl">Filter jenis bahaya</h2>
+          <h2 className="font-display text-xl">Dari mana angka risiko</h2>
           <p className="text-[15px] leading-relaxed">
-            Filter gempa, tsunami, banjir, dan seterusnya adalah{" "}
-            <strong>lensa kapasitas</strong>, bukan lensa IRBI. Yang berubah:
-            matriks bobot disiplin, kecocokan bahaya pusat studi, dan daftar
-            peristiwa historis. Yang tidak berubah: warna layer Risiko dan
-            sumbu risiko pada Keselarasan — keduanya tetap komposit IRBI 2025.
+            Buku IRBI 2025 tidak menerbitkan skor ancaman tingkat provinsi.
+            Yang resmi di 38 provinsi hanya <strong>komposit</strong>. Per
+            jenis ancaman, BNPB merilis peringkat kabupaten (hlm. 212–375).
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            PKPRB merangkum tiap ancaman sebagai{" "}
+            <strong>rata-rata sederhana</strong> skor kabupaten yang tertulis
+            di tabel itu. Bukan maksimum, bukan tertimbang penduduk. Kabupaten
+            yang tidak muncul di tabel tidak masuk pembagi. Provinsi tanpa
+            satu baris pun = 0 (contoh: tsunami di DIY, gunung api di Papua).
+            Nol berarti “tidak ada baris”, bukan sertifikat aman.
           </p>
           <p className="text-[15px] leading-relaxed text-muted">
-            Buku IRBI 2025 tidak menerbitkan skor ancaman tingkat provinsi.
-            Rincian per jenis hanya ada di peringkat kabupaten (hlm. 212–375).
-            Kolom per-bahaya di template Excel adalah sisa prototipe dan tidak
-            dipakai peta.
+            Filter juga mengubah matriks bobot disiplin, kecocokan bahaya
+            pusat studi, dan daftar peristiwa historis. Angka per ancaman
+            (kira-kira 0–33) dan komposit (57–231) memakai cap berbeda agar
+            warna tidak tertelan.
           </p>
         </section>
 
@@ -147,29 +159,26 @@ function MetodologiPage() {
           <h2 className="font-display text-xl">Ringkasan rumus</h2>
           <div className="space-y-3 text-[15px] leading-relaxed">
             <p>
-              <strong>1. Skor prodi</strong> = bobot disiplin (matriks bahaya
-              yang sedang dipilih) × bobot jenjang × bobot akreditasi. IABEE
-              General atau Provisional dihitung sebagai Internasional, tidak
-              ditumpuk di atas Unggul.
+              <strong>1. Skor prodi</strong> = bobot disiplin × bobot jenjang ×
+              bobot akreditasi. IABEE General atau Provisional = Internasional,
+              tidak ditumpuk di atas Unggul.
             </p>
             <p>
-              <strong>2. Pusat</strong> = bobot pusat × kematangan (anchor 1,35 /
-              PUI 1,20 / standard 1,00) × jejaring nasional 1,20 × kecocokan
-              bahaya (1,00 cocok; 0,20 jika filter bahaya lain).
+              <strong>2. Pusat</strong> = bobot pusat × kematangan (anchor 1,35
+              / PUI 1,20 / standard 1,00) × jejaring nasional 1,20 × kecocokan
+              bahaya (1,00 atau 0,20).
             </p>
             <p>
               <strong>3. Kepakaran</strong> = bobot kepakaran × bendera PkM pada
-              baris pusat. Sheet layanan aktivitas (04) ditunda — tidak masuk
-              skor.
+              baris pusat. Lembar 04 (aktivitas layanan) ditunda.
             </p>
             <p>
-              <strong>4. Spillover</strong> mengikuti akreditasi institusi, bukan
-              prodi. Kolam sepulau / nasional dibagi rata ke penerima, tidak
-              digandakan. PT dengan akreditasi Baik tidak memancar.
+              <strong>4. Spillover</strong> mengikuti akreditasi institusi.
+              Kolam sepulau / nasional dibagi rata, tidak digandakan.
             </p>
             <p>
-              <strong>5. Tertil</strong> dihitung di antara 38 provinsi (33% /
-              67%) untuk Keselarasan dan Respons.
+              <strong>5. Tertil</strong> 33% / 67% di antara 38 provinsi, dihitung
+              ulang setiap filter.
             </p>
           </div>
         </section>
@@ -177,20 +186,16 @@ function MetodologiPage() {
         <section className="space-y-3">
           <h2 className="font-display text-xl">Isi basis saat ini</h2>
           <ul className="list-inside list-disc space-y-1.5 text-[15px] text-muted">
-            <li>38 komposit IRBI 2025 (buku InaRISK); cap tampilan 250.</li>
+            <li>38 komposit IRBI 2025 resmi; cap 250.</li>
             <li>
-              204 program studi (BAN-PT / LAM Teknik–SAKTI / IABEE / laman PT).
-              Prioritas S2/S3 luar Jawa pada sipil, planologi, geologi,
-              lingkungan, kebencanaan.
+              Tujuh ancaman = rata-rata kabupaten IRBI 2025 (gempa 514 kab,
+              tsunami ~271, banjir 510, longsor 455, likuefaksi 514, gunung api
+              130, karhutla 467).
             </li>
+            <li>204 program studi (BAN-PT / SAKTI / IABEE / laman PT).</li>
+            <li>17 pusat studi bernama; kepakaran = bendera PkM.</li>
             <li>
-              17 pusat studi terverifikasi nama. Lubang disengaja: Papua
-              (kecuali Uncen sebagai prodi, bukan pusat), NTT, Malut, sebagian
-              besar Kalimantan.
-            </li>
-            <li>
-              50 peristiwa historis dengan korban jiwa (BNPB / EM-DAT / berita
-              resmi), termasuk Flores 2026 dan banjir Sumatera 2025.
+              50 peristiwa historis dengan korban jiwa, termasuk Flores 2026.
             </li>
           </ul>
         </section>
@@ -198,10 +203,10 @@ function MetodologiPage() {
         <section className="rounded-lg border border-line bg-surface p-4 text-[14px] leading-relaxed text-muted">
           <p className="font-medium text-ink">Batas klaim</p>
           <p className="mt-1">
-            Matriks disiplin–bahaya adalah prior kerja, bukan regresi. Inventaris
-            bukan direktori nasional lengkap. Historis bukan DIBI. Karhutla
-            understated (hanya korban langsung). Akreditasi dan pusat berubah;
-            pemutakhiran masih lewat template Excel.
+            Rata-rata kabupaten adalah ringkasan PKPRB, bukan angka resmi
+            provinsi BNPB. Jangan mengutip “IRBI gempa Provinsi Aceh = 22,23”
+            sebagai terbitan BNPB. Matriks disiplin–bahaya adalah prior, bukan
+            regresi. Inventaris bukan direktori lengkap. Historis bukan DIBI.
           </p>
         </section>
 
