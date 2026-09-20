@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 
-/** Token unduh fasilitator. Set VALIDASI_EXPORT_TOKEN di environment produksi. */
+/** Token unduh fasilitator. Default 12345678; override dengan VALIDASI_EXPORT_TOKEN. */
 function exportToken() {
   const fromEnv =
     typeof process !== "undefined" ? process.env.VALIDASI_EXPORT_TOKEN : undefined;
   const trimmed = fromEnv?.trim();
-  return trimmed && trimmed.length > 0 ? trimmed : "konteks20-validasi";
+  return trimmed && trimmed.length > 0 ? trimmed : "12345678";
 }
 
 function json(data: unknown, status = 200, headers?: HeadersInit) {

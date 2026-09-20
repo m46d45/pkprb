@@ -128,8 +128,9 @@ function ValidasiHasilPage() {
             />
           </label>
           <p className="text-[13px] text-muted">
-            Default workshop: <code className="rounded bg-line/60 px-1">konteks20-validasi</code>
-            . Di produksi set <code className="rounded bg-line/60 px-1">VALIDASI_EXPORT_TOKEN</code>.
+            Token bersama fasilitator (default):{" "}
+            <code className="rounded bg-line/60 px-1">12345678</code>. Boleh diganti lewat
+            env <code className="rounded bg-line/60 px-1">VALIDASI_EXPORT_TOKEN</code>.
           </p>
           <div className="flex flex-wrap gap-2">
             <button
