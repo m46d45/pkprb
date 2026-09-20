@@ -8,15 +8,19 @@ Bukan peta kesiapan, ketangguhan, atau kapasitas kelembagaan daerah.
 
 ## Tiga lapisan peta
 
-1. **Risiko** — komposit IRBI-gaya dan profil per bahaya (gempabumi, tsunami, banjir, longsor, likuefaksi, gunung api, karhutla).
-2. **IDPKI** — Indeks Dukungan Pendidikan untuk Ketangguhan Infrastruktur, dihitung **per juta penduduk**.
+1. **Risiko** — komposit IRBI 2025 resmi tingkat provinsi, plus rata-rata skor kabupaten per bahaya (gempabumi, tsunami, banjir, longsor, likuefaksi, gunung api, karhutla).
+2. **IDPKI** — Indeks Dukungan Pendidikan untuk Ketangguhan Infrastruktur; warna peta memakai `ln(1 + kapasitas)`. Angka per juta penduduk tetap di panel detail.
 3. **Keselarasan 3×3** — tertil risiko × tertil IDPKI. Kuadran intervensi: kesenjangan kapasitas pendidikan.
 
 Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan), bonus IABEE, pusat studi/PkM, dan spillover antarprovinsi dapat digeser di panel kiri.
 
+## Validasi ahli
+
+Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan **Validasi** di header peta dan halaman Metodologi). Versi beku untuk workshop KoNTekS 20 / 24 Oktober 2026: jawaban diunduh sebagai JSON dan diserahkan ke fasilitator — tidak otomatis masuk ke GitHub.
+
 ## Disclaimer
 
-Skor risiko pada prototipe ini dikalibrasi ke angka publik IRBI 2024 (contoh: Maluku 161,5; DKI Jakarta 59,29), tetapi **bukan salinan resmi IRBI BNPB per sel**. Inventaris prodi bersifat kurasi (BAN-PT / pangkalan data P2MI) dan perlu validasi berkala. Hubungan disiplin–bahaya adalah matriks kerja, bukan hasil regresi.
+Komposit memakai indeks resmi IRBI 2025 tingkat provinsi (contoh tampilan: Papua Barat Daya 230,78; Maluku 203,94; DKI Jakarta 57,58; cap 250). Skor per bahaya adalah rata-rata kabupaten dari tabel ancaman IRBI yang sama (cap 40) — **bukan** angka resmi provinsi BNPB per sel. Inventaris prodi bersifat kurasi (BAN-PT / pangkalan data P2MI) dan perlu validasi berkala. Hubungan disiplin–bahaya adalah matriks kerja, bukan hasil regresi.
 
 Proyek terkait P2MI Multidisiplin FTSL ITB 2026 *Mainstreaming Disaster Resiliency in Infrastructure Systems*.
 

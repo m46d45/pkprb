@@ -32,12 +32,25 @@
       display: flex; gap: 12px; align-items: center;
     }
     header a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; font-size: 14px; }
-    main { max-width: 760px; margin: 0 auto; padding: 28px 16px 80px; }
+    main { max-width: 760px; margin: 0 auto; padding: 28px 16px 120px; }
     h1 { font-size: 28px; margin: 0 0 8px; }
     .lede { color: var(--muted); margin: 0 0 20px; }
     .note {
       background: var(--surface); border: 1px solid var(--line);
       border-radius: 8px; padding: 14px 16px; margin: 0 0 28px;
+    }
+    .handoff {
+      background: #1b4f5c;
+      color: #f7f1e8;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 0 0 28px;
+    }
+    .handoff strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .handoff a {
+      color: #fff;
+      font-weight: 600;
+      text-underline-offset: 3px;
     }
     section { margin: 32px 0; }
     h2 { font-size: 20px; margin: 0 0 12px; }
@@ -57,16 +70,27 @@
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } table { font-size: 12px; } }
     .actions {
-      position: sticky; bottom: 0;
+      position: sticky; bottom: 0; z-index: 3;
       background: var(--surface); border-top: 1px solid var(--line);
-      padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap;
+      padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
     }
-    button {
+    .actions .wrap {
+      max-width: 760px; margin: 0 auto; width: 100%;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    }
+    button, a.btn {
       border: 0; border-radius: 6px; padding: 10px 14px;
       background: var(--teal); color: #fff; font: inherit; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center;
     }
-    button.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
-    #status { font-size: 14px; color: var(--muted); align-self: center; }
+    button.ghost, a.btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    button.primary {
+      background: var(--teal);
+      font-weight: 700;
+      padding: 12px 18px;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 25%, transparent);
+    }
+    #status { font-size: 14px; color: var(--muted); flex: 1 1 12rem; }
   </style>
 </head>
 <body>
@@ -78,17 +102,26 @@
     </div>
   </header>
   <main>
-    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">P2MI Multidisiplin FTSL ITB · 28 Agustus 2026</p>
+    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">KoNTekS 20 · Workshop validasi · 24 Oktober 2026 · IRBI 2025</p>
     <h1>Permintaan penilaian ahli</h1>
-    <p class="lede">Bapak/Ibu diminta menilai bobot yang dipakai peta ini — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Perkiraan 20–25 menit. Disarankan membuka peta dan halaman metodologi sebelum mengisi.</p>
+    <p class="lede">Diisi pada sesi workshop (termasuk peserta dadakan). Bapak/Ibu menilai bobot yang dipakai peta — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Sel atau kotak yang dikosongkan = menyetujui nilai bawaan. Perkiraan 20–25 menit; boleh fokus pada bagian sesuai keahlian.</p>
+
+    <div class="handoff" id="serahkan">
+      <strong>Setelah selesai mengisi</strong>
+      Klik tombol hijau <em>Unduh jawaban JSON</em> di bawah (atau
+      <a href="#unduh-json">tautan ini</a>).
+      Berkas langsung tersimpan di perangkat Anda — serahkan file itu ke fasilitator workshop.
+      Jawaban tidak masuk otomatis ke GitHub.
+    </div>
+
     <div class="note">
-      <p style="margin:0 0 8px;"><strong>Apa yang dinilai.</strong> Bobot jenjang, akreditasi, pusat studi, pancaran (spillover), dan matriks disiplin × jenis bahaya. Sel atau kotak yang dikosongkan artinya Bapak/Ibu menyetujui nilai bawaan.</p>
+      <p style="margin:0 0 8px;"><strong>Apa yang dinilai.</strong> Bobot jenjang, akreditasi, pusat studi, pancaran (spillover), dan matriks disiplin × jenis bahaya.</p>
       <p style="margin:0 0 8px;"><strong>Cara membaca peta.</strong> Filter Komposit memakai indeks resmi IRBI 2025 tingkat provinsi. Filter gempa, tsunami, banjir, dan seterusnya memakai rata-rata skor kabupaten pada tabel ancaman IRBI yang sama. Angka 0 berarti tidak ada baris kabupaten di tabel itu — bukan sertifikat bahwa daerah aman.</p>
       <p style="margin:0;"><strong>Yang tidak masuk hitungan peta.</strong> Daftar kegiatan layanan (workshop, laboratorium uji, penyusunan dokumen) dicatat terpisah. Yang dihitung sebagai kepakaran hanya tanda pengabdian (PkM) pada pusat studi.</p>
     </div>
     <form id="q">
       <section>
-        <h2>0. Identitas</h2>
+        <h2>1. Identitas</h2>
         <div class="row2">
           <div><label class="block">Nama (boleh inisial)</label><input name="nama" /></div>
           <div><label class="block">Institusi / unit</label><input name="institusi" /></div>
@@ -207,7 +240,7 @@
       </section>
       <section>
         <h2>7. Matriks disiplin × jenis bahaya</h2>
-        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat.</p>
+        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat. Di workshop: boleh mengisi hanya baris bahaya sesuai keahlian.</p>
         <label class="block">F1. Kesan terhadap nilai bawaan</label>
         <select name="f1">
           <option value="">— pilih —</option>
@@ -233,15 +266,20 @@
           <label><input type="checkbox" name="setuju_ringkas" /> Penilaian ini boleh dipakai menyesuaikan bobot bawaan peta</label>
           <label><input type="checkbox" name="setuju_institusi" /> Nama institusi boleh dicantumkan pada daftar validator</label>
         </div>
-        <p class="lede" style="margin-top:16px">Terima kasih. Penilaian Bapak/Ibu akan diringkas untuk menyetel bobot bawaan, bukan dikutip nama per orang kecuali izin di atas diberikan.</p>
+        <p class="lede" style="margin-top:16px">Terima kasih. Setelah centang di atas, unduh JSON dan serahkan ke fasilitator. Penilaian akan diringkas untuk menyetel bobot bawaan, bukan dikutip nama per orang kecuali izin di atas diberikan.</p>
+        <p style="margin-top:12px">
+          <a class="btn primary" href="#unduh-json" id="goto-unduh">Unduh jawaban JSON →</a>
+        </p>
       </section>
     </form>
   </main>
-  <div class="actions">
-    <button type="button" id="save">Simpan dulu</button>
-    <button type="button" class="ghost" id="dl">Unduh jawaban</button>
-    <button type="button" class="ghost" id="mail">Kirim lewat surel</button>
-    <span id="status"></span>
+  <div class="actions" id="unduh-json">
+    <div class="wrap">
+      <button type="button" class="primary" id="dl">Unduh jawaban JSON</button>
+      <button type="button" class="ghost" id="save">Simpan dulu di perangkat ini</button>
+      <button type="button" class="ghost" id="mail">Cadangan: buka surel</button>
+      <span id="status"></span>
+    </div>
   </div>
   <script>
     const HAZ = ["Gempabumi","Tsunami","Banjir","Longsor","Likuefaksi","Gunung api","Karhutla","Komposit"];
@@ -263,7 +301,11 @@
       ).join("") + "</tr>").join("");
     function collect() {
       const fd = new FormData(document.getElementById("q"));
-      const o = { versi: "2026-08-28", waktu: new Date().toISOString() };
+      const o = {
+        versi: "2026-10-24-konteks20",
+        acara: "KoNTekS 20 workshop validasi",
+        waktu: new Date().toISOString(),
+      };
       for (const [k,v] of fd.entries()) {
         if (k === "ahli") { (o.ahli ||= []).push(v); continue; }
         o[k] = v;
@@ -290,23 +332,36 @@
         if (v != null) inp.value = v;
       });
     }
-    const KEY = "pkprb-kuesioner-v1";
-    const status = document.getElementById("status");
-    document.getElementById("save").onclick = () => {
-      localStorage.setItem(KEY, JSON.stringify(collect()));
-      status.textContent = "Tersimpan di perangkat ini. Boleh dilanjutkan nanti.";
-    };
-    document.getElementById("dl").onclick = () => {
-      const blob = new Blob([JSON.stringify(collect(), null, 2)], { type: "application/json" });
+    function downloadJson() {
+      const data = collect();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "pkprb-kuesioner-" + (collect().nama || "responden").replace(/\s+/g,"-") + ".json";
+      a.download = "pkprb-kuesioner-" + (data.nama || "responden").replace(/\s+/g,"-") + ".json";
       a.click();
-      status.textContent = "Berkas jawaban terunduh. Lampirkan pada surel ke tim PKPRB.";
+      URL.revokeObjectURL(a.href);
+      status.textContent = "JSON terunduh. Serahkan berkas itu ke fasilitator workshop.";
+    }
+    const KEY = "pkprb-kuesioner-v1";
+    const status = document.getElementById("status");
+    document.getElementById("dl").onclick = downloadJson;
+    document.getElementById("goto-unduh").onclick = (e) => {
+      e.preventDefault();
+      document.getElementById("unduh-json").scrollIntoView({ behavior: "smooth", block: "end" });
+      downloadJson();
+    };
+    document.getElementById("save").onclick = () => {
+      localStorage.setItem(KEY, JSON.stringify(collect()));
+      status.textContent = "Tersimpan sementara di perangkat ini (bukan ke fasilitator).";
     };
     document.getElementById("mail").onclick = () => {
-      const body = encodeURIComponent("Yth. tim PKPRB,\n\nTerlampir penilaian bobot dari formulir validasi.\n\n" + JSON.stringify(collect(), null, 2).slice(0, 1600));
-      location.href = "mailto:25025029@mahasiswa.itb.ac.id?subject=" + encodeURIComponent("Penilaian ahli bobot PKPRB") + "&body=" + body;
+      const body = encodeURIComponent(
+        "Yth. fasilitator PKPRB / KoNTekS 20,\n\n" +
+        "Saya melampirkan file JSON hasil unduhan dari formulir validasi (lebih lengkap daripada cuplikan di bawah).\n\n" +
+        JSON.stringify(collect(), null, 2).slice(0, 1200)
+      );
+      location.href = "mailto:25025029@mahasiswa.itb.ac.id?subject=" + encodeURIComponent("Penilaian ahli bobot PKPRB — KoNTekS 20") + "&body=" + body;
+      status.textContent = "Surel hanya cadangan. Utamakan unduh JSON lalu serahkan ke fasilitator.";
     };
     try { apply(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) {}
   </script>

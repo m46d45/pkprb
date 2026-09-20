@@ -489,20 +489,22 @@ def build():
     heading(doc, "7. Risiko")
     body(
         doc,
-        "Komposit dikalibrasi ke angka publik IRBI 2024: Maluku 161,5; Maluku Utara "
-        "145,09; DKI Jakarta 59,29. Skor per bahaya (gempabumi, tsunami, banjir, "
-        "longsor, likuefaksi, gunung api, karhutla) adalah profil relatif prototipe "
-        "— bukan sel resmi IRBI/BNPB.",
+        "Komposit = indeks resmi IRBI 2025 tingkat provinsi (buku InaRISK); contoh "
+        "tampilan: Papua Barat Daya 230,78; Maluku 203,94; DKI Jakarta 57,58. "
+        "Per bahaya (gempabumi, tsunami, banjir, longsor, likuefaksi, gunung api, "
+        "karhutla) = rata-rata sederhana skor kabupaten pada tabel ancaman IRBI "
+        "yang sama — bukan angka resmi provinsi BNPB, bukan maksimum, bukan "
+        "tertimbang penduduk. Provinsi tanpa baris di tabel = 0 (bukan sertifikat aman).",
     )
     body(
         doc,
-        "Warna dan angka Risiko di peta memakai skala 1–10. Skor mentah IRBI tetap di panel.",
+        "Warna dan angka Risiko di peta memakai skala 1–10. Skor mentah tetap di panel.",
     )
     formula(
         doc,
         "Risiko_tampil = 1 + 9 × min(1, R / R_cap)\n"
-        "R_cap = 100  (bahaya tunggal)\n"
-        "      = 200  (komposit)",
+        "R_cap = 40   (bahaya tunggal, rata-rata kabupaten)\n"
+        "      = 250  (komposit IRBI 2025)",
     )
 
     heading(doc, "8. Tertil dan matriks 3×3")
