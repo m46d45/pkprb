@@ -42,7 +42,8 @@ function MetodologiPage() {
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8">
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">
-            28 Agustus 2026 · P2MI Multidisiplin FTSL ITB
+            Versi beku IRBI 2025 · Workshop KoNTekS 20 · 24 Oktober 2026 · P2MI
+            Multidisiplin FTSL ITB
           </p>
           <h1 className="font-display text-3xl leading-tight">
             Peta Keselarasan Pendidikan dan Risiko Bencana
@@ -96,9 +97,9 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Validasi</p>
               <p className="mt-0.5 text-sm text-muted">
-                Kuesioner bobot untuk ahli.
+                Form workshop: kirim isian; fasilitator unduh JSON.
               </p>
-              <p className="mt-2 text-sm font-medium text-teal">Isi formulir →</p>
+              <p className="mt-2 text-sm font-medium text-teal">Isi &amp; kirim →</p>
             </div>
           </a>
         </section>
@@ -240,6 +241,13 @@ function MetodologiPage() {
             <a href="/kuesioner.html" className="text-teal underline-offset-2 hover:underline">
               Validasi bobot
             </a>
+            {" · "}
+            <Link
+              to="/validasi/hasil"
+              className="text-teal underline-offset-2 hover:underline"
+            >
+              Hasil (fasilitator)
+            </Link>
           </p>
         </footer>
       </main>

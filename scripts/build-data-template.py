@@ -174,7 +174,7 @@ def sheet_petunjuk(wb: Workbook, n_prodi: int, n_pt: int, n_center: int, n_prov:
         (f"02_Perguruan_tinggi — {n_pt} institusi. Akreditasi PT (bukan prodi) dipakai spillover. Cari BAN-PT Perguruan Tinggi. Internasional hanya ITB, UI, UGM, ITS kecuali ada bukti akreditasi institusi internasional.", font_body),
         (f"03_Pusat_studi — {n_center} pusat. Tambah PUI, PSB, laboratorium kebencanaan. Isi bahaya yang relevan (kode, pisahkan koma).", font_body),
         ("04_Layanan_kepakaran — hampir kosong. Ini yang paling perlu. Layanan konsultasi, pendampingan BPBD, laboratorium uji, pelatihan SNI, klinik infrastruktur. Jangan menggandakan pusat studi kecuali ada layanan kepakaran yang jelas.", font_body),
-        (f"05_Provinsi_risiko — {n_prov} provinsi. Penduduk dan skor risiko. Komposit dikalibrasi IRBI 2024 (Maluku 161,5; Malut 145,09; DKI 59,29). Skor per bahaya masih prototipe — ganti dengan angka resmi jika ada. Jangan ganti nama provinsi.", font_body),
+        (f"05_Provinsi_risiko — {n_prov} provinsi. Penduduk dan skor risiko. Komposit = IRBI 2025 resmi provinsi (contoh: PBD 230,78; Maluku 203,94; DKI 57,58). Per bahaya = rata-rata kabupaten IRBI 2025 (bukan angka resmi provinsi). Jangan ganti nama provinsi.", font_body),
         (f"06_Historis_bencana — {n_events} peristiwa signifikan 2000–sekarang (korban jiwa absolut). Tambah kejadian besar; multi-provinsi = beberapa baris. Karhutla sering understated (hanya korban langsung).", font_body),
         ("07_Celah_prioritas — antrean kerja (otomatis dari data prodi/pusat).", font_body),
         ("08_Daftar_kode — dropdown. Jangan diubah. Nama provinsi harus sama persis dengan daftar ini.", font_body),
@@ -549,8 +549,8 @@ def sheet_provinsi(wb: Workbook, provinces: list[dict]):
         ws.cell(1, i, h)
     style_header(ws, len(headers))
     comment(ws, 6, "Jangan ganti nama provinsi. Penduduk: angka jiwa, bukan ribuan.")
-    comment(ws, 7, "Komposit: kalibrasi IRBI 2024. Skala warna peta 0–200.")
-    comment(ws, 8, "Skor bahaya prototipe 0–100. Ganti dengan angka resmi jika tersedia.")
+    comment(ws, 7, "Komposit: IRBI 2025 resmi provinsi. Cap tampilan 250.")
+    comment(ws, 8, "Per bahaya: rata-rata kabupaten IRBI 2025. Cap tampilan 40. 0 = tidak ada baris di tabel ancaman.")
     r = 2
     for p in provinces:
         risk = p.get("risk") or {}
@@ -573,8 +573,8 @@ def sheet_provinsi(wb: Workbook, provinces: list[dict]):
                 risk.get("gunungapi", ""),
                 risk.get("karhutla", ""),
                 "",
-                "IRBI 2024 publik (komposit dikalibrasi)",
-                "Skor per bahaya bersifat prototipe",
+                "IRBI 2025 resmi (komposit provinsi)",
+                "Per bahaya = rata-rata kabupaten IRBI 2025",
                 "",
                 "",
             ],
