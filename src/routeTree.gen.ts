@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MetodologiRouteImport } from './routes/metodologi'
+import { Route as ApiValidasiRouteImport } from './routes/api/validasi'
+import { Route as ValidasiHasilRouteImport } from './routes/validasi.hasil'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +31,16 @@ const MetodologiRoute = MetodologiRouteImport.update({
   path: '/metodologi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiValidasiRoute = ApiValidasiRouteImport.update({
+  id: '/api/validasi',
+  path: '/api/validasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ValidasiHasilRoute = ValidasiHasilRouteImport.update({
+  id: '/validasi/hasil',
+  path: '/validasi/hasil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -39,12 +51,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/metodologi': typeof MetodologiRoute
+  '/api/validasi': typeof ApiValidasiRoute
+  '/validasi/hasil': typeof ValidasiHasilRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/metodologi': typeof MetodologiRoute
+  '/api/validasi': typeof ApiValidasiRoute
+  '/validasi/hasil': typeof ValidasiHasilRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -52,20 +68,43 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/metodologi': typeof MetodologiRoute
+  '/api/validasi': typeof ApiValidasiRoute
+  '/validasi/hasil': typeof ValidasiHasilRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/metodologi' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/metodologi'
+    | '/api/validasi'
+    | '/validasi/hasil'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/metodologi' | '/api/auth/$'
-  id: '__root__' | '/' | '/login' | '/metodologi' | '/api/auth/$'
+  to:
+    | '/'
+    | '/login'
+    | '/metodologi'
+    | '/api/validasi'
+    | '/validasi/hasil'
+    | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/metodologi'
+    | '/api/validasi'
+    | '/validasi/hasil'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   MetodologiRoute: typeof MetodologiRoute
+  ApiValidasiRoute: typeof ApiValidasiRoute
+  ValidasiHasilRoute: typeof ValidasiHasilRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -92,6 +131,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MetodologiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/validasi': {
+      id: '/api/validasi'
+      path: '/api/validasi'
+      fullPath: '/api/validasi'
+      preLoaderRoute: typeof ApiValidasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/validasi/hasil': {
+      id: '/validasi/hasil'
+      path: '/validasi/hasil'
+      fullPath: '/validasi/hasil'
+      preLoaderRoute: typeof ValidasiHasilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -106,6 +159,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   MetodologiRoute: MetodologiRoute,
+  ApiValidasiRoute: ApiValidasiRoute,
+  ValidasiHasilRoute: ValidasiHasilRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

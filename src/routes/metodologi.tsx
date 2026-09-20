@@ -97,9 +97,9 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Validasi</p>
               <p className="mt-0.5 text-sm text-muted">
-                Form workshop: unduh JSON, serahkan ke fasilitator.
+                Form workshop: kirim isian; fasilitator unduh JSON.
               </p>
-              <p className="mt-2 text-sm font-medium text-teal">Isi &amp; unduh JSON →</p>
+              <p className="mt-2 text-sm font-medium text-teal">Isi &amp; kirim →</p>
             </div>
           </a>
         </section>
@@ -241,6 +241,13 @@ function MetodologiPage() {
             <a href="/kuesioner.html" className="text-teal underline-offset-2 hover:underline">
               Validasi bobot
             </a>
+            {" · "}
+            <Link
+              to="/validasi/hasil"
+              className="text-teal underline-offset-2 hover:underline"
+            >
+              Hasil (fasilitator)
+            </Link>
           </p>
         </footer>
       </main>

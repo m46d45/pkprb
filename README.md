@@ -16,7 +16,12 @@ Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan)
 
 ## Validasi ahli
 
-Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan **Validasi** di header peta dan halaman Metodologi). Versi beku untuk workshop KoNTekS 20 / 24 Oktober 2026: jawaban diunduh sebagai JSON dan diserahkan ke fasilitator — tidak otomatis masuk ke GitHub.
+Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan **Validasi** di header peta dan halaman Metodologi). Versi beku untuk workshop KoNTekS 20 / 24 Oktober 2026:
+
+- **Validator** menekan **Kirim isian** (tersimpan di server).
+- **Fasilitator** mengunduh JSON kapan saja di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx) (token default `konteks20-validasi`, atau env `VALIDASI_EXPORT_TOKEN`).
+
+Untuk jawaban yang bertahan antar-restart, deploy dengan `DATABASE_URL` (Neon). Tanpa itu, preview memakai PGLite di memori.
 
 ## Disclaimer
 
