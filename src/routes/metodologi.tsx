@@ -56,7 +56,7 @@ function MetodologiPage() {
           </p>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-3">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <a
             href="/Template-Data-PKPRB.xlsx"
             download
@@ -100,6 +100,22 @@ function MetodologiPage() {
                 Form workshop: kirim isian; fasilitator unduh JSON.
               </p>
               <p className="mt-2 text-sm font-medium text-teal">Isi &amp; kirim →</p>
+            </div>
+          </a>
+          <a
+            href="/Panduan-Acara-Validasi-PKPRB.docx"
+            download
+            className="flex items-start gap-3 rounded-lg border border-line bg-surface p-4 transition hover:border-ink"
+          >
+            <FileText className="mt-0.5 size-5 shrink-0 text-teal" />
+            <div>
+              <p className="font-medium">Panduan acara</p>
+              <p className="mt-0.5 text-sm text-muted">
+                Skenario fasilitator KoNTekS 20.
+              </p>
+              <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
+                <Download className="size-3.5" /> Unduh .docx
+              </p>
             </div>
           </a>
         </section>
