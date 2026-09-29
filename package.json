@@ -16,7 +16,8 @@
     "test": "node --test 'scripts/**/*.test.mjs'",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "write-og": "node scripts/write-og.mjs"
+    "write-og": "node scripts/write-og.mjs",
+    "write-workshop-docx": "python3 scripts/build-workshop-docx.py"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
