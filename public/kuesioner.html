@@ -108,13 +108,13 @@
     </div>
   </header>
   <main>
-    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">KoNTekS 20 · Workshop validasi · 23 Oktober 2026 · IRBI 2025</p>
+    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">FGD validasi PKPRB · 16 Oktober 2026 · IRBI 2025</p>
     <h1>Permintaan penilaian ahli</h1>
-    <p class="lede">Diisi pada sesi workshop (termasuk peserta dadakan). Bapak/Ibu menilai bobot yang dipakai peta — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Sel atau kotak yang dikosongkan = menyetujui nilai bawaan. Perkiraan 20–25 menit; boleh fokus pada bagian sesuai keahlian.</p>
+    <p class="lede">Diisi pada sesi FGD (boleh bergabung di hari H). Bapak/Ibu menilai bobot yang dipakai peta — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Sel atau kotak yang dikosongkan = menyetujui nilai bawaan. Perkiraan 20–25 menit; boleh fokus pada bagian sesuai keahlian.</p>
 
     <div class="handoff" id="serahkan">
       <strong>Setelah selesai mengisi</strong>
-      Tekan tombol <em>Kirim isian</em> di bawah. Jawaban tersimpan ke server workshop;
+      Tekan tombol <em>Kirim isian</em> di bawah. Jawaban tersimpan ke server FGD;
       fasilitator yang mengunduh JSON-nya nanti — Bapak/Ibu tidak perlu mengunduh berkas.
     </div>
 
@@ -244,7 +244,7 @@
       </section>
       <section>
         <h2>7. Matriks disiplin × jenis bahaya</h2>
-        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat. Di workshop: boleh mengisi hanya baris bahaya sesuai keahlian.</p>
+        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat. Di FGD: boleh mengisi hanya baris bahaya sesuai keahlian.</p>
         <label class="block">F1. Kesan terhadap nilai bawaan</label>
         <select name="f1">
           <option value="">— pilih —</option>
@@ -308,8 +308,8 @@
     function collect() {
       const fd = new FormData(document.getElementById("q"));
       const o = {
-        versi: "2026-10-23-konteks20",
-        acara: "KoNTekS 20 workshop validasi",
+        versi: "2026-10-16-fgd",
+        acara: "FGD validasi PKPRB 16 Oktober 2026",
         waktu: new Date().toISOString(),
       };
       for (const [k,v] of fd.entries()) {

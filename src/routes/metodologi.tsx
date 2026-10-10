@@ -42,7 +42,7 @@ function MetodologiPage() {
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8">
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">
-            Versi beku IRBI 2025 · Workshop KoNTekS 20 · 23 Oktober 2026 · P2MI
+            Versi beku IRBI 2025 · FGD validasi · 16 Oktober 2026 · P2MI
             Multidisiplin FTSL ITB
           </p>
           <h1 className="font-display text-3xl leading-tight">
@@ -56,7 +56,7 @@ function MetodologiPage() {
           </p>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-3">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <a
             href="/Template-Data-PKPRB.xlsx"
             download
@@ -97,9 +97,25 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Validasi</p>
               <p className="mt-0.5 text-sm text-muted">
-                Form workshop: kirim isian; fasilitator unduh JSON.
+                Form FGD: kirim isian; fasilitator unduh JSON.
               </p>
               <p className="mt-2 text-sm font-medium text-teal">Isi &amp; kirim →</p>
+            </div>
+          </a>
+          <a
+            href="/Panduan-Acara-Validasi-PKPRB.docx"
+            download
+            className="flex items-start gap-3 rounded-lg border border-line bg-surface p-4 transition hover:border-ink"
+          >
+            <FileText className="mt-0.5 size-5 shrink-0 text-teal" />
+            <div>
+              <p className="font-medium">Panduan FGD</p>
+              <p className="mt-0.5 text-sm text-muted">
+                Skenario fasilitator 16 Oktober.
+              </p>
+              <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
+                <Download className="size-3.5" /> Unduh .docx
+              </p>
             </div>
           </a>
         </section>

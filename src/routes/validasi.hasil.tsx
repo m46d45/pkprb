@@ -191,7 +191,7 @@ function ValidasiHasilPage() {
         <p className="text-[13px] leading-relaxed text-muted">
           Catatan: tanpa <code className="rounded bg-line/60 px-1">DATABASE_URL</code>{" "}
           (Neon), data memakai PGLite di memori server dan hilang saat server
-          di-restart. Untuk workshop yang jawaban harus bertahan, deploy dengan
+          di-restart. Untuk FGD yang jawaban harus bertahan, deploy dengan
           database.
         </p>
       </main>
