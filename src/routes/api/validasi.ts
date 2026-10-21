@@ -2,6 +2,8 @@ import { timingSafeEqual } from "node:crypto";
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 import { buildValidasiCsv, type ValidasiExportRow } from "@/lib/validasi-csv";
+import { agregasiValidasi, defaultsFromWeightTables } from "@/lib/validasi-agregasi.mjs";
+import { DEFAULT_ACC, DEFAULT_STRATA, DEFAULT_WEIGHTS } from "@/lib/weights";
 
 const MAX_BODY_BYTES = 32 * 1024;
 const SCORE_FIELDS = ["s1", "s2", "s3", "acc_int", "acc_unggul", "acc_bs", "acc_baik"] as const;
@@ -68,6 +70,8 @@ function coerceScore(raw: unknown): number | null {
   return null;
 }
 
+const MATRIX_MARKS = new Set(["setuju", "tidak_yakin"]);
+
 /** Angka 0–1 dinormalisasi. Mengembalikan pesan galat, atau null bila lolos. */
 function normalizePayload(payload: Record<string, unknown>): string | null {
   for (const key of SCORE_FIELDS) {
@@ -84,6 +88,14 @@ function normalizePayload(payload: Record<string, unknown>): string | null {
   for (const [hazard, cells] of Object.entries(payload.matriks as Record<string, unknown>)) {
     if (!cells || typeof cells !== "object" || Array.isArray(cells)) return "Matriks tidak valid";
     for (const [discipline, raw] of Object.entries(cells as Record<string, unknown>)) {
+      if (raw == null || raw === "") {
+        delete (cells as Record<string, unknown>)[discipline];
+        continue;
+      }
+      if (typeof raw === "string" && MATRIX_MARKS.has(raw.trim())) {
+        (cells as Record<string, unknown>)[discipline] = raw.trim();
+        continue;
+      }
       const n = coerceScore(raw);
       if (n == null) return `Nilai matriks ${hazard} / ${discipline} harus antara 0 dan 1`;
       (cells as Record<string, unknown>)[discipline] = n;
@@ -202,10 +214,12 @@ export const Route = createFileRoute("/api/validasi")({
       },
 
       GET: async ({ request }) => {
+        const url = new URL(request.url);
+        const format = (url.searchParams.get("format") ?? "").toLowerCase();
+        if (format === "agregasi") return agregasiPublik();
+
         const auth = authorize(request);
         if (!auth.ok) return json({ ok: false, error: auth.error }, 401);
-
-        const url = new URL(request.url);
         let rows: Array<{
           id: string;
           created_at: string | Date;
@@ -226,7 +240,6 @@ export const Route = createFileRoute("/api/validasi")({
           return json({ ok: false, error: "Gagal membaca jawaban" }, 500);
         }
 
-        const format = (url.searchParams.get("format") ?? "").toLowerCase();
         const stamp = new Date().toISOString().slice(0, 10);
         if (format === "csv") {
           const csv = buildValidasiCsv(rows as ValidasiExportRow[]);
@@ -300,6 +313,25 @@ export const Route = createFileRoute("/api/validasi")({
     },
   },
 });
+
+/** Hitungan agregat tanpa token. Tidak mengembalikan nama atau catatan. */
+async function agregasiPublik() {
+  try {
+    const sql = await getSql();
+    const rows = await sql<{ payload: unknown }>`
+      select payload from validasi_jawaban order by created_at asc
+    `;
+    const defaults = defaultsFromWeightTables(DEFAULT_WEIGHTS, DEFAULT_STRATA, DEFAULT_ACC);
+    const agregasi = agregasiValidasi(
+      rows.map((row) => row.payload),
+      defaults,
+    );
+    return json({ ok: true, ...agregasi });
+  } catch (err) {
+    console.error("[validasi] agregasi gagal", err instanceof Error ? err.name : "error");
+    return json({ ok: false, error: "Gagal menghitung agregasi" }, 500);
+  }
+}
 
 function asObject(payload: unknown): Record<string, unknown> {
   if (payload && typeof payload === "object" && !Array.isArray(payload)) {

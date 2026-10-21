@@ -148,6 +148,13 @@ function ValidasiHasilPage() {
             Halaman fasilitator. Peserta menekan <strong className="text-ink">Kirim isian</strong>{" "}
             di form; jawaban langsung tersimpan di server. Unduh JSON atau CSV dari sini.
           </p>
+          <p className="text-[15px] leading-relaxed text-muted">
+            Agregasi matriks, jenjang, akreditasi, dan pilihan ganda tersedia tanpa token di{" "}
+            <a className="underline" href="/api/validasi?format=agregasi">
+              /api/validasi?format=agregasi
+            </a>
+            . Aturan hitungnya ada di <code className="rounded bg-line/60 px-1">docs/metodologi-agregasi.md</code>.
+          </p>
         </section>
 
         <section className="space-y-3 rounded-lg border border-line bg-surface p-4">

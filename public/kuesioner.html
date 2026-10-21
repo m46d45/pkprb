@@ -82,7 +82,7 @@
     th, td { border: 1px solid var(--line); padding: 4px; text-align: center; vertical-align: middle; }
     th { background: var(--teal); color: #fff; font-weight: 600; }
     td:first-child, th:first-child { text-align: left; }
-    td select { min-width: 7.5rem; padding: 8px 4px; }
+    td select { min-width: 11.5rem; padding: 8px 4px; }
     .matriks-wrap { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
     #matriks-mobile { display: none; }
     details.bahaya {
@@ -98,14 +98,20 @@
     .bawaan { color: var(--muted); font-weight: 400; font-size: 14px; white-space: nowrap; }
     .picker { display: flex; flex-wrap: wrap; gap: 6px; }
     .picker button {
-      flex: 1 1 calc(16.66% - 6px);
+      flex: 1 1 calc(20% - 6px);
       min-width: 44px; min-height: 44px;
       padding: 8px 4px;
       background: #fff; color: var(--ink);
       border: 1px solid var(--line);
       font-weight: 600; font-size: 14px;
+      line-height: 1.2;
       touch-action: manipulation;
     }
+    .picker button.teks {
+      flex: 1 1 100%;
+      font-weight: 600;
+    }
+    .bawaan-sel { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.2; font-weight: 500; }
     .picker button[aria-pressed="true"] {
       background: var(--teal); color: #fff; border-color: var(--teal);
     }
@@ -180,7 +186,7 @@
 
     <div class="note">
       <p style="margin:0 0 8px;"><strong>Apa yang dinilai.</strong> Bobot jenjang, akreditasi, pusat studi, pancaran (spillover), dan matriks disiplin × jenis bahaya.</p>
-      <p style="margin:0 0 8px;"><strong>Nilai bawaan</strong> = faktor pengali (0–1) yang saat ini dipakai peta. 1 = dihitung penuh; 0,8 = dihitung 80%; 0 = tidak dihitung. Kosongkan kotak bila setuju dengan nilai bawaan.</p>
+      <p style="margin:0 0 8px;"><strong>Nilai bawaan</strong> = faktor pengali (0–1) yang saat ini dipakai peta. 1 = dihitung penuh; 0,8 = dihitung 80%; 0 = tidak dihitung. Pada jenjang dan akreditasi, kosongkan kotak bila setuju dengan nilai bawaan. Pada matriks, setuju dan tidak yakin dipilih sendiri.</p>
       <p style="margin:0 0 8px;"><strong>Cara membaca peta.</strong> Filter Komposit memakai indeks resmi IRBI 2025 tingkat provinsi. Filter gempa, tsunami, banjir, dan seterusnya memakai rata-rata skor kabupaten pada tabel ancaman IRBI yang sama. Angka 0 berarti tidak ada baris kabupaten di tabel itu — bukan sertifikat bahwa daerah aman.</p>
       <p style="margin:0;"><strong>Yang tidak masuk hitungan peta.</strong> Daftar kegiatan layanan (workshop, laboratorium uji, penyusunan dokumen) dicatat terpisah. Yang dihitung sebagai kepakaran hanya tanda pengabdian (PkM) pada pusat studi.</p>
     </div>
@@ -315,7 +321,7 @@
       </section>
       <section id="bagian-7">
         <h2>7. Matriks disiplin × jenis bahaya</h2>
-        <p class="lede">Isi hanya sel yang ingin diubah. Kosong = setuju nilai bawaan.</p>
+        <p class="lede">Pilih opsi pada sel yang dinilai. Belum diisi tidak dihitung. Setuju nilai bawaan dan Tidak yakin tersimpan terpisah.</p>
         <label class="block">F1. Kesan terhadap nilai bawaan</label>
         <p class="hint">F1 menanyakan kesan umum atas nilai bawaan pada tabel di bawah.</p>
         <select name="f1">
@@ -333,7 +339,9 @@
             <li><strong>0,5</strong> = pendukung</li>
             <li><strong>0,25</strong> = tidak langsung</li>
             <li><strong>0</strong> = tidak relevan</li>
-            <li><strong>kosong</strong> = setuju nilai bawaan / tidak yakin</li>
+            <li><strong>Setuju nilai bawaan</strong> = angka bawaan sel ini sudah tepat</li>
+            <li><strong>Tidak yakin</strong> = belum cukup dasar untuk menilai sel ini</li>
+            <li><strong>Belum diisi</strong> = sel belum dipilih; bukan setuju dan bukan tidak yakin</li>
           </ul>
           <p style="margin:0;"><strong>Cukup isi baris bahaya yang sesuai keahlian Bapak/Ibu (1–2 baris).</strong> Baris lain boleh dilewati.</p>
         </div>
@@ -389,12 +397,14 @@
       "Komposit":[.85,.4,.55,.7,.45,.4,.85,.8]
     };
     const STEPS = [
+      ["", "Belum diisi"],
+      ["setuju", "Setuju nilai bawaan"],
+      ["tidak_yakin", "Tidak yakin"],
       ["0", "0"],
       ["0.25", "0,25"],
       ["0.5", "0,5"],
       ["0.75", "0,75"],
-      ["1", "1"],
-      ["", "kosong"]
+      ["1", "1"]
     ];
     const ANGKA = ["s1", "s2", "s3", "acc_int", "acc_unggul", "acc_bs", "acc_baik"];
     const KEY_V1 = "pkprb-kuesioner-v1";
@@ -427,16 +437,15 @@
     let head = "<tr><th>Bahaya</th>" + DISC.map((d) => "<th>" + esc(d) + "</th>").join("") + "</tr>";
     head += HAZ.map((h) => "<tr><th>" + esc(h) + "</th>" + DISC.map((d, i) => {
       const bawaan = fmt(DEF[h][i]);
-      const opts = "<option value=\"\">bawaan " + bawaan + "</option>" +
-        STEPS.filter((s) => s[0] !== "").map((s) => "<option value=\"" + s[0] + "\">" + s[1] + "</option>").join("");
-      return "<td><select data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" class=\"kosong\" aria-label=\"" + esc(h + " " + d) + "\">" + opts + "</select></td>";
+      const opts = STEPS.map((s) => "<option value=\"" + s[0] + "\">" + s[1] + "</option>").join("");
+      return "<td><select data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" class=\"kosong\" aria-label=\"" + esc(h + " " + d) + "\" title=\"" + esc("Nilai bawaan " + bawaan) + "\">" + opts + "</select><span class=\"bawaan-sel\">bawaan " + bawaan + "</span></td>";
     }).join("") + "</tr>").join("");
     tb.innerHTML = head;
 
     mobile.innerHTML = HAZ.map((h) => {
       const rows = DISC.map((d, i) => {
         const buttons = STEPS.map((s) =>
-          "<button type=\"button\" data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" data-v=\"" + s[0] + "\" aria-pressed=\"" + (s[0] === "" ? "true" : "false") + "\" aria-label=\"" + esc(h + " " + d + " " + (s[1] || "kosong")) + "\">" + s[1] + "</button>"
+          "<button type=\"button\" class=\"" + (s[0] === "" || s[0] === "setuju" || s[0] === "tidak_yakin" ? "teks" : "") + "\" data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" data-v=\"" + s[0] + "\" aria-pressed=\"" + (s[0] === "" ? "true" : "false") + "\" aria-label=\"" + esc(h + " " + d + " " + s[1]) + "\">" + s[1] + "</button>"
         ).join("");
         return "<div class=\"disc\"><div class=\"disc-head\"><span>" + esc(d) + "</span><span class=\"bawaan\">bawaan " + fmt(DEF[h][i]) + "</span></div><div class=\"picker\" role=\"group\" aria-label=\"" + esc(d + " untuk " + h) + "\">" + buttons + "</div></div>";
       }).join("");
@@ -468,10 +477,11 @@
         return s && s.value !== "";
       }).length;
       const mark = document.querySelector('details.bahaya[data-h="' + CSS.escape(h) + '"] .isi');
-      if (mark) mark.textContent = filled ? " · " + filled + " diubah" : "";
+      if (mark) mark.textContent = filled ? " · " + filled + " diisi" : "";
     }
     function canon(raw) {
       if (raw == null || raw === "") return "";
+      if (raw === "setuju" || raw === "tidak_yakin") return raw;
       const n = Number(String(raw).trim().replace(",", "."));
       if (!Number.isFinite(n)) return "";
       const hit = [0, 0.25, 0.5, 0.75, 1].find((s) => Math.abs(s - n) < 1e-9);
@@ -508,6 +518,10 @@
       o.matriks = {};
       document.querySelectorAll("#matriks select").forEach((sel) => {
         if (sel.value === "") return;
+        if (sel.value === "setuju" || sel.value === "tidak_yakin") {
+          (o.matriks[sel.dataset.h] ||= {})[sel.dataset.d] = sel.value;
+          return;
+        }
         const n = Number(sel.value);
         if (!Number.isFinite(n)) return;
         (o.matriks[sel.dataset.h] ||= {})[sel.dataset.d] = n;

@@ -109,6 +109,7 @@ function ahliCell(value: unknown): string {
   return "";
 }
 
+/** Angka, `setuju`, atau `tidak_yakin`. Sel yang tidak ada tetap sel kosong. */
 function matrixValue(
   payload: Record<string, unknown>,
   hazard: string,
