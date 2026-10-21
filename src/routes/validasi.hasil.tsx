@@ -149,11 +149,15 @@ function ValidasiHasilPage() {
             di form; jawaban langsung tersimpan di server. Unduh JSON atau CSV dari sini.
           </p>
           <p className="text-[15px] leading-relaxed text-muted">
-            Agregasi matriks, jenjang, akreditasi, dan pilihan ganda tersedia tanpa token di{" "}
+            Tampilan proyeksi agregat, tanpa token:{" "}
+            <a className="underline" href="/validasi-hasil.html">
+              /validasi-hasil.html
+            </a>
+            . JSON agregat:{" "}
             <a className="underline" href="/api/validasi?format=agregasi">
               /api/validasi?format=agregasi
             </a>
-            . Aturan hitungnya ada di <code className="rounded bg-line/60 px-1">docs/metodologi-agregasi.md</code>.
+            . Unduh yang memuat nama tetap memakai token.
           </p>
         </section>
 

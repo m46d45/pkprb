@@ -58,3 +58,9 @@ Butir pilihan (A1, A2, B1, C1, C2, D1, D2, E1, E2, F1, pernah membuka peta, keah
 ## Baris yang sudah tersimpan
 
 Baris lama yang sel matriksnya tidak ditulis tetap “belum diisi”. Agregasi tidak menafsirkan kekosongan lama sebagai `setuju` atau `tidak_yakin`, dan tidak menulis ulang baris tersebut.
+
+## Tampilan publik
+
+`GET /api/validasi?format=agregasi` tidak meminta token. Isinya hanya jumlah, median, status, dan tally pilihan. Nama, institusi, surel, dan catatan bebas tidak ikut. Unduh JSON atau CSV yang memuat identitas tetap memakai token fasilitator.
+
+Halaman proyeksi `/validasi-hasil.html` menampilkan agregat yang sama dan memuat ulang setiap 30 detik. Peta resmi tidak diubah.

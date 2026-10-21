@@ -97,6 +97,31 @@ test("jenjang kosong dihitung setuju, pilihan dihitung", () => {
   assert.equal(hasil.pilihan.setuju_bukan_kesiapan.kosong, 2);
 });
 
+test("agregasi publik tidak memuat identitas atau catatan", () => {
+  const hasil = agregasiValidasi(
+    [
+      {
+        nama: "Rahasia Orang",
+        institusi: "Kampus Rahasia",
+        email: "rahasia@example.com",
+        peran: "peneliti rahasia",
+        a1_alasan: "catatan bernama Rahasia Orang",
+        g1: "ubah model rahasia",
+        g2: "jangan ubah rahasia",
+        g3: "catatan lain rahasia",
+        matriks: { Gempabumi: { Sipil: "setuju" } },
+        a1: "mean",
+      },
+    ],
+    defaults,
+  );
+  const teks = JSON.stringify(hasil);
+  for (const jejak of ["Rahasia Orang", "Kampus Rahasia", "rahasia@example.com", "peneliti rahasia", "catatan bernama", "ubah model", "jangan ubah", "catatan lain"]) {
+    assert.equal(teks.includes(jejak), false, jejak);
+  }
+  assert.deepEqual(Object.keys(hasil).sort(), ["akreditasi", "ambang", "jenjang", "matriks", "n_jawaban", "pilihan"]);
+});
+
 test("nilai bawaan agregasi mengikuti tabel bobot peta", () => {
   const weights = {
     gempa: { sipil: 1, arsitektur: 0.55, pwk: 0.4, geologi: 0.9, lingkungan: 0.25, kelautan: 0.25, bencana: 0.85, multidisiplin: 0.7 },
