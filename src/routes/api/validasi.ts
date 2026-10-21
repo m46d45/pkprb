@@ -7,15 +7,21 @@ const MAX_BODY_BYTES = 32 * 1024;
 const SCORE_FIELDS = ["s1", "s2", "s3", "acc_int", "acc_unggul", "acc_bs", "acc_baik"] as const;
 
 /**
- * Token fasilitator dari lingkungan. `VALIDASI_TOKEN` didahulukan;
- * `VALIDASI_EXPORT_TOKEN` tetap dibaca agar pengaturan yang sudah terpasang jalan.
- * Tidak ada nilai bawaan di kode.
+ * Token yang sudah dipakai panduan fasilitator. Hanya dipakai bila env kosong,
+ * supaya unduhan jalan tanpa mengatur Vercel. Jangan dicetak ke log.
+ */
+const FACILITATOR_TOKEN_FALLBACK = "12345678";
+
+/**
+ * `VALIDASI_TOKEN` didahulukan, lalu `VALIDASI_EXPORT_TOKEN`.
+ * Keduanya menimpa nilai bawaan bila diisi.
  */
 function configuredToken(): string {
   const primary = process.env.VALIDASI_TOKEN?.trim();
   if (primary) return primary;
   const legacy = process.env.VALIDASI_EXPORT_TOKEN?.trim();
-  return legacy || "";
+  if (legacy) return legacy;
+  return FACILITATOR_TOKEN_FALLBACK;
 }
 
 function providedToken(request: Request): string {
@@ -27,9 +33,6 @@ function providedToken(request: Request): string {
 
 function authorize(request: Request): { ok: true } | { ok: false; error: string } {
   const expected = configuredToken();
-  if (!expected) {
-    return { ok: false, error: "Token fasilitator belum diatur di server" };
-  }
   const provided = providedToken(request);
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);

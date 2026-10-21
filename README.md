@@ -19,7 +19,7 @@ Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan)
 Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan **Validasi** di header peta dan halaman Metodologi). Versi beku untuk workshop KoNTekS 20 / 24 Oktober 2026:
 
 - **Validator** menekan **Kirim isian** (tersimpan di server setelah commit). Peserta tidak mengunduh berkas.
-- **Fasilitator** mengunduh JSON atau CSV di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx). Token dibaca dari env `VALIDASI_TOKEN` (atau `VALIDASI_EXPORT_TOKEN` bila itu yang sudah terpasang) dan tidak ditulis di kode.
+- **Fasilitator** mengunduh JSON atau CSV di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx). Tanpa env, server memakai token yang sama dengan panduan fasilitator. Env `VALIDASI_TOKEN` atau `VALIDASI_EXPORT_TOKEN` menimpa nilai itu bila diisi. Nilai token tidak dicetak di halaman atau log.
 - `GET /api/validasi/health` memeriksa koneksi basis data tanpa mengembalikan jawaban.
 
 **Database wajib untuk workshop:** set `DATABASE_URL` (Neon/Postgres). Tanpa itu preview memakai PGLite di memori dan jawaban hilang saat server restart.

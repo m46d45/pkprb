@@ -163,9 +163,10 @@ function ValidasiHasilPage() {
             />
           </label>
           <p className="text-[13px] text-muted">
-            Token dibagikan penyelenggara. Server membacanya dari lingkungan (
-            <code className="rounded bg-line/60 px-1">VALIDASI_TOKEN</code>
-            ), bukan dari halaman ini.
+            Masukkan token dari panduan fasilitator. Env{" "}
+            <code className="rounded bg-line/60 px-1">VALIDASI_TOKEN</code> atau{" "}
+            <code className="rounded bg-line/60 px-1">VALIDASI_EXPORT_TOKEN</code> menimpa nilai
+            bawaan bila diisi.
           </p>
           <div className="flex flex-wrap gap-2">
             <button
