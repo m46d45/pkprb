@@ -178,8 +178,10 @@ function MetodologiPage() {
           <div className="space-y-3 text-[15px] leading-relaxed">
             <p>
               <strong>1. Skor prodi</strong> = bobot disiplin × bobot jenjang ×
-              bobot akreditasi. IABEE General atau Provisional = Internasional,
-              tidak ditumpuk di atas Unggul.
+              bobot akreditasi. Hanya IABEE General Accreditation (GA) =
+              Internasional, dan tidak ditumpuk dengan peringkat BAN-PT/LAM.
+              IABEE Provisional Accreditation (PA) bukan akreditasi; prodi PA
+              dinilai dari peringkat BAN-PT/LAM-nya.
             </p>
             <p>
               <strong>2. Pusat</strong> = bobot pusat × kematangan (anchor 1,35

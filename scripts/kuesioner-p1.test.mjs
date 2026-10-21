@@ -35,7 +35,13 @@ test("teks P1 untuk peserta", () => {
   assert.match(html, /placeholder="0,70"/);
   assert.doesNotMatch(html, /IABEE \(1,00\)/);
   assert.doesNotMatch(html, /Unggul \/ A \(0,90\)/);
-  assert.match(html, /IABEE <strong>General<\/strong>/);
+  assert.match(html, /C1\. Akreditasi IABEE \(General Accreditation\/GA\) disetarakan dengan Internasional/);
+  assert.match(
+    html,
+    /Hanya IABEE General Accreditation \(GA\) yang dihitung sebagai akreditasi internasional\. IABEE Provisional Accreditation \(PA\) bukan akreditasi/,
+  );
+  assert.doesNotMatch(html, /General\/Provisional/);
+  assert.doesNotMatch(html, /keduanya diberi faktor/);
   assert.match(html, /<strong>PkM<\/strong> = pengabdian kepada masyarakat/);
   assert.match(html, /<strong>Pancaran \(spillover\)<\/strong>/);
   assert.match(html, /value="arsitektur"/);

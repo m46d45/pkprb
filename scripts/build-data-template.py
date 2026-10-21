@@ -184,7 +184,7 @@ def sheet_petunjuk(wb: Workbook, n_prodi: int, n_pt: int, n_center: int, n_prov:
         ("2. Baris baru: status = baru. Biarkan id kosong.", font_body),
         ("3. Nama provinsi wajib dari dropdown. Papua pemekaran: Papua, Papua Barat, Papua Selatan, Papua Tengah, Papua Pegunungan, Papua Barat Daya.", font_body),
         ("4. Satu baris = satu prodi (bukan satu universitas). S1 dan S2 sipil di kampus yang sama = dua baris.", font_body),
-        ("5. IABEE hanya untuk prodi teknik. Jika IABEE general/provisional, akreditasi prodi boleh Internasional.", font_body),
+        ("5. IABEE hanya untuk prodi teknik. Hanya IABEE general (GA) yang dicatat sebagai Internasional. Provisional (PA) bukan akreditasi; isi peringkat BAN-PT/LAM dan jangan beri faktor Internasional.", font_body),
         ("6. Wajib isi kolom sumber (URL BAN-PT, PDDikti, IABEE, laman LPPM). Tanpa sumber tidak masuk peta.", font_body),
         ("7. Kolom diisi_oleh dan tanggal_isi diisi nama + tanggal (YYYY-MM-DD).", font_body),
         ("", font_body),
@@ -286,7 +286,7 @@ def sheet_prodi(wb: Workbook, programs: list[dict], provinces: list[str]):
         "Contoh: Teknik Sipil",
         "Pilih dari daftar",
         "S1 S2 S3 D4",
-        "Internasional jika IABEE",
+        "Internasional hanya untuk IABEE GA. PA memakai peringkat BAN-PT/LAM.",
         "tidak / provisional / general",
         "Kota/kabupaten kampus",
         "Wajib sama dengan daftar 38",
@@ -301,13 +301,17 @@ def sheet_prodi(wb: Workbook, programs: list[dict], provinces: list[str]):
     style_header(ws, len(headers))
 
     def acc_label(p):
-        if p.get("iabee") in ("general", "provisional"):
+        if p.get("iabee") == "general":
             return "Internasional"
         a = (p.get("accreditation") or "").lower()
         if "unggul" in a or a == "a":
             return "Unggul"
         if "baik sekali" in a or a == "b":
             return "Baik Sekali"
+        if p.get("iabee") == "provisional":
+            return "Baik"
+        if "internasional" in a:
+            return "Internasional"
         return "Baik"
 
     r = 2
