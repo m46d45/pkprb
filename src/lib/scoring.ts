@@ -24,11 +24,14 @@ export type ScoringOptions = {
   spilloverWeight: number;
 };
 
+/** GA replaces the national rank. PA is not accreditation and keeps BAN-PT/LAM. */
 export function prodiAccLevel(p: Program): AccLevel {
-  if (p.iabee === "general" || p.iabee === "provisional") return "internasional";
+  if (p.iabee === "general") return "internasional";
   const a = p.accreditation.toLowerCase();
   if (a.includes("unggul") || a === "a") return "unggul";
   if (a.includes("baik sekali") || a === "b") return "baik-sekali";
+  if (p.iabee === "provisional") return "baik";
+  if (a.includes("internasional")) return "internasional";
   return "baik";
 }
 

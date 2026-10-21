@@ -315,7 +315,7 @@ def build():
         [
             "Matriks bobot disiplin × bahaya (prior Delphi). Apakah sipil harus 1,00 di gempa? Apakah Planologi 0,40 terlalu rendah?",
             "Jenjang S1/S2/S3 default semua 1,00. Perlukah S2/S3 lebih tinggi?",
-            "IABEE dipetakan ke akreditasi Internasional, bukan bonus di atas Unggul. Setuju?",
+            "Hanya IABEE General Accreditation (GA) disetarakan dengan Internasional. Provisional Accreditation (PA) bukan akreditasi dan dinilai dari peringkat BAN-PT/LAM. Setuju?",
             "Hanya ITB, UI, UGM, ITS yang disebut PT internasional untuk spillover. Tambah IPB, Unpad, Unhas, atau lainnya?",
             "Besaran kolam spillover 12 / 8 / 4% sepulau dan 6 / 3% antar-pulau, dibagi rata ke penerima. Arahnya sudah benar?",
             "Skala tampilan 1–10 untuk Pendidikan dan Risiko (bukan min–maks 38 provinsi). Keselarasan tetap 3×3. Cukup intuitif?",
@@ -387,13 +387,13 @@ def build():
     heading(doc, "Akreditasi prodi", level=2)
     body(
         doc,
-        "IABEE General atau Provisional → Internasional. Tidak ditumpuk di atas Unggul.",
+        "Hanya IABEE General Accreditation (GA) → Internasional, tidak ditumpuk dengan peringkat BAN-PT/LAM. Provisional Accreditation (PA) bukan akreditasi; prodi PA dinilai dari peringkat BAN-PT/LAM.",
     )
     table(
         doc,
         ["Peringkat prodi", "Default"],
         [
-            ["Internasional (IABEE)", "1,00"],
+            ["Internasional (IABEE GA)", "1,00"],
             ["Unggul atau A", "0,90"],
             ["Baik Sekali atau B", "0,80"],
             ["Baik, C, atau terakreditasi lain", "0,70"],

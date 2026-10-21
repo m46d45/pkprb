@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Validasi bobot — PKPRB</title>
   <style>
     :root {
@@ -14,6 +14,7 @@
       --surface: #efe8dc;
     }
     * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: clip; }
     body {
       margin: 0;
       font: 16px/1.5 Calibri, "Segoe UI", system-ui, sans-serif;
@@ -29,16 +30,27 @@
     header .bar {
       max-width: 760px; margin: 0 auto;
       padding: 12px 16px;
-      display: flex; gap: 12px; align-items: center;
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
     }
     header a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; font-size: 14px; }
-    main { max-width: 760px; margin: 0 auto; padding: 28px 16px 120px; }
-    h1 { font-size: 28px; margin: 0 0 8px; }
+    .progress-track { height: 4px; background: var(--line); }
+    .progress-track > div { height: 100%; width: 0; background: var(--teal); }
+    .progress-label {
+      max-width: 760px; margin: 0 auto;
+      padding: 6px 16px 8px;
+      font-size: 13px; color: var(--muted);
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 28px 16px calc(148px + env(safe-area-inset-bottom)); }
+    h1 { font-size: 28px; margin: 0 0 8px; line-height: 1.2; }
     .lede { color: var(--muted); margin: 0 0 20px; }
-    .note {
+    .hint { color: var(--muted); font-weight: 400; margin: 0 0 8px; font-size: 15px; }
+    .note, .panduan {
       background: var(--surface); border: 1px solid var(--line);
       border-radius: 8px; padding: 14px 16px; margin: 0 0 28px;
     }
+    .panduan { margin: 12px 0; }
+    .panduan ul { margin: 8px 0; padding-left: 1.1rem; }
+    .panduan li { margin: 2px 0; }
     .handoff {
       background: #1b4f5c;
       color: #f7f1e8;
@@ -47,43 +59,83 @@
       margin: 0 0 28px;
     }
     .handoff strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    fieldset { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
     section { margin: 32px 0; }
     h2 { font-size: 20px; margin: 0 0 12px; }
     label.block { display: block; font-weight: 600; margin: 14px 0 6px; }
-    input[type=text], input[type=email], input[type=number], textarea, select {
-      width: 100%; padding: 8px 10px; border: 1px solid var(--line);
-      border-radius: 6px; background: #fff; font: inherit; color: var(--ink);
+    input, select, textarea { font-size: 16px; }
+    input:not([type]), input[type=text], input[type=email], input[type=number], textarea, select {
+      width: 100%; max-width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: 6px; background: #fff; font: inherit; font-size: 16px; color: var(--ink);
     }
+    select.kosong { color: var(--muted); }
     textarea { min-height: 72px; }
-    .choices { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 10px; }
-    .choices label { font-weight: 400; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
-    th, td { border: 1px solid var(--line); padding: 6px; text-align: center; }
+    ::placeholder { color: #8a847b; opacity: 1; }
+    .choices { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 10px; }
+    .choices label {
+      font-weight: 400;
+      display: flex; gap: 10px; align-items: flex-start;
+      min-height: 44px; padding: 8px 0;
+    }
+    .choices input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; flex: 0 0 auto; }
+    table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
+    th, td { border: 1px solid var(--line); padding: 4px; text-align: center; vertical-align: middle; }
     th { background: var(--teal); color: #fff; font-weight: 600; }
-    td:first-child, th:first-child { text-align: left; white-space: nowrap; }
-    td input { width: 52px; padding: 4px; text-align: center; }
+    td:first-child, th:first-child { text-align: left; }
+    td select { min-width: 7.5rem; padding: 8px 4px; }
+    .matriks-wrap { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+    #matriks-mobile { display: none; }
+    details.bahaya {
+      background: #fff; border: 1px solid var(--line); border-radius: 8px; margin: 8px 0;
+    }
+    details.bahaya summary {
+      padding: 12px 14px; min-height: 44px; cursor: pointer; font-weight: 700;
+      list-style-position: outside;
+    }
+    details.bahaya summary .isi { font-weight: 500; color: var(--teal); }
+    .disc { padding: 8px 12px 12px; border-top: 1px solid var(--line); }
+    .disc-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+    .bawaan { color: var(--muted); font-weight: 400; font-size: 14px; white-space: nowrap; }
+    .picker { display: flex; flex-wrap: wrap; gap: 6px; }
+    .picker button {
+      flex: 1 1 calc(16.66% - 6px);
+      min-width: 44px; min-height: 44px;
+      padding: 8px 4px;
+      background: #fff; color: var(--ink);
+      border: 1px solid var(--line);
+      font-weight: 600; font-size: 14px;
+      touch-action: manipulation;
+    }
+    .picker button[aria-pressed="true"] {
+      background: var(--teal); color: #fff; border-color: var(--teal);
+    }
+    @media (max-width: 640px) {
+      .matriks-wrap { display: none; }
+      #matriks-mobile { display: block; }
+      h1 { font-size: 24px; }
+    }
+    @media (min-width: 641px) {
+      .choices { flex-direction: row; flex-wrap: wrap; gap: 8px 16px; }
+      .choices label { min-height: 0; padding: 2px 0; }
+    }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } table { font-size: 12px; } }
+    @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
     .actions {
       position: sticky; bottom: 0; z-index: 3;
       background: var(--surface); border-top: 1px solid var(--line);
-      padding: 12px 16px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
     }
     .actions .wrap {
       max-width: 760px; margin: 0 auto; width: 100%;
       display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
     }
     button {
-      border: 0; border-radius: 6px; padding: 10px 14px;
-      background: var(--teal); color: #fff; font: inherit; cursor: pointer;
+      border: 0; border-radius: 6px; padding: 10px 14px; min-height: 44px;
+      background: var(--teal); color: #fff; font: inherit; font-size: 16px; cursor: pointer;
+      touch-action: manipulation;
     }
     button.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
-    button.primary {
-      background: var(--teal);
-      font-weight: 700;
-      padding: 12px 18px;
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 25%, transparent);
-    }
+    button.primary { background: var(--teal); font-weight: 700; padding: 12px 18px; }
     button:disabled { opacity: 0.55; cursor: wait; }
     #status { font-size: 14px; color: var(--muted); flex: 1 1 12rem; }
     #status.ok { color: var(--teal); font-weight: 600; }
@@ -97,6 +149,11 @@
       margin: 24px 0;
     }
     .done.show { display: block; }
+    .kode {
+      font-size: 40px; letter-spacing: 0.08em; font-weight: 800;
+      margin: 12px 0 0; color: var(--teal); line-height: 1.1;
+    }
+    #done-id { margin: 8px 0 12px; font-size: 13px; color: var(--muted); word-break: break-all; }
   </style>
 </head>
 <body>
@@ -106,39 +163,47 @@
       <a href="/metodologi">Metodologi</a>
       <strong>Validasi PKPRB</strong>
     </div>
+    <div class="progress-track" id="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Isian terisi">
+      <div id="progress-bar"></div>
+    </div>
+    <p class="progress-label" id="progress-label">Bagian 1 dari 9 · 0% terisi · ±10–15 menit</p>
   </header>
   <main>
     <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin:0 0 6px;">KoNTekS 20 · Workshop validasi · 23 Oktober 2026 · IRBI 2025</p>
     <h1>Permintaan penilaian ahli</h1>
-    <p class="lede">Diisi pada sesi workshop (termasuk peserta dadakan). Bapak/Ibu menilai bobot yang dipakai peta — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Sel atau kotak yang dikosongkan = menyetujui nilai bawaan. Perkiraan 20–25 menit; boleh fokus pada bagian sesuai keahlian.</p>
+    <p class="lede">Diisi pada sesi workshop (termasuk peserta dadakan). Bapak/Ibu menilai bobot yang dipakai peta — bukan melengkapi daftar perguruan tinggi, dan bukan menilai kesiapan BPBD. Perkiraan <strong>10–15 menit</strong>; isi bagian sesuai keahlian saja.</p>
 
     <div class="handoff" id="serahkan">
       <strong>Setelah selesai mengisi</strong>
-      Tekan tombol <em>Kirim isian</em> di bawah. Jawaban tersimpan ke server workshop;
-      fasilitator yang mengunduh JSON-nya nanti — Bapak/Ibu tidak perlu mengunduh berkas.
+      Jawaban langsung tersimpan di server. Bapak/Ibu tidak perlu mengunduh apa pun. Tekan <em>Kirim isian</em> di bawah.
     </div>
 
     <div class="note">
       <p style="margin:0 0 8px;"><strong>Apa yang dinilai.</strong> Bobot jenjang, akreditasi, pusat studi, pancaran (spillover), dan matriks disiplin × jenis bahaya.</p>
+      <p style="margin:0 0 8px;"><strong>Nilai bawaan</strong> = faktor pengali (0–1) yang saat ini dipakai peta. 1 = dihitung penuh; 0,8 = dihitung 80%; 0 = tidak dihitung. Kosongkan kotak bila setuju dengan nilai bawaan.</p>
       <p style="margin:0 0 8px;"><strong>Cara membaca peta.</strong> Filter Komposit memakai indeks resmi IRBI 2025 tingkat provinsi. Filter gempa, tsunami, banjir, dan seterusnya memakai rata-rata skor kabupaten pada tabel ancaman IRBI yang sama. Angka 0 berarti tidak ada baris kabupaten di tabel itu — bukan sertifikat bahwa daerah aman.</p>
       <p style="margin:0;"><strong>Yang tidak masuk hitungan peta.</strong> Daftar kegiatan layanan (workshop, laboratorium uji, penyusunan dokumen) dicatat terpisah. Yang dihitung sebagai kepakaran hanya tanda pengabdian (PkM) pada pusat studi.</p>
     </div>
     <form id="q">
-      <section>
+      <fieldset id="isian">
+      <section id="bagian-1">
         <h2>1. Identitas</h2>
         <div class="row2">
-          <div><label class="block">Nama (boleh inisial)</label><input name="nama" /></div>
-          <div><label class="block">Institusi / unit</label><input name="institusi" /></div>
+          <div><label class="block">Nama (boleh inisial)</label><input name="nama" autocomplete="name" /></div>
+          <div><label class="block">Institusi / unit</label><input name="institusi" autocomplete="organization" /></div>
         </div>
         <label class="block">Jabatan atau peran</label><input name="peran" />
         <label class="block">Keahlian (boleh lebih dari satu)</label>
         <div class="choices">
-          <label><input type="checkbox" name="ahli" value="pendidikan" /> Pendidikan tinggi</label>
-          <label><input type="checkbox" name="ahli" value="kebencanaan" /> Kebencanaan / IRBI</label>
           <label><input type="checkbox" name="ahli" value="sipil" /> Sipil / geoteknik</label>
+          <label><input type="checkbox" name="ahli" value="arsitektur" /> Arsitektur</label>
           <label><input type="checkbox" name="ahli" value="pwk" /> PWK</label>
           <label><input type="checkbox" name="ahli" value="geologi" /> Geologi</label>
           <label><input type="checkbox" name="ahli" value="lingkungan" /> Lingkungan</label>
+          <label><input type="checkbox" name="ahli" value="kelautan" /> Kelautan / pesisir</label>
+          <label><input type="checkbox" name="ahli" value="kebencanaan" /> Kebencanaan / IRBI</label>
+          <label><input type="checkbox" name="ahli" value="multidisiplin" /> Multidisiplin</label>
+          <label><input type="checkbox" name="ahli" value="pendidikan" /> Pendidikan tinggi</label>
           <label><input type="checkbox" name="ahli" value="bpbd" /> BPBD / pemda</label>
         </div>
         <label class="block">Pernah membuka peta?</label>
@@ -148,7 +213,7 @@
           <label><input type="radio" name="lihat_peta" value="belum" /> Belum</label>
         </div>
       </section>
-      <section>
+      <section id="bagian-2">
         <h2>2. Angka risiko</h2>
         <label class="block">A1. Cara merangkum skor kabupaten menjadi satu angka provinsi</label>
         <select name="a1">
@@ -156,26 +221,29 @@
           <option value="mean">Rata-rata sederhana (yang dipakai peta sekarang)</option>
           <option value="max">Nilai maksimum</option>
           <option value="wpop">Rata-rata tertimbang penduduk</option>
+          <option value="irbi_prov">Pakai indeks IRBI tingkat provinsi resmi BNPB bila tersedia (seperti filter Komposit)</option>
           <option value="lain">Lain</option>
         </select>
         <label class="block">Alasan singkat</label><textarea name="a1_alasan"></textarea>
         <label class="block">A2. Jika suatu provinsi tidak muncul di tabel ancaman IRBI</label>
+        <p class="hint">Angka 0 pada filter ancaman = <strong>tidak ada baris data kabupaten di tabel IRBI</strong>, bukan berarti tidak berisiko.</p>
         <select name="a2">
           <option value="">— pilih —</option>
           <option value="tetap0">Biarkan bernilai 0</option>
           <option value="isi_ahli">Isi menurut pertimbangan ahli / wilayah tetangga</option>
           <option value="sembunyi">Jangan tampilkan filter itu untuk provinsi tersebut</option>
+          <option value="data_na">Tampilkan sebagai 'Data tidak tersedia' (abu-abu), bukan 0</option>
         </select>
       </section>
-      <section>
-        <h2>3. Bobot jenjang</h2>
-        <p class="lede">Kosong = menyetujui nilai bawaan 1,00.</p>
+      <section id="bagian-3">
+        <h2>3. Faktor pengali jenjang</h2>
+        <p class="lede">Faktor pengali 0–1 untuk skor program studi menurut jenjang. Kosong = setuju nilai bawaan (saat ini semua 1,00).</p>
         <div class="row2">
-          <div><label class="block">S1 / D4</label><input type="number" min="0" max="1" step="0.05" name="s1" placeholder="1,00" /></div>
-          <div><label class="block">S2</label><input type="number" min="0" max="1" step="0.05" name="s2" placeholder="1,00" /></div>
+          <div><label class="block">S1 / D4</label><input type="text" inputmode="decimal" name="s1" placeholder="1,00" autocomplete="off" /></div>
+          <div><label class="block">S2</label><input type="text" inputmode="decimal" name="s2" placeholder="1,00" autocomplete="off" /></div>
         </div>
-        <label class="block">S3</label><input type="number" min="0" max="1" step="0.05" name="s3" placeholder="1,00" />
-        <label class="block">B1. Haruskah S3 lebih tinggi daripada S1 untuk ketangguhan bencana?</label>
+        <label class="block">S3</label><input type="text" inputmode="decimal" name="s3" placeholder="1,00" autocomplete="off" />
+        <label class="block">B1. Haruskah bobot lulusan S1, S2, dan S3 meningkat secara proporsional dalam aspek ketangguhan bencana?</label>
         <select name="b1">
           <option value="">— pilih —</option>
           <option value="ya">Ya</option>
@@ -183,16 +251,17 @@
           <option value="bergantung">Bergantung disiplin</option>
         </select>
       </section>
-      <section>
-        <h2>4. Akreditasi</h2>
-        <p class="lede">Kosong = menyetujui nilai bawaan.</p>
+      <section id="bagian-4">
+        <h2>4. Faktor pengali akreditasi</h2>
+        <p class="lede">Kosong = setuju nilai bawaan (angka abu-abu).</p>
         <div class="row2">
-          <div><label class="block">Internasional / IABEE (1,00)</label><input type="number" min="0" max="1" step="0.05" name="acc_int" /></div>
-          <div><label class="block">Unggul / A (0,90)</label><input type="number" min="0" max="1" step="0.05" name="acc_unggul" /></div>
-          <div><label class="block">Baik Sekali / B (0,80)</label><input type="number" min="0" max="1" step="0.05" name="acc_bs" /></div>
-          <div><label class="block">Baik / C (0,70)</label><input type="number" min="0" max="1" step="0.05" name="acc_baik" /></div>
+          <div><label class="block">Internasional / IABEE GA</label><input type="text" inputmode="decimal" name="acc_int" placeholder="1,00" autocomplete="off" /></div>
+          <div><label class="block">Unggul / A</label><input type="text" inputmode="decimal" name="acc_unggul" placeholder="0,90" autocomplete="off" /></div>
+          <div><label class="block">Baik Sekali / B</label><input type="text" inputmode="decimal" name="acc_bs" placeholder="0,80" autocomplete="off" /></div>
+          <div><label class="block">Baik / C</label><input type="text" inputmode="decimal" name="acc_baik" placeholder="0,70" autocomplete="off" /></div>
         </div>
-        <label class="block">C1. IABEE General/Provisional disetarakan dengan Internasional</label>
+        <label class="block">C1. Akreditasi IABEE (General Accreditation/GA) disetarakan dengan Internasional</label>
+        <p class="hint">Hanya IABEE General Accreditation (GA) yang dihitung sebagai akreditasi internasional. IABEE Provisional Accreditation (PA) bukan akreditasi, sehingga tidak diberi faktor Internasional; prodi berstatus PA dinilai dari peringkat BAN-PT/LAM-nya. Faktor IABEE GA tidak ditumpuk dengan peringkat BAN-PT/LAM.</p>
         <select name="c1">
           <option value="">— pilih —</option>
           <option value="setuju">Setuju</option>
@@ -207,8 +276,9 @@
           <option value="tampil">Tampil di peta tanpa skor</option>
         </select>
       </section>
-      <section>
+      <section id="bagian-5">
         <h2>5. Pusat studi dan kepakaran</h2>
+        <p class="hint"><strong>PkM</strong> = pengabdian kepada masyarakat. Yang dihitung hanya penanda PkM pada pusat studi kebencanaan; daftar layanan (workshop, uji lab, dokumen) tidak dihitung.</p>
         <label class="block">D1. Kepakaran dihitung dari tanda pengabdian (PkM) pada pusat studi</label>
         <select name="d1">
           <option value="">— pilih —</option>
@@ -224,8 +294,9 @@
           <option value="proxy">Pakai nilai pulau tetangga</option>
         </select>
       </section>
-      <section>
+      <section id="bagian-6">
         <h2>6. Pancaran kapasitas (spillover)</h2>
+        <p class="hint"><strong>Pancaran (spillover)</strong> = sebagian skor kapasitas perguruan tinggi yang dianggap ikut melayani provinsi lain (sepulau/nasional), sehingga provinsi tanpa perguruan tinggi kuat tetap mendapat sebagian kapasitas.</p>
         <label class="block">E1. Sebagian skor perguruan tinggi memancar ke provinsi lain</label>
         <select name="e1">
           <option value="">— pilih —</option>
@@ -242,10 +313,11 @@
           <option value="penerima">Hanya ke perguruan tinggi atau kota penerima</option>
         </select>
       </section>
-      <section>
+      <section id="bagian-7">
         <h2>7. Matriks disiplin × jenis bahaya</h2>
-        <p class="lede">Angka di dalam kotak adalah usulan 0–1. Angka abu-abu adalah nilai bawaan. Kosongkan sel yang menurut Bapak/Ibu sudah tepat. Di workshop: boleh mengisi hanya baris bahaya sesuai keahlian.</p>
+        <p class="lede">Isi hanya sel yang ingin diubah. Kosong = setuju nilai bawaan.</p>
         <label class="block">F1. Kesan terhadap nilai bawaan</label>
+        <p class="hint">F1 menanyakan kesan umum atas nilai bawaan pada tabel di bawah.</p>
         <select name="f1">
           <option value="">— pilih —</option>
           <option value="ok">Masuk akal</option>
@@ -253,38 +325,54 @@
           <option value="sipil">Terlalu condong ke teknik sipil</option>
           <option value="lain">Lain</option>
         </select>
-        <div style="overflow-x:auto;margin-top:12px">
+        <div class="panduan" id="panduan-skor">
+          <p style="margin:0;"><strong>Panduan skor</strong></p>
+          <ul>
+            <li><strong>1</strong> = disiplin inti</li>
+            <li><strong>0,75</strong> = penyumbang utama</li>
+            <li><strong>0,5</strong> = pendukung</li>
+            <li><strong>0,25</strong> = tidak langsung</li>
+            <li><strong>0</strong> = tidak relevan</li>
+            <li><strong>kosong</strong> = setuju nilai bawaan / tidak yakin</li>
+          </ul>
+          <p style="margin:0;"><strong>Cukup isi baris bahaya yang sesuai keahlian Bapak/Ibu (1–2 baris).</strong> Baris lain boleh dilewati.</p>
+        </div>
+        <div class="matriks-wrap">
           <table id="matriks"></table>
         </div>
+        <div id="matriks-mobile"></div>
       </section>
-      <section>
-        <h2>8. Catatan terbuka</h2>
-        <label class="block">G1. Satu hal yang sebaiknya diubah</label><textarea name="g1"></textarea>
-        <label class="block">G2. Satu hal yang sebaiknya tidak diubah</label><textarea name="g2"></textarea>
-        <label class="block">G3. Catatan lain</label><textarea name="g3"></textarea>
+      <section id="bagian-8">
+        <h2>8. Catatan terbuka tentang peta/model PKPRB</h2>
+        <label class="block">G1. Satu hal pada peta/model PKPRB yang sebaiknya diubah</label><textarea name="g1"></textarea>
+        <label class="block">G2. Satu hal pada peta/model PKPRB yang sebaiknya tidak diubah</label><textarea name="g2"></textarea>
+        <label class="block">G3. Catatan lain tentang peta/model PKPRB</label><textarea name="g3"></textarea>
       </section>
-      <section>
+      <section id="bagian-9">
         <h2>9. Persetujuan</h2>
         <div class="choices">
           <label><input type="checkbox" name="setuju_bukan_kesiapan" /> Saya memahami PKPRB bukan peta kesiapan daerah</label>
           <label><input type="checkbox" name="setuju_ringkas" /> Penilaian ini boleh dipakai menyesuaikan bobot bawaan peta</label>
           <label><input type="checkbox" name="setuju_institusi" /> Nama institusi boleh dicantumkan pada daftar validator</label>
         </div>
-        <p class="lede" style="margin-top:16px">Terima kasih. Setelah centang di atas, tekan <strong>Kirim isian</strong>. Fasilitator yang akan mengunduh JSON.</p>
+        <p class="lede" style="margin-top:16px">Terima kasih. Setelah centang di atas, tekan <strong>Kirim isian</strong>. Jawaban langsung tersimpan di server. Bapak/Ibu tidak perlu mengunduh apa pun.</p>
       </section>
+      </fieldset>
     </form>
 
     <div class="done" id="done">
       <strong>Isian terkirim.</strong>
-      <p class="lede" style="margin:8px 0 0">Tidak perlu mengunduh apa pun. Fasilitator sudah bisa melihat jawaban Bapak/Ibu di halaman hasil.</p>
-      <p id="done-id" style="margin:8px 0 0;font-size:13px;color:var(--muted)"></p>
+      <p class="lede" style="margin:8px 0 0">Jawaban langsung tersimpan di server. Bapak/Ibu tidak perlu mengunduh apa pun.</p>
+      <p class="kode" id="done-short"></p>
+      <p id="done-id"></p>
+      <button type="button" class="ghost" id="isi-lagi">Isi lagi sebagai orang lain</button>
     </div>
   </main>
   <div class="actions" id="aksi-kirim">
     <div class="wrap">
       <button type="button" class="primary" id="submit">Kirim isian</button>
-      <button type="button" class="ghost" id="save">Simpan dulu di perangkat ini</button>
-      <span id="status"></span>
+      <button type="button" class="ghost" id="save">Simpan draf</button>
+      <span id="status" role="status"></span>
     </div>
   </div>
   <script>
@@ -300,26 +388,129 @@
       "Karhutla":[.25,.15,.45,.25,.7,.05,.8,.75],
       "Komposit":[.85,.4,.55,.7,.45,.4,.85,.8]
     };
+    const STEPS = [
+      ["0", "0"],
+      ["0.25", "0,25"],
+      ["0.5", "0,5"],
+      ["0.75", "0,75"],
+      ["1", "1"],
+      ["", "kosong"]
+    ];
+    const ANGKA = ["s1", "s2", "s3", "acc_int", "acc_unggul", "acc_bs", "acc_baik"];
+    const KEY_V1 = "pkprb-kuesioner-v1";
+    const KEY_V2 = "pkprb-kuesioner-v2";
+    const SENT_KEY = "pkprb-terkirim";
+    const VERSI = "2026-10-23-konteks20";
+
+    function uuid() {
+      if (globalThis.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+      const bytes = new Uint8Array(16);
+      if (globalThis.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+      else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+      return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+    }
+    function fmt(n) { return String(n).replace(".", ","); }
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    let clientId = uuid();
+    let startedAt = Date.now();
+    let terkunci = false;
+    let saveTimer = 0;
+
     const tb = document.getElementById("matriks");
-    tb.innerHTML = "<tr><th>Bahaya</th>" + DISC.map(d => "<th>"+d+"</th>").join("") + "</tr>" +
-      HAZ.map(h => "<tr><th>"+h+"</th>" + DISC.map((d,i) =>
-        "<td><input type='number' min='0' max='1' step='0.05' data-h='"+h+"' data-d='"+d+"' placeholder='"+DEF[h][i]+"' /></td>"
-      ).join("") + "</tr>").join("");
+    const mobile = document.getElementById("matriks-mobile");
+    let head = "<tr><th>Bahaya</th>" + DISC.map((d) => "<th>" + esc(d) + "</th>").join("") + "</tr>";
+    head += HAZ.map((h) => "<tr><th>" + esc(h) + "</th>" + DISC.map((d, i) => {
+      const bawaan = fmt(DEF[h][i]);
+      const opts = "<option value=\"\">bawaan " + bawaan + "</option>" +
+        STEPS.filter((s) => s[0] !== "").map((s) => "<option value=\"" + s[0] + "\">" + s[1] + "</option>").join("");
+      return "<td><select data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" class=\"kosong\" aria-label=\"" + esc(h + " " + d) + "\">" + opts + "</select></td>";
+    }).join("") + "</tr>").join("");
+    tb.innerHTML = head;
+
+    mobile.innerHTML = HAZ.map((h) => {
+      const rows = DISC.map((d, i) => {
+        const buttons = STEPS.map((s) =>
+          "<button type=\"button\" data-h=\"" + esc(h) + "\" data-d=\"" + esc(d) + "\" data-v=\"" + s[0] + "\" aria-pressed=\"" + (s[0] === "" ? "true" : "false") + "\" aria-label=\"" + esc(h + " " + d + " " + (s[1] || "kosong")) + "\">" + s[1] + "</button>"
+        ).join("");
+        return "<div class=\"disc\"><div class=\"disc-head\"><span>" + esc(d) + "</span><span class=\"bawaan\">bawaan " + fmt(DEF[h][i]) + "</span></div><div class=\"picker\" role=\"group\" aria-label=\"" + esc(d + " untuk " + h) + "\">" + buttons + "</div></div>";
+      }).join("");
+      return "<details class=\"bahaya\" data-h=\"" + esc(h) + "\"><summary>" + esc(h) + "<span class=\"isi\"></span></summary>" + rows + "</details>";
+    }).join("");
+
+    function selectsFor(h, d) {
+      return Array.from(document.querySelectorAll("#matriks select")).filter((el) => el.dataset.h === h && el.dataset.d === d);
+    }
+    function setCell(h, d, value) {
+      const sel = selectsFor(h, d)[0];
+      if (sel) {
+        if (value && !Array.from(sel.options).some((o) => o.value === value)) {
+          const opt = document.createElement("option");
+          opt.value = value;
+          opt.textContent = String(value).replace(".", ",");
+          sel.appendChild(opt);
+        }
+        sel.value = value;
+        sel.classList.toggle("kosong", value === "");
+      }
+      document.querySelectorAll("#matriks-mobile button").forEach((btn) => {
+        if (btn.dataset.h === h && btn.dataset.d === d) {
+          btn.setAttribute("aria-pressed", btn.dataset.v === value ? "true" : "false");
+        }
+      });
+      const filled = DISC.filter((name) => {
+        const s = selectsFor(h, name)[0];
+        return s && s.value !== "";
+      }).length;
+      const mark = document.querySelector('details.bahaya[data-h="' + CSS.escape(h) + '"] .isi');
+      if (mark) mark.textContent = filled ? " · " + filled + " diubah" : "";
+    }
+    function canon(raw) {
+      if (raw == null || raw === "") return "";
+      const n = Number(String(raw).trim().replace(",", "."));
+      if (!Number.isFinite(n)) return "";
+      const hit = [0, 0.25, 0.5, 0.75, 1].find((s) => Math.abs(s - n) < 1e-9);
+      return hit == null ? String(n) : String(hit);
+    }
+
+    function parseAngka(raw) {
+      const text = String(raw ?? "").trim();
+      if (!text) return { ok: true, value: "" };
+      const n = Number(text.replace(",", "."));
+      if (!Number.isFinite(n) || n < 0 || n > 1) return { ok: false };
+      return { ok: true, value: n };
+    }
     function collect() {
       const fd = new FormData(document.getElementById("q"));
       const o = {
-        versi: "2026-10-23-konteks20",
+        versi: VERSI,
+        schema: 2,
+        form_rev: "2026-10-22",
+        client_id: clientId,
         acara: "KoNTekS 20 workshop validasi",
         waktu: new Date().toISOString(),
+        durasi_detik: Math.max(0, Math.round((Date.now() - startedAt) / 1000)),
       };
-      for (const [k,v] of fd.entries()) {
+      for (const [k, v] of fd.entries()) {
         if (k === "ahli") { (o.ahli ||= []).push(v); continue; }
+        if (ANGKA.includes(k)) {
+          const parsed = parseAngka(v);
+          o[k] = parsed.ok ? parsed.value : v;
+          continue;
+        }
         o[k] = v;
       }
       o.matriks = {};
-      document.querySelectorAll("#matriks input").forEach(inp => {
-        if (inp.value === "") return;
-        (o.matriks[inp.dataset.h] ||= {})[inp.dataset.d] = Number(inp.value);
+      document.querySelectorAll("#matriks select").forEach((sel) => {
+        if (sel.value === "") return;
+        const n = Number(sel.value);
+        if (!Number.isFinite(n)) return;
+        (o.matriks[sel.dataset.h] ||= {})[sel.dataset.d] = n;
       });
       return o;
     }
@@ -330,50 +521,204 @@
         if (!el.name || el.name === "ahli") continue;
         if (el.type === "checkbox") el.checked = !!o[el.name];
         else if (el.type === "radio") el.checked = o[el.name] === el.value;
-        else if (o[el.name] != null) el.value = o[el.name];
+        else if (o[el.name] != null && o[el.name] !== "") el.value = o[el.name];
       }
-      document.querySelectorAll("input[name=ahli]").forEach(c => { c.checked = (o.ahli||[]).includes(c.value); });
-      document.querySelectorAll("#matriks input").forEach(inp => {
-        const v = o.matriks && o.matriks[inp.dataset.h] && o.matriks[inp.dataset.h][inp.dataset.d];
-        if (v != null) inp.value = v;
-      });
+      document.querySelectorAll("input[name=ahli]").forEach((c) => { c.checked = (o.ahli || []).includes(c.value); });
+      HAZ.forEach((h) => DISC.forEach((d) => {
+        const v = o.matriks && o.matriks[h] && o.matriks[h][d];
+        setCell(h, d, canon(v));
+      }));
     }
-    const KEY = "pkprb-kuesioner-v1";
+    function adaIsian(o) {
+      if (!o || typeof o !== "object") return false;
+      if (Array.isArray(o.ahli) && o.ahli.length) return true;
+      if (o.matriks && Object.keys(o.matriks).length) return true;
+      return ["nama","institusi","peran","lihat_peta","a1","a1_alasan","a2","s1","s2","s3","b1","acc_int","acc_unggul","acc_bs","acc_baik","c1","c2","d1","d2","e1","e2","f1","g1","g2","g3","setuju_bukan_kesiapan","setuju_ringkas","setuju_institusi"].some((k) => o[k]);
+    }
+    function readStore(key) {
+      try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+    }
+
     const status = document.getElementById("status");
     const submitBtn = document.getElementById("submit");
+    const saveBtn = document.getElementById("save");
     function setStatus(text, kind) {
       status.textContent = text;
       status.className = kind || "";
     }
-    document.getElementById("save").onclick = () => {
-      localStorage.setItem(KEY, JSON.stringify(collect()));
-      setStatus("Tersimpan sementara di perangkat ini (belum terkirim ke fasilitator).");
-    };
-    submitBtn.onclick = async () => {
+    function updateProgress() {
       const data = collect();
+      const scalar = ["nama","institusi","peran","lihat_peta","a1","a1_alasan","a2","s1","s2","s3","b1","acc_int","acc_unggul","acc_bs","acc_baik","c1","c2","d1","d2","e1","e2","f1","g1","g2","g3","setuju_bukan_kesiapan","setuju_ringkas","setuju_institusi"];
+      let filled = scalar.filter((k) => data[k] !== undefined && data[k] !== "").length;
+      if (Array.isArray(data.ahli) && data.ahli.length) filled += 1;
+      if (data.matriks && Object.keys(data.matriks).length) filled += 1;
+      const total = scalar.length + 2;
+      const pct = Math.round((filled / total) * 100);
+      document.getElementById("progress-bar").style.width = pct + "%";
+      const wrap = document.getElementById("progress-wrap");
+      wrap.setAttribute("aria-valuenow", String(pct));
+      const bagian = document.getElementById("progress-label").dataset.bagian || "1";
+      document.getElementById("progress-label").textContent = "Bagian " + bagian + " dari 9 · " + pct + "% terisi · ±10–15 menit";
+    }
+    function saveDraft() {
+      if (terkunci) return;
+      const o = collect();
+      o._startedAt = startedAt;
+      localStorage.setItem(KEY_V2, JSON.stringify(o));
+    }
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveDraft, 500);
+    }
+    function tampilKode(id) {
+      const short = String(id).slice(-6);
+      document.getElementById("done-short").textContent = short;
+      document.getElementById("done-id").textContent = "Kode kiriman: " + id;
+      document.getElementById("done").classList.add("show");
+      return short;
+    }
+    function kunciTerkirim(id) {
+      terkunci = true;
+      clearTimeout(saveTimer);
+      document.getElementById("isian").disabled = true;
       submitBtn.disabled = true;
+      saveBtn.disabled = true;
+      submitBtn.textContent = "Terkirim";
+      const short = tampilKode(id);
+      setStatus("Sudah terkirim (kode " + short + ")", "ok");
+    }
+    function resetOrangLain() {
+      terkunci = false;
+      localStorage.removeItem(SENT_KEY);
+      localStorage.removeItem(KEY_V2);
+      localStorage.removeItem(KEY_V1);
+      clientId = uuid();
+      startedAt = Date.now();
+      document.getElementById("q").reset();
+      HAZ.forEach((h) => DISC.forEach((d) => setCell(h, d, "")));
+      document.getElementById("isian").disabled = false;
+      document.getElementById("done").classList.remove("show");
+      submitBtn.disabled = false;
+      saveBtn.disabled = false;
+      submitBtn.textContent = "Kirim isian";
+      setStatus("");
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("matriks-mobile").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-v]");
+      if (!btn || terkunci) return;
+      setCell(btn.dataset.h, btn.dataset.d, btn.dataset.v);
+      scheduleSave();
+      updateProgress();
+    });
+    document.getElementById("matriks").addEventListener("change", (e) => {
+      const sel = e.target.closest("select");
+      if (!sel) return;
+      setCell(sel.dataset.h, sel.dataset.d, sel.value);
+    });
+    document.getElementById("q").addEventListener("input", () => { scheduleSave(); updateProgress(); });
+    document.getElementById("q").addEventListener("change", () => { scheduleSave(); updateProgress(); });
+    document.getElementById("q").addEventListener("submit", (e) => { e.preventDefault(); void kirim(); });
+    saveBtn.onclick = () => {
+      if (terkunci) return;
+      saveDraft();
+      setStatus("Draf tersimpan di perangkat ini.");
+    };
+    document.getElementById("isi-lagi").onclick = resetOrangLain;
+
+    const sections = Array.from(document.querySelectorAll("form section"));
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const index = sections.indexOf(visible.target);
+      if (index < 0) return;
+      document.getElementById("progress-label").dataset.bagian = String(index + 1);
+      updateProgress();
+    }, { rootMargin: "-20% 0px -55% 0px", threshold: [0.15, 0.4, 0.75] });
+    sections.forEach((section) => io.observe(section));
+
+    function angkaSalah() {
+      for (const name of ANGKA) {
+        const el = document.querySelector('[name="' + name + '"]');
+        if (!el) continue;
+        const parsed = parseAngka(el.value);
+        if (!parsed.ok) return el;
+      }
+      return null;
+    }
+
+    async function kirim() {
+      if (terkunci || submitBtn.disabled) return;
+      const wajib = document.querySelector('[name="setuju_bukan_kesiapan"]');
+      if (!wajib.checked) {
+        setStatus("Centang dulu: saya memahami PKPRB bukan peta kesiapan daerah.", "err");
+        wajib.focus();
+        return;
+      }
+      const salah = angkaSalah();
+      if (salah) {
+        setStatus("Angka harus antara 0 dan 1. Koma desimal boleh, misalnya 0,8.", "err");
+        salah.focus();
+        return;
+      }
+      saveDraft();
+      const data = collect();
+      delete data._startedAt;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Mengirim…";
       setStatus("Mengirim…");
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), 15000);
       try {
         const res = await fetch("/api/validasi", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(data),
+          signal: ac.signal,
         });
         const out = await res.json().catch(() => ({}));
-        if (!res.ok || !out.ok) {
+        if (!res.ok || !out.ok || !out.id) {
           throw new Error(out.error || ("Gagal kirim (" + res.status + ")"));
         }
-        localStorage.removeItem(KEY);
-        document.getElementById("done").classList.add("show");
-        document.getElementById("done-id").textContent = "Kode kiriman: " + out.id;
+        localStorage.setItem(SENT_KEY, JSON.stringify({ id: out.id, at: new Date().toISOString() }));
+        localStorage.removeItem(KEY_V2);
+        localStorage.removeItem(KEY_V1);
+        kunciTerkirim(out.id);
+        setStatus("Terkirim. Jawaban langsung tersimpan di server. Bapak/Ibu tidak perlu mengunduh apa pun.", "ok");
         document.getElementById("done").scrollIntoView({ behavior: "smooth", block: "center" });
-        setStatus("Terkirim. Terima kasih — fasilitator yang mengunduh JSON.", "ok");
       } catch (e) {
-        setStatus(e.message || "Gagal mengirim. Coba lagi atau hubungi fasilitator.", "err");
+        if (e && e.name === "AbortError") {
+          setStatus("Koneksi lambat — draf aman, tekan Kirim lagi", "err");
+        } else if (e instanceof TypeError) {
+          setStatus("Tidak terhubung — draf aman di perangkat ini. Sambungkan internet, lalu tekan Kirim lagi.", "err");
+        } else {
+          setStatus((e && e.message) || "Gagal mengirim. Draf aman, tekan Kirim lagi.", "err");
+        }
         submitBtn.disabled = false;
+        submitBtn.textContent = "Kirim isian";
+      } finally {
+        clearTimeout(timer);
       }
-    };
-    try { apply(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) {}
+    }
+    submitBtn.onclick = () => { void kirim(); };
+
+    const terkirim = readStore(SENT_KEY);
+    if (terkirim && terkirim.id) {
+      kunciTerkirim(terkirim.id);
+    } else {
+      const draf = readStore(KEY_V2) || readStore(KEY_V1);
+      if (draf) {
+        if (typeof draf.client_id === "string" && draf.client_id) clientId = draf.client_id;
+        if (typeof draf._startedAt === "number") startedAt = draf._startedAt;
+        apply(draf);
+        if (!readStore(KEY_V2)) saveDraft();
+        try { localStorage.removeItem(KEY_V1); } catch (e) {}
+        if (adaIsian(draf)) setStatus("Draf dipulihkan.");
+      }
+      updateProgress();
+    }
   </script>
 </body>
 </html>
