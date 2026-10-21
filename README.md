@@ -18,8 +18,9 @@ Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan)
 
 Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan **Validasi** di header peta dan halaman Metodologi). Versi beku untuk workshop KoNTekS 20 / 24 Oktober 2026:
 
-- **Validator** menekan **Kirim isian** (tersimpan di server).
-- **Fasilitator** mengunduh JSON kapan saja di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx) (token default `12345678`, atau env `VALIDASI_EXPORT_TOKEN`).
+- **Validator** menekan **Kirim isian** (tersimpan di server setelah commit). Peserta tidak mengunduh berkas.
+- **Fasilitator** mengunduh JSON atau CSV di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx). Token dibaca dari env `VALIDASI_TOKEN` (atau `VALIDASI_EXPORT_TOKEN` bila itu yang sudah terpasang) dan tidak ditulis di kode.
+- `GET /api/validasi/health` memeriksa koneksi basis data tanpa mengembalikan jawaban.
 
 **Database wajib untuk workshop:** set `DATABASE_URL` (Neon/Postgres). Tanpa itu preview memakai PGLite di memori dan jawaban hilang saat server restart.
 
@@ -27,7 +28,7 @@ Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan *
 
 Komposit memakai indeks resmi IRBI 2025 tingkat provinsi (contoh tampilan: Papua Barat Daya 230,78; Maluku 203,94; DKI Jakarta 57,58; cap 250). Skor per bahaya adalah rata-rata kabupaten dari tabel ancaman IRBI yang sama (cap 40) — **bukan** angka resmi provinsi BNPB per sel. Inventaris prodi bersifat kurasi (BAN-PT / pangkalan data P2MI) dan perlu validasi berkala. Hubungan disiplin–bahaya adalah matriks kerja, bukan hasil regresi.
 
-Proyek terkait P2MI Multidisiplin FTSL ITB 2026 *Mainstreaming Disaster Resiliency in Infrastructure Systems*.
+Proyek terkait P2MI Multidisiplin FTSL ITB 2026 _Mainstreaming Disaster Resiliency in Infrastructure Systems_.
 
 ## Menjalankan secara lokal
 
