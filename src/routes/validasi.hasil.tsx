@@ -148,6 +148,17 @@ function ValidasiHasilPage() {
             Halaman fasilitator. Peserta menekan <strong className="text-ink">Kirim isian</strong>{" "}
             di form; jawaban langsung tersimpan di server. Unduh JSON atau CSV dari sini.
           </p>
+          <p className="text-[15px] leading-relaxed text-muted">
+            Tampilan proyeksi agregat, tanpa token:{" "}
+            <a className="underline" href="/validasi-hasil.html">
+              /validasi-hasil.html
+            </a>
+            . JSON agregat:{" "}
+            <a className="underline" href="/api/validasi?format=agregasi">
+              /api/validasi?format=agregasi
+            </a>
+            . Unduh yang memuat nama tetap memakai token.
+          </p>
         </section>
 
         <section className="space-y-3 rounded-lg border border-line bg-surface p-4">

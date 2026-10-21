@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Agregasi validasi — PKPRB</title>
+  <style>
+    :root {
+      --ink: #1f1a16;
+      --muted: #5c564e;
+      --teal: #1b4f5c;
+      --line: #d4cfc5;
+      --paper: #f7f1e8;
+      --surface: #efe8dc;
+      --naik: #8f4e2a;
+      --turun: #3d4f73;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; max-width: 100%; overflow-x: clip; }
+    body {
+      font: 18px/1.4 Calibri, "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    header .bar {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    header a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 15px;
+      background: #fff;
+    }
+    header strong { font-size: 20px; }
+    #meta { margin-left: auto; color: var(--muted); font-size: 15px; }
+    main { max-width: 1440px; margin: 0 auto; padding: 20px 20px 48px; }
+    h1 { font-size: 36px; line-height: 1.15; margin: 0 0 8px; }
+    h2 { font-size: 24px; margin: 28px 0 10px; }
+    .lede { color: var(--muted); margin: 0 0 16px; }
+    .jumlah {
+      display: flex;
+      gap: 28px;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+    .jumlah b { display: block; font-size: 64px; line-height: 0.9; font-weight: 700; }
+    .jumlah span { color: var(--muted); font-size: 16px; }
+    .legenda { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+    .legenda i {
+      display: inline-block;
+      min-width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 3px;
+      vertical-align: -2px;
+      margin-right: 6px;
+      border: 1px solid var(--line);
+    }
+    .sw-setuju { background: var(--teal); }
+    .sw-naik { background: var(--naik); }
+    .sw-turun { background: var(--turun); }
+    .sw-kosong { background: var(--surface); }
+    .wrap { overflow-x: auto; max-width: 100%; }
+    table.panas {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    table.panas th, table.panas td {
+      border: 1px solid var(--line);
+      padding: 6px 7px;
+      vertical-align: top;
+      text-align: left;
+    }
+    table.panas th {
+      background: var(--teal);
+      color: #f7f1e8;
+      font-size: 14px;
+      font-weight: 650;
+      text-align: center;
+    }
+    table.panas th.bahaya, table.panas td.bahaya {
+      text-align: left;
+      font-weight: 700;
+      background: var(--surface);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    td.sel { min-width: 7.6rem; color: var(--ink); background: var(--surface); }
+    td.sel.setuju { background: var(--teal); color: #f7f1e8; }
+    td.sel.naik { background: var(--naik); color: #f7f1e8; }
+    td.sel.turun { background: var(--turun); color: #f7f1e8; }
+    .med { display: block; font-size: 22px; font-weight: 700; line-height: 1.1; }
+    .baw, .cnt, .st { display: block; font-size: 13px; line-height: 1.25; opacity: 0.95; }
+    .st { font-weight: 700; margin-top: 2px; }
+    .kartu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .kartu article, .tally article {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .kartu .med { font-size: 32px; }
+    .kartu.setuju { background: var(--teal); color: #f7f1e8; }
+    .kartu.naik { background: var(--naik); color: #f7f1e8; }
+    .kartu.turun { background: var(--turun); color: #f7f1e8; }
+    .tally {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+    }
+    .tally h3 { font-size: 16px; margin: 0 0 8px; }
+    .tally li { display: flex; justify-content: space-between; gap: 12px; margin: 3px 0; }
+    .tally ul { list-style: none; margin: 0; padding: 0; }
+    .tally b { font-variant-numeric: tabular-nums; }
+    #galat { color: #8f2d2a; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a href="/">Peta</a>
+      <a href="/kuesioner.html">Kuesioner</a>
+      <strong>Agregasi validasi</strong>
+      <span id="meta">Memuat…</span>
+    </div>
+  </header>
+  <main>
+    <h1>Agregasi validasi PKPRB</h1>
+    <p class="lede">Angka agregat dari jawaban kuesioner. Nama, institusi, dan catatan tidak ditampilkan. Disegarkan setiap 30 detik.</p>
+    <p id="galat" role="status"></p>
+    <section class="jumlah" aria-live="polite">
+      <div>
+        <b id="jumlah">—</b>
+        <span>Jumlah responden</span>
+      </div>
+      <div class="legenda">
+        <span><i class="sw-setuju"></i>Setuju</span>
+        <span><i class="sw-naik"></i>Usul naik</span>
+        <span><i class="sw-turun"></i>Usul turun</span>
+        <span><i class="sw-kosong"></i>Belum ada angka</span>
+      </div>
+    </section>
+
+    <h2>Matriks disiplin × jenis bahaya</h2>
+    <p class="lede">Di setiap sel: median, nilai bawaan, jumlah setuju / tidak yakin, lalu status.</p>
+    <div class="wrap">
+      <table class="panas" id="matriks">
+        <thead id="kepala"></thead>
+        <tbody id="badan"></tbody>
+      </table>
+    </div>
+
+    <h2>Faktor jenjang</h2>
+    <div class="kartu" id="jenjang"></div>
+    <h2>Faktor akreditasi</h2>
+    <div class="kartu" id="akreditasi"></div>
+    <h2>Pilihan</h2>
+    <div class="tally" id="pilihan"></div>
+  </main>
+  <script>
+    const DISC = ["Sipil", "Arsitektur", "PWK", "Geologi", "Lingkungan", "Kelautan", "Kebencanaan", "Multidisiplin"];
+    const HAZ = ["Gempabumi", "Tsunami", "Banjir", "Longsor", "Likuefaksi", "Gunung api", "Karhutla", "Komposit"];
+    const STATUS = { setuju: "Setuju", "usul naik": "Usul naik", "usul turun": "Usul turun" };
+    const KELAS = { setuju: "setuju", "usul naik": "naik", "usul turun": "turun" };
+    const LABEL = {
+      ahli: {
+        sipil: "Sipil / geoteknik", arsitektur: "Arsitektur", pwk: "PWK", geologi: "Geologi",
+        lingkungan: "Lingkungan", kelautan: "Kelautan / pesisir", kebencanaan: "Kebencanaan / IRBI",
+        multidisiplin: "Multidisiplin", pendidikan: "Pendidikan tinggi", bpbd: "BPBD / pemda"
+      },
+      lihat_peta: { lama: "Ya, cukup lama", sekilas: "Ya, sekilas", belum: "Belum" },
+      a1: {
+        mean: "Rata-rata sederhana (yang dipakai peta sekarang)",
+        max: "Nilai maksimum",
+        wpop: "Rata-rata tertimbang penduduk",
+        irbi_prov: "Pakai indeks IRBI tingkat provinsi resmi BNPB bila tersedia",
+        lain: "Lain"
+      },
+      a2: {
+        tetap0: "Biarkan bernilai 0",
+        isi_ahli: "Isi menurut pertimbangan ahli / wilayah tetangga",
+        sembunyi: "Jangan tampilkan filter itu untuk provinsi tersebut",
+        data_na: "Tampilkan sebagai data tidak tersedia, bukan 0"
+      },
+      b1: { ya: "Ya", tidak: "Tidak", bergantung: "Bergantung disiplin" },
+      c1: { setuju: "Setuju", tinggi: "Terlalu tinggi", tumpuk: "Boleh ditambahkan di atas peringkat Unggul" },
+      c2: { "070": "Dihitung 0,70", "0": "Tidak dihitung", tampil: "Tampil di peta tanpa skor" },
+      d1: { setuju: "Setuju untuk versi ini", kegiatan: "Harus ada daftar kegiatan agar dihitung", hapus: "Komponen kepakaran dihapus saja" },
+      d2: { biarkan: "Biarkan kosong apa adanya", cari: "Lengkapi inventaris pusat dulu", proxy: "Pakai nilai pulau tetangga" },
+      e1: { tahan: "Pertahankan", kecil: "Kecilkan", besar: "Besarkan", hapus: "Hapus" },
+      e2: { rata: "Rata ke provinsi sepulau / nasional", tetangga: "Hanya ke provinsi tetangga", penerima: "Hanya ke perguruan tinggi atau kota penerima" },
+      f1: { ok: "Masuk akal", rata: "Terlalu merata", sipil: "Terlalu condong ke teknik sipil", lain: "Lain" },
+      setuju_bukan_kesiapan: { dicentang: "Dicentang" },
+      setuju_ringkas: { dicentang: "Dicentang" },
+      setuju_institusi: { dicentang: "Dicentang" }
+    };
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function fmt(n) {
+      if (n == null || !Number.isFinite(Number(n))) return "—";
+      const rounded = Math.round(Number(n) * 1000) / 1000;
+      return String(rounded).replace(".", ",");
+    }
+    function kelas(status) { return KELAS[status] || ""; }
+    function namaStatus(status) { return STATUS[status] || "Belum ada angka"; }
+    function labelOpsi(kunci, kode) {
+      const peta = LABEL[kunci] || {};
+      return peta[kode] || String(kode);
+    }
+
+    const kepala = document.getElementById("kepala");
+    kepala.innerHTML = "<tr><th class=\"bahaya\">Bahaya</th>" + DISC.map((d) => "<th>" + esc(d) + "</th>").join("") + "</tr>";
+
+    function selMatriks(sel) {
+      const k = kelas(sel && sel.status);
+      const setuju = sel && sel.n_setuju != null ? sel.n_setuju : 0;
+      const ragu = sel && sel.n_tidak_yakin != null ? sel.n_tidak_yakin : 0;
+      return "<td class=\"sel " + k + "\"><span class=\"med\">" + fmt(sel && sel.median) + "</span><span class=\"baw\">bawaan " + fmt(sel && sel.bawaan) + "</span><span class=\"cnt\">" + setuju + " / " + ragu + "</span><span class=\"st\">" + esc(namaStatus(sel && sel.status)) + "</span></td>";
+    }
+    function kartu(item) {
+      const k = kelas(item && item.status);
+      return "<article class=\"" + k + "\"><div>" + esc(item.label || "") + "</div><span class=\"med\">" + fmt(item.median) + "</span><span class=\"baw\">bawaan " + fmt(item.bawaan) + "</span><span class=\"st\">" + esc(namaStatus(item.status)) + "</span></article>";
+    }
+    function daftarPilihan(kunci, item) {
+      const hitung = item && item.hitung ? item.hitung : {};
+      const baris = Object.keys(hitung)
+        .filter((kode) => hitung[kode])
+        .sort((a, b) => hitung[b] - hitung[a] || a.localeCompare(b))
+        .map((kode) => "<li><span>" + esc(labelOpsi(kunci, kode)) + "</span><b>" + hitung[kode] + "</b></li>");
+      const kosong = item && item.kosong ? "<li><span>Kosong</span><b>" + item.kosong + "</b></li>" : "";
+      const isi = baris.length || kosong ? baris.join("") + kosong : "<li><span>Belum ada pilihan</span><b>0</b></li>";
+      return "<article><h3>" + esc(item.label || kunci) + "</h3><ul>" + isi + "</ul></article>";
+    }
+
+    async function muat() {
+      const meta = document.getElementById("meta");
+      const galat = document.getElementById("galat");
+      try {
+        const res = await fetch("/api/validasi?format=agregasi", { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok || !data || data.ok !== true) throw new Error("gagal");
+        document.getElementById("jumlah").textContent = String(data.n_jawaban ?? 0);
+        const badan = HAZ.map((h) => {
+          const baris = data.matriks && data.matriks[h] ? data.matriks[h] : {};
+          return "<tr><th class=\"bahaya\">" + esc(h) + "</th>" + DISC.map((d) => selMatriks(baris[d])).join("") + "</tr>";
+        }).join("");
+        document.getElementById("badan").innerHTML = badan;
+        const jenjang = data.jenjang || {};
+        document.getElementById("jenjang").innerHTML = ["s1", "s2", "s3"].map((k) => kartu(jenjang[k] || {})).join("");
+        const akreditasi = data.akreditasi || {};
+        document.getElementById("akreditasi").innerHTML = ["acc_int", "acc_unggul", "acc_bs", "acc_baik"].map((k) => kartu(akreditasi[k] || {})).join("");
+        const pilihan = data.pilihan || {};
+        document.getElementById("pilihan").innerHTML = Object.keys(pilihan).map((k) => daftarPilihan(k, pilihan[k] || {})).join("");
+        const jam = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        meta.textContent = "Diperbarui " + jam;
+        galat.textContent = "";
+      } catch (e) {
+        galat.textContent = "Gagal memuat agregasi.";
+        meta.textContent = "Gagal memuat";
+      }
+    }
+    muat();
+    setInterval(muat, 30000);
+  </script>
+</body>
+</html>

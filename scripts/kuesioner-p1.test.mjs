@@ -56,6 +56,11 @@ test("teks P1 untuk peserta", () => {
   const visible = html.replace(/<script[\s\S]*<\/script>/g, "").replace(/<style[\s\S]*<\/style>/g, "");
   assert.doesNotMatch(visible, /JSON/i);
   assert.match(html, /1<\/strong> = disiplin inti/);
+  assert.match(html, /Setuju nilai bawaan/);
+  assert.match(html, /Tidak yakin/);
+  assert.match(html, /Belum diisi/);
+  assert.doesNotMatch(html, /setuju nilai bawaan \/ tidak yakin/);
+  assert.match(html, /sel\.value === "setuju" \|\| sel\.value === "tidak_yakin"/);
   assert.match(html, /Cukup isi baris bahaya yang sesuai keahlian/);
   assert.match(html, /F1 menanyakan kesan umum atas nilai bawaan/);
   assert.match(html, /pkprb-kuesioner-v2/);
