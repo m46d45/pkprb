@@ -1,8 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { createFileRoute } from "@tanstack/react-router";
-import { getSql } from "@/lib/db";
-import { buildValidasiCsv, type ValidasiExportRow } from "@/lib/validasi-csv";
+import { getSql, type Sql } from "@/lib/db";
+import { buildValidasiCsv } from "@/lib/validasi-csv";
 import { agregasiValidasi, defaultsFromWeightTables } from "@/lib/validasi-agregasi.mjs";
+import { FASE_PILOT, FASE_VALIDASI, hitungFase, type FaseValidasi } from "@/lib/validasi-fase.mjs";
 import { DEFAULT_ACC, DEFAULT_STRATA, DEFAULT_WEIGHTS } from "@/lib/weights";
 
 const MAX_BODY_BYTES = 32 * 1024;
@@ -179,20 +180,13 @@ export const Route = createFileRoute("/api/validasi")({
           const sql = await getSql();
           // Satu pernyataan: INSERT auto-commit sebelum baris dikembalikan.
           // client_id yang sudah ada tidak menulis baris baru.
+          // Kiriman baru selalu fase validasi. Baris pilot hanya dari migrasi.
+          const adaFase = await kolomFaseAda(sql);
           const rows = await sql.query<SavedRow>(
-            `with inserted as (
-               insert into validasi_jawaban (id, versi, nama, institusi, client_id, payload)
-               values ($1, $2, $3, $4, $5, $6::jsonb)
-               on conflict (client_id) do nothing
-               returning id
-             )
-             select id, false as duplicate from inserted
-             union all
-             select id, true as duplicate from validasi_jawaban
-             where $5::text is not null
-               and client_id = $5
-               and not exists (select 1 from inserted)`,
-            [id, versi, nama, institusi, clientId, JSON.stringify(payload)],
+            adaFase ? INSERT_DENGAN_FASE : INSERT_TANPA_FASE,
+            adaFase
+              ? [id, versi, nama, institusi, clientId, JSON.stringify(payload), FASE_VALIDASI]
+              : [id, versi, nama, institusi, clientId, JSON.stringify(payload)],
           );
           const saved = rows[0];
           if (!saved?.id) {
@@ -220,29 +214,19 @@ export const Route = createFileRoute("/api/validasi")({
 
         const auth = authorize(request);
         if (!auth.ok) return json({ ok: false, error: auth.error }, 401);
-        let rows: Array<{
-          id: string;
-          created_at: string | Date;
-          versi: string | null;
-          nama: string | null;
-          institusi: string | null;
-          payload: Record<string, unknown>;
-        }>;
+        let rows: JawabanRow[];
         try {
           const sql = await getSql();
-          rows = await sql`
-            select id, created_at, versi, nama, institusi, payload
-            from validasi_jawaban
-            order by created_at asc
-          `;
+          rows = await muatJawaban(sql);
         } catch (err) {
           console.error("[validasi] baca gagal", err instanceof Error ? err.name : "error");
           return json({ ok: false, error: "Gagal membaca jawaban" }, 500);
         }
 
         const stamp = new Date().toISOString().slice(0, 10);
+        const ringkas = ringkasFase(rows);
         if (format === "csv") {
-          const csv = buildValidasiCsv(rows as ValidasiExportRow[]);
+          const csv = buildValidasiCsv(rows);
           return new Response(`\uFEFF${csv}`, {
             status: 200,
             headers: {
@@ -258,11 +242,13 @@ export const Route = createFileRoute("/api/validasi")({
           return json(
             {
               diekspor_pada: new Date().toISOString(),
-              jumlah: rows.length,
+              penanda_fase: PENANDA_FASE,
+              ...ringkas,
               jawaban: rows.map((r) => ({
                 id: r.id,
                 created_at: r.created_at,
                 ...asObject(r.payload),
+                fase: r.fase,
               })),
             },
             200,
@@ -274,10 +260,12 @@ export const Route = createFileRoute("/api/validasi")({
 
         return json({
           ok: true,
-          jumlah: rows.length,
+          penanda_fase: PENANDA_FASE,
+          ...ringkas,
           jawaban: rows.map((r) => ({
             id: r.id,
             created_at: r.created_at,
+            fase: r.fase,
             versi: r.versi,
             nama: r.nama,
             institusi: r.institusi,
@@ -314,23 +302,121 @@ export const Route = createFileRoute("/api/validasi")({
   },
 });
 
-/** Hitungan agregat tanpa token. Tidak mengembalikan nama atau catatan. */
+/** Hitungan agregat tanpa token. Hanya fase validasi. Tidak mengembalikan nama atau catatan. */
 async function agregasiPublik() {
   try {
     const sql = await getSql();
-    const rows = await sql<{ payload: unknown }>`
-      select payload from validasi_jawaban order by created_at asc
-    `;
+    const rows = await muatJawaban(sql);
+    const validasi = rows.filter((r) => r.fase === FASE_VALIDASI);
     const defaults = defaultsFromWeightTables(DEFAULT_WEIGHTS, DEFAULT_STRATA, DEFAULT_ACC);
     const agregasi = agregasiValidasi(
-      rows.map((row) => row.payload),
+      validasi.map((row) => row.payload),
       defaults,
     );
-    return json({ ok: true, ...agregasi });
+    return json({
+      ok: true,
+      ...agregasi,
+      fase: FASE_VALIDASI,
+      n_pilot: rows.length - validasi.length,
+    });
   } catch (err) {
     console.error("[validasi] agregasi gagal", err instanceof Error ? err.name : "error");
     return json({ ok: false, error: "Gagal menghitung agregasi" }, 500);
   }
+}
+
+const PENANDA_FASE = "pilot = uji coba, tidak masuk agregasi; validasi = jawaban workshop";
+
+const INSERT_DENGAN_FASE = `with inserted as (
+   insert into validasi_jawaban (id, versi, nama, institusi, client_id, payload, fase)
+   values ($1, $2, $3, $4, $5, $6::jsonb, $7)
+   on conflict (client_id) do nothing
+   returning id
+ )
+ select id, false as duplicate from inserted
+ union all
+ select id, true as duplicate from validasi_jawaban
+ where $5::text is not null
+   and client_id = $5
+   and not exists (select 1 from inserted)`;
+
+const INSERT_TANPA_FASE = `with inserted as (
+   insert into validasi_jawaban (id, versi, nama, institusi, client_id, payload)
+   values ($1, $2, $3, $4, $5, $6::jsonb)
+   on conflict (client_id) do nothing
+   returning id
+ )
+ select id, false as duplicate from inserted
+ union all
+ select id, true as duplicate from validasi_jawaban
+ where $5::text is not null
+   and client_id = $5
+   and not exists (select 1 from inserted)`;
+
+type JawabanRow = {
+  id: string;
+  created_at: string | Date;
+  versi: string | null;
+  nama: string | null;
+  institusi: string | null;
+  payload: unknown;
+  fase: FaseValidasi;
+};
+
+function ringkasFase(rows: JawabanRow[]) {
+  const jumlah_pilot = rows.filter((r) => r.fase === FASE_PILOT).length;
+  return {
+    jumlah: rows.length,
+    jumlah_pilot,
+    jumlah_validasi: rows.length - jumlah_pilot,
+  };
+}
+
+async function kolomFaseAda(sql: Sql): Promise<boolean> {
+  const g = globalThis as typeof globalThis & { __validasiKolomFase__?: boolean };
+  if (g.__validasiKolomFase__ === true) return true;
+  const rows = await sql<{ ok: number }>`
+    select 1 as ok
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'validasi_jawaban'
+      and column_name = 'fase'
+  `;
+  const ada = rows.length > 0;
+  if (ada) g.__validasiKolomFase__ = true;
+  return ada;
+}
+
+async function muatJawaban(sql: Sql): Promise<JawabanRow[]> {
+  if (await kolomFaseAda(sql)) {
+    const rows = await sql<{
+      id: string;
+      created_at: string | Date;
+      versi: string | null;
+      nama: string | null;
+      institusi: string | null;
+      payload: unknown;
+      fase: string | null;
+    }>`
+      select id, created_at, versi, nama, institusi, payload, fase
+      from validasi_jawaban
+      order by created_at asc
+    `;
+    return rows.map((r) => ({ ...r, fase: hitungFase(r.fase, r.created_at) }));
+  }
+  const rows = await sql<{
+    id: string;
+    created_at: string | Date;
+    versi: string | null;
+    nama: string | null;
+    institusi: string | null;
+    payload: unknown;
+  }>`
+    select id, created_at, versi, nama, institusi, payload
+    from validasi_jawaban
+    order by created_at asc
+  `;
+  return rows.map((r) => ({ ...r, fase: hitungFase(null, r.created_at) }));
 }
 
 function asObject(payload: unknown): Record<string, unknown> {

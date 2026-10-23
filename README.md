@@ -21,6 +21,7 @@ Formulir penilaian bobot: [`/kuesioner.html`](./public/kuesioner.html) (tautan *
 - **Validator** menekan **Kirim isian** (tersimpan di server setelah commit). Peserta tidak mengunduh berkas.
 - **Fasilitator** mengunduh JSON atau CSV di [`/validasi/hasil`](./src/routes/validasi.hasil.tsx). Tanpa env, server memakai token yang sama dengan panduan fasilitator. Env `VALIDASI_TOKEN` atau `VALIDASI_EXPORT_TOKEN` menimpa nilai itu bila diisi. Nilai token tidak dicetak di halaman atau log.
 - `GET /api/validasi/health` memeriksa koneksi basis data tanpa mengembalikan jawaban.
+- Jawaban sebelum 23 Oktober 2026 pukul 00:00 WIB bertanda `fase = pilot` dan tidak masuk agregasi. Baris itu tetap ada dan ikut unduhan ber-token, dengan kolom `fase`. Kiriman baru bertanda `validasi`. Migrasi `0004_validasi_fase.sql` menulis tanda itu. Build preview tidak menjalankan migrasi karena memakai database yang sama dengan produksi; tanda tersimpan saat deploy production.
 
 **Database wajib untuk workshop:** set `DATABASE_URL` (Neon/Postgres). Tanpa itu preview memakai PGLite di memori dan jawaban hilang saat server restart.
 

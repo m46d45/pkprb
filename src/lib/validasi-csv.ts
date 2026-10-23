@@ -57,13 +57,23 @@ const FLAT_FIELDS = [
   "setuju_institusi",
 ] as const;
 
-const RESERVED = new Set<string>(["matriks", "ahli", "versi", "schema", "waktu", ...FLAT_FIELDS]);
+const RESERVED = new Set<string>([
+  "matriks",
+  "ahli",
+  "versi",
+  "schema",
+  "waktu",
+  "fase",
+  ...FLAT_FIELDS,
+]);
 
 export type ValidasiExportRow = {
   id: string;
   created_at: string | Date;
   versi: string | null;
   payload: unknown;
+  /** `pilot` (uji coba, tidak masuk agregasi) atau `validasi`. */
+  fase?: string | null;
 };
 
 function asPayload(raw: unknown): Record<string, unknown> {
@@ -166,6 +176,7 @@ export function buildValidasiCsv(rows: ValidasiExportRow[]): string {
   ];
   const headers = [
     "id",
+    "fase",
     "waktu",
     "created_at",
     "versi",
@@ -182,6 +193,7 @@ export function buildValidasiCsv(rows: ValidasiExportRow[]): string {
       typeof payload.waktu === "string" && payload.waktu ? payload.waktu : iso(row.created_at);
     const values: unknown[] = [
       row.id,
+      row.fase ?? "",
       waktu,
       iso(row.created_at),
       row.versi ?? (typeof payload.versi === "string" ? payload.versi : ""),

@@ -8,12 +8,12 @@ Agregasi dibaca di `GET /api/validasi?format=agregasi` tanpa token. Respons hany
 
 Setiap sel disiplin × bahaya punya tiga keadaan yang tidak disamakan:
 
-| Tampilan | Nilai di payload | Peran dalam agregasi |
-|---|---|---|
-| Belum diisi | kunci sel tidak ada | Bukan respons. Bukan setuju, bukan tidak yakin. |
-| Setuju nilai bawaan | `setuju` | Respons. Masuk median sebagai angka nilai bawaan sel itu. |
-| Tidak yakin | `tidak_yakin` | Respons. Dihitung, tetapi tidak masuk median. |
-| 0; 0,25; 0,5; 0,75; 1 | angka | Respons. Masuk median sebagai angka itu. |
+| Tampilan              | Nilai di payload    | Peran dalam agregasi                                      |
+| --------------------- | ------------------- | --------------------------------------------------------- |
+| Belum diisi           | kunci sel tidak ada | Bukan respons. Bukan setuju, bukan tidak yakin.           |
+| Setuju nilai bawaan   | `setuju`            | Respons. Masuk median sebagai angka nilai bawaan sel itu. |
+| Tidak yakin           | `tidak_yakin`       | Respons. Dihitung, tetapi tidak masuk median.             |
+| 0; 0,25; 0,5; 0,75; 1 | angka               | Respons. Masuk median sebagai angka itu.                  |
 
 Nilai bawaan sel adalah angka pada `DEFAULT_WEIGHTS` untuk pasangan bahaya dan disiplin yang sama. Contoh: Gempabumi × Sipil = 1; Gempabumi × Arsitektur = 0,55. Angka ini tidak diubah oleh agregasi.
 
@@ -57,10 +57,16 @@ Butir pilihan (A1, A2, B1, C1, C2, D1, D2, E1, E2, F1, pernah membuka peta, keah
 
 ## Baris yang sudah tersimpan
 
-Baris lama yang sel matriksnya tidak ditulis tetap “belum diisi”. Agregasi tidak menafsirkan kekosongan lama sebagai `setuju` atau `tidak_yakin`, dan tidak menulis ulang baris tersebut.
+Baris lama yang sel matriksnya tidak ditulis tetap “belum diisi”. Agregasi tidak menafsirkan kekosongan lama sebagai `setuju` atau `tidak_yakin`, dan tidak menulis ulang isi jawaban tersebut.
+
+## Fase: pilot dan validasi
+
+Jawaban dengan `created_at` sebelum 23 Oktober 2026 pukul 00:00 WIB adalah uji coba. Migrasi `0004_validasi_fase.sql` menulis `fase = pilot` pada baris itu dan `fase = validasi` pada baris sejak batas itu yang belum bertanda. Kiriman baru disimpan sebagai `validasi`. Sebelum kolom itu ada, pembacaan memakai batas waktu yang sama. Setelah migrasi, nilai kolom yang tersimpan yang dipakai.
+
+Agregasi publik hanya memakai baris `validasi`. Baris `pilot` tidak dihapus. `n_jawaban` adalah jumlah validasi. `n_pilot` adalah jumlah yang dikecualikan, tanpa nama. Unduh JSON dan CSV ber-token tetap memuat kedua kelompok, dengan penanda `fase` pada setiap baris.
 
 ## Tampilan publik
 
-`GET /api/validasi?format=agregasi` tidak meminta token. Isinya hanya jumlah, median, status, dan tally pilihan. Nama, institusi, surel, dan catatan bebas tidak ikut. Unduh JSON atau CSV yang memuat identitas tetap memakai token fasilitator.
+`GET /api/validasi?format=agregasi` tidak meminta token. Isinya hanya jumlah, median, status, dan tally pilihan dari jawaban validasi, plus `n_pilot`. Nama, institusi, surel, dan catatan bebas tidak ikut. Unduh JSON atau CSV yang memuat identitas tetap memakai token fasilitator.
 
 Halaman proyeksi `/validasi-hasil.html` menampilkan agregat yang sama dan memuat ulang setiap 30 detik. Peta resmi tidak diubah.
