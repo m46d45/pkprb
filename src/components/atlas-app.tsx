@@ -11,6 +11,8 @@ import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
+import { V1_WEIGHTS } from "@/lib/weight-versions";
+import { DEFAULT_WEIGHTS } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -29,29 +31,64 @@ export function AtlasApp() {
   const setPanelOpen = useMapStore((s) => s.setPanelOpen);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
 
-  const scores = useMemo(
-    () =>
-      scoreProvinces({
-        hazard,
-        weights: weights[hazard],
-        strataWeights,
-        accWeights,
-        centerWeight,
-        kepakaranWeight,
-        spilloverWeight,
-      }),
-    [
-      hazard,
-      weights,
+  const scoreOpts = useMemo(
+    () => ({
       strataWeights,
       accWeights,
       centerWeight,
       kepakaranWeight,
       spilloverWeight,
-    ],
+    }),
+    [strataWeights, accWeights, centerWeight, kepakaranWeight, spilloverWeight],
+  );
+
+  const scores = useMemo(
+    () =>
+      scoreProvinces({
+        hazard,
+        weights: weights[hazard],
+        ...scoreOpts,
+      }),
+    [hazard, weights, scoreOpts],
+  );
+
+  const scoresV0 = useMemo(
+    () =>
+      scoreProvinces({
+        hazard,
+        weights: DEFAULT_WEIGHTS[hazard],
+        ...scoreOpts,
+      }),
+    [hazard, scoreOpts],
+  );
+
+  const scoresV1 = useMemo(
+    () =>
+      scoreProvinces({
+        hazard,
+        weights: V1_WEIGHTS[hazard],
+        ...scoreOpts,
+      }),
+    [hazard, scoreOpts],
+  );
+
+  const sensitive = useMemo(() => {
+    const byV1 = new Map(scoresV1.map((s) => [s.provinceId, s.quadrant]));
+    return scoresV0.filter((s) => byV1.get(s.provinceId) !== s.quadrant);
+  }, [scoresV0, scoresV1]);
+
+  const sensitiveIds = useMemo(
+    () => new Set(sensitive.map((s) => s.provinceId)),
+    [sensitive],
+  );
+
+  const sensitiveNames = sensitive.map(
+    (s) => getProvince(s.provinceId)?.name ?? s.provinceId,
   );
 
   const selected = scores.find((s) => s.provinceId === selectedId) ?? null;
+  const selectedV0 = scoresV0.find((s) => s.provinceId === selectedId) ?? null;
+  const selectedV1 = scoresV1.find((s) => s.provinceId === selectedId) ?? null;
   const gaps = [...scores].sort((a, b) => b.gap - a.gap).slice(0, 6);
   const roadmap = [...scores]
     .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
@@ -61,7 +98,7 @@ export function AtlasApp() {
   return (
     <div className="flex h-dvh max-w-[100vw] flex-col overflow-hidden bg-paper text-ink">
       <Header />
-      <ViewToolbar />
+      <ViewToolbar sensitiveNames={sensitiveNames} />
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <aside
           className={cn(
@@ -80,7 +117,7 @@ export function AtlasApp() {
 
         <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div className="absolute inset-0">
-            <MapView scores={scores} />
+            <MapView scores={scores} sensitiveIds={sensitiveIds} />
           </div>
           <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start">
             <Button
@@ -144,7 +181,14 @@ export function AtlasApp() {
             selected ? "translate-x-0" : "translate-x-full pointer-events-none",
           )}
         >
-          {selected ? <ProvincePanel score={selected} /> : null}
+          {selected && selectedV0 && selectedV1 ? (
+            <ProvincePanel
+              score={selected}
+              scoreV0={selectedV0}
+              scoreV1={selectedV1}
+              sensitive={sensitiveIds.has(selected.provinceId)}
+            />
+          ) : null}
         </div>
       </div>
 

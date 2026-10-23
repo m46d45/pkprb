@@ -1,4 +1,5 @@
-import { HAZARDS, type ViewMode } from "@/lib/types";
+import { MAP_HAZARDS, type ViewMode } from "@/lib/types";
+import { V1_META, WEIGHT_VERSION_LABEL, type WeightVersion } from "@/lib/weight-versions";
 import { HAZARD_LABEL, VIEW_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -21,11 +22,15 @@ const VIEW_GROUPS: {
   },
 ];
 
-export function ViewToolbar() {
+const VERSIONS: WeightVersion[] = ["v0", "v1"];
+
+export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
+  const weightVersion = useMapStore((s) => s.weightVersion);
   const setViewMode = useMapStore((s) => s.setViewMode);
   const setHazard = useMapStore((s) => s.setHazard);
+  const setWeightVersion = useMapStore((s) => s.setWeightVersion);
 
   return (
     <div className="flex shrink-0 flex-col gap-3 border-b border-line bg-surface px-4 py-2.5 xl:flex-row xl:items-stretch xl:gap-0">
@@ -70,7 +75,39 @@ export function ViewToolbar() {
         </div>
       </div>
 
-      {/* Pemisah vertikal (hanya layar lebar) */}
+      <div
+        className="hidden w-px shrink-0 self-stretch bg-line xl:block"
+        aria-hidden
+      />
+
+      <div className="flex min-w-0 flex-col gap-1.5 xl:px-5">
+        <p className="text-[10px] font-semibold tracking-wide text-muted uppercase">
+          Versi bobot
+        </p>
+        <div className="flex flex-wrap gap-1" role="group" aria-label="Versi bobot">
+          {VERSIONS.map((v) => (
+            <button
+              key={v}
+              type="button"
+              aria-pressed={weightVersion === v}
+              title={v === "v1" ? V1_META.label : "Nilai bawaan disiplin × bahaya"}
+              onClick={() => setWeightVersion(v)}
+              className={cn(
+                "h-8 rounded-full border px-2.5 text-[11px] transition-colors",
+                weightVersion === v
+                  ? "border-ink bg-ink text-paper"
+                  : "border-line bg-surface text-ink hover:border-muted",
+              )}
+            >
+              {WEIGHT_VERSION_LABEL[v]}
+            </button>
+          ))}
+        </div>
+        <p className="max-w-xs text-[10px] leading-snug text-muted">
+          V1: {V1_META.nValidator} validator, dibekukan {V1_META.frozenLabel}.
+        </p>
+      </div>
+
       <div
         className="hidden w-px shrink-0 self-stretch bg-line xl:block"
         aria-hidden
@@ -82,7 +119,7 @@ export function ViewToolbar() {
           Jenis bahaya
         </p>
         <div className="flex flex-wrap gap-1">
-          {HAZARDS.map((h) => (
+          {MAP_HAZARDS.map((h) => (
             <button
               key={h}
               type="button"
@@ -98,6 +135,11 @@ export function ViewToolbar() {
             </button>
           ))}
         </div>
+        {sensitiveNames.length > 0 ? (
+          <p className="text-[10px] leading-snug text-muted">
+            sensitif: {sensitiveNames.join(", ")}
+          </p>
+        ) : null}
       </div>
     </div>
   );

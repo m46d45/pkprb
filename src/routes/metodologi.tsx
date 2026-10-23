@@ -1,5 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { V1_CHANGED, V1_META } from "@/lib/weight-versions";
+import type { DisciplineId, HazardId } from "@/lib/types";
+import { DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
+
+function angkaId(n: number) {
+  return n.toLocaleString("id-ID", { maximumFractionDigits: 3 });
+}
 
 export const Route = createFileRoute("/metodologi")({
   component: MetodologiPage,
@@ -11,7 +18,7 @@ export const Route = createFileRoute("/metodologi")({
       {
         name: "description",
         content:
-          "Rumus skor, IRBI 2025 komposit dan rata-rata kabupaten per ancaman, matriks 3×3, dan sumber data PKPRB.",
+          "Rumus skor, versi bobot V0 dan V1, lima bahaya filter, IRBI 2025, dan sumber data PKPRB.",
       },
     ],
   }),
@@ -110,10 +117,10 @@ function MetodologiPage() {
             <li>
               <strong>Risiko / Bahaya</strong> — bergantung filter.{" "}
               <em>Komposit</em>: indeks resmi IRBI 2025 tingkat provinsi (buku
-              InaRISK), cap tampilan 250. <em>Gempa, tsunami, banjir, longsor,
-              likuefaksi, gunung api, karhutla</em>: rata-rata skor kabupaten
-              pada tabel ancaman yang sama, cap 40. Dua skala ini tidak
-              dibanding silang.
+              InaRISK), cap tampilan 250. <em>Gempabumi, tsunami, banjir, tanah
+              longsor, likuefaksi</em>: rata-rata skor kabupaten pada tabel
+              ancaman yang sama, cap 40. Dua skala ini tidak dibanding silang.
+              Gunung api dan karhutla tidak ada di filter.
             </li>
             <li>
               <strong>Pendidikan</strong> — 1–10 dari{" "}
@@ -162,8 +169,10 @@ function MetodologiPage() {
             <strong>rata-rata sederhana</strong> skor kabupaten yang tertulis
             di tabel itu. Bukan maksimum, bukan tertimbang penduduk. Kabupaten
             yang tidak muncul di tabel tidak masuk pembagi. Provinsi tanpa
-            satu baris pun = 0 (contoh: tsunami di DIY, gunung api di Papua).
-            Nol berarti “tidak ada baris”, bukan sertifikat aman.
+            satu baris pun = 0 (contoh: tsunami di DIY). Nol berarti “tidak ada
+            baris”, bukan sertifikat aman. Gunung api dan karhutla tetap ada di
+            tabel sumber dan di jawaban kuesioner, tetapi tidak dipakai sebagai
+            filter peta.
           </p>
           <p className="text-[15px] leading-relaxed text-muted">
             Filter juga mengubah matriks bobot disiplin, kecocokan bahaya
@@ -174,11 +183,76 @@ function MetodologiPage() {
         </section>
 
         <section className="space-y-4">
+          <h2 className="font-display text-xl">Versi bobot V0 dan V1</h2>
+          <p className="text-[15px] leading-relaxed">
+            Peta punya dua matriks disiplin × bahaya. Pilihan bawaan adalah V0.
+            Mengganti versi hanya mengubah bobot disiplin. Jenjang, akreditasi,
+            pusat, kepakaran, dan spillover tidak ikut berganti.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            <strong>V0 Bawaan</strong> adalah prior yang sudah dipakai peta
+            (berkas <code className="rounded bg-line/60 px-1 text-[13px]">src/lib/weights.ts</code>
+            ). Angka ini tidak diubah oleh jawaban validator.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            <strong>V1 {V1_META.label}</strong>. Sumbernya berkas statis{" "}
+            <code className="rounded bg-line/60 px-1 text-[13px]">{V1_META.sourceFile}</code>
+            , waktu beku {V1_META.frozenLabel} ({V1_META.frozenAt}). Peta tidak
+            membaca agregasi secara langsung.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            Aturan penggantian, sama dengan ambang agregasi kuesioner: pada
+            gempabumi, tsunami, banjir, tanah longsor, likuefaksi, dan komposit,
+            sel diganti median validator hanya bila selisih absolut median
+            terhadap nilai bawaan mencapai atau melewati {angkaId(V1_META.ambang)}.
+            Selisih di bawah ambang itu tetap V0, walaupun mediannya tidak sama
+            persis dengan bawaan. Gunung api dan karhutla tidak diganti dan tidak
+            masuk filter. Komposit mengikuti aturan yang sama; pada beku ini
+            tidak ada sel komposit yang lolos ambang.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            Dua belas sel yang berubah, semuanya usul naik:
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left text-[14px]">
+              <thead>
+                <tr className="border-b border-line text-[12px] text-muted">
+                  <th className="py-1.5 pr-3 font-medium">Bahaya</th>
+                  <th className="py-1.5 pr-3 font-medium">Disiplin</th>
+                  <th className="py-1.5 pr-3 font-medium">V0</th>
+                  <th className="py-1.5 font-medium">V1</th>
+                </tr>
+              </thead>
+              <tbody>
+                {V1_CHANGED.map((cell) => (
+                  <tr key={`${cell.hazard}-${cell.discipline}`} className="border-b border-line/70">
+                    <td className="py-1.5 pr-3">{HAZARD_LABEL[cell.hazard as HazardId]}</td>
+                    <td className="py-1.5 pr-3">
+                      {DISCIPLINE_LABEL[cell.discipline as DisciplineId]}
+                      {cell.discipline === "pwk" ? " (PWK)" : ""}
+                    </td>
+                    <td className="py-1.5 pr-3 tabular-nums">{angkaId(cell.bawaan)}</td>
+                    <td className="py-1.5 tabular-nums">{angkaId(cell.median)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[15px] leading-relaxed">
+            Label Keselarasan dihitung untuk kedua versi dengan parameter lain
+            yang sedang dipakai. Provinsi yang labelnya berbeda pada filter
+            bahaya yang aktif ditandai sensitif, di peta dan di panel provinsi.
+            Panel menampilkan label V0 dan V1 sekaligus.
+          </p>
+        </section>
+
+        <section className="space-y-4">
           <h2 className="font-display text-xl">Ringkasan rumus</h2>
           <div className="space-y-3 text-[15px] leading-relaxed">
             <p>
-              <strong>1. Skor prodi</strong> = bobot disiplin × bobot jenjang ×
-              bobot akreditasi. Hanya IABEE General Accreditation (GA) =
+              <strong>1. Skor prodi</strong> = bobot disiplin dari versi yang
+              dipilih (V0 atau V1) × bobot jenjang × bobot akreditasi. Hanya
+              IABEE General Accreditation (GA) =
               Internasional, dan tidak ditumpuk dengan peringkat BAN-PT/LAM.
               IABEE Provisional Accreditation (PA) bukan akreditasi; prodi PA
               dinilai dari peringkat BAN-PT/LAM-nya.
@@ -208,9 +282,11 @@ function MetodologiPage() {
           <ul className="list-inside list-disc space-y-1.5 text-[15px] text-muted">
             <li>38 komposit IRBI 2025 resmi; cap 250.</li>
             <li>
-              Tujuh ancaman = rata-rata kabupaten IRBI 2025 (gempa 514 kab,
-              tsunami ~271, banjir 510, longsor 455, likuefaksi 514, gunung api
-              130, karhutla 467).
+              Filter peta: komposit dan lima bahaya (gempa, tsunami, banjir,
+              longsor, likuefaksi), masing-masing rata-rata kabupaten IRBI 2025
+              (gempa 514 kab, tsunami ~271, banjir 510, longsor 455, likuefaksi
+              514). Tabel gunung api (130 kab) dan karhutla (467) tetap tersimpan,
+              tidak dipakai sebagai filter.
             </li>
             <li>204 program studi (BAN-PT / SAKTI / IABEE / laman PT).</li>
             <li>17 pusat studi bernama; kepakaran = bendera PkM.</li>
@@ -225,8 +301,10 @@ function MetodologiPage() {
           <p className="mt-1">
             Rata-rata kabupaten adalah ringkasan PKPRB, bukan angka resmi
             provinsi BNPB. Jangan mengutip “IRBI gempa Provinsi Aceh = 22,23”
-            sebagai terbitan BNPB. Matriks disiplin–bahaya adalah prior, bukan
-            regresi. Inventaris bukan direktori lengkap. Historis bukan DIBI.
+            sebagai terbitan BNPB. V0 adalah prior, bukan regresi. V1 hanya
+            mengganti sel yang lolos ambang {angkaId(V1_META.ambang)} pada lima
+            bahaya filter dan komposit. Inventaris bukan direktori lengkap.
+            Historis bukan DIBI.
           </p>
         </section>
 

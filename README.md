@@ -8,11 +8,13 @@ Bukan peta kesiapan, ketangguhan, atau kapasitas kelembagaan daerah.
 
 ## Tiga lapisan peta
 
-1. **Risiko** — komposit IRBI 2025 resmi tingkat provinsi, plus rata-rata skor kabupaten per bahaya (gempabumi, tsunami, banjir, longsor, likuefaksi, gunung api, karhutla).
+1. **Risiko** — komposit IRBI 2025 resmi tingkat provinsi, plus rata-rata skor kabupaten untuk lima bahaya filter (gempabumi, tsunami, banjir, longsor, likuefaksi). Gunung api dan karhutla tetap ada di data IRBI dan di jawaban kuesioner, tetapi tidak masuk filter peta.
 2. **IDPKI** — Indeks Dukungan Pendidikan untuk Ketangguhan Infrastruktur; warna peta memakai `ln(1 + kapasitas)`. Angka per juta penduduk tetap di panel detail.
 3. **Keselarasan 3×3** — tertil risiko × tertil IDPKI. Kuadran intervensi: kesenjangan kapasitas pendidikan.
 
 Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan), bonus IABEE, pusat studi/PkM, dan spillover antarprovinsi dapat digeser di panel kiri.
+
+Dua versi bobot disiplin × bahaya dapat dipilih di peta. V0 Bawaan adalah prior di `src/lib/weights.ts`. V1 Tervalidasi dibekukan 23 Oktober 2026 pukul 17.02 WIB dari 24 validator (`src/data/v1-beku-20261023.json`): hanya sel yang selisih mediannya mencapai 0,125 diganti median. Provinsi yang label Keselarasannya berbeda antara V0 dan V1 pada filter yang aktif ditandai sensitif.
 
 ## Validasi ahli
 
