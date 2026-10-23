@@ -177,6 +177,10 @@ function ValidasiHasilPage() {
             </a>
             . Unduh yang memuat nama tetap memakai token.
           </p>
+          <p className="text-[15px] leading-relaxed text-muted">
+            Jawaban gunung api dan karhutla tetap ada di rekap dan di unduhan.
+            Keduanya tidak dipakai pada filter peta.
+          </p>
         </section>
 
         <section className="space-y-3 rounded-lg border border-line bg-surface p-4">

@@ -2,12 +2,14 @@ import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ACC_LEVELS, DISCIPLINES, STRATA_LEVELS } from "@/lib/types";
+import { WEIGHT_VERSION_LABEL } from "@/lib/weight-versions";
 import { ACC_LABEL, DISCIPLINE_LABEL, STRATA_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export function ControlPanel() {
   const hazard = useMapStore((s) => s.hazard);
+  const weightVersion = useMapStore((s) => s.weightVersion);
   const weights = useMapStore((s) => s.weights);
   const strataWeights = useMapStore((s) => s.strataWeights);
   const accWeights = useMapStore((s) => s.accWeights);
@@ -34,7 +36,9 @@ export function ControlPanel() {
             Reset
           </Button>
         </div>
-        <p className="mb-2 text-[11px] text-muted">Prodi</p>
+        <p className="mb-2 text-[11px] text-muted">
+          Prodi · {WEIGHT_VERSION_LABEL[weightVersion]}. Reset mengembalikan versi ini.
+        </p>
         <div className="space-y-3">
           {DISCIPLINES.map((d) => (
             <WeightRow
@@ -109,6 +113,11 @@ export function ControlPanel() {
   );
 }
 
+function formatWeight(value: number) {
+  const rounded = Math.round(value * 1000) / 1000;
+  return rounded.toFixed(3).replace(/\.?0+$/, "");
+}
+
 function WeightRow({
   label,
   value,
@@ -123,13 +132,13 @@ function WeightRow({
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px]">{label}</span>
         <span className="tabular-nums text-[12px] text-muted">
-          {value.toFixed(2)}
+          {formatWeight(value)}
         </span>
       </div>
       <Slider
         min={0}
         max={1}
-        step={0.05}
+        step={0.025}
         value={[value]}
         onValueChange={([v]) => onChange(v ?? 0)}
       />

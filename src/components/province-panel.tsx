@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { centersIn, eventsIn, programsIn, prodiAccLevel, QUADRANT_LABEL, RESPONS_LABEL } from "@/lib/scoring";
 import type { ProvinceScore } from "@/lib/types";
+import { V1_META, WEIGHT_VERSION_LABEL } from "@/lib/weight-versions";
 import { ACC_LABEL, DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatInt, formatNumber } from "@/lib/utils";
@@ -11,8 +12,14 @@ import { ptAccreditation } from "@/data/universities";
 
 export function ProvincePanel({
   score,
+  scoreV0,
+  scoreV1,
+  sensitive,
 }: {
   score: ProvinceScore;
+  scoreV0: ProvinceScore;
+  scoreV1: ProvinceScore;
+  sensitive: boolean;
 }) {
   const hazard = useMapStore((s) => s.hazard);
   const weights = useMapStore((s) => s.weights);
@@ -46,6 +53,9 @@ export function ProvincePanel({
             {HAZARD_LABEL[hazard]}
           </p>
           <h2 className="font-display text-2xl leading-tight">{p.name}</h2>
+          {sensitive ? (
+            <p className="mt-1 text-[12px] font-medium tracking-wide">sensitif</p>
+          ) : null}
         </div>
         <Button
           variant="ghost"
@@ -82,6 +92,18 @@ export function ProvincePanel({
             ? RESPONS_LABEL[score.respons]
             : QUADRANT_LABEL[score.quadrant]}
         </div>
+        <section className="space-y-1 text-sm">
+          <h3 className="text-[11px] font-medium tracking-wide text-muted uppercase">
+            Keselarasan
+          </h3>
+          <p>
+            {WEIGHT_VERSION_LABEL.v0}: {QUADRANT_LABEL[scoreV0.quadrant]}
+          </p>
+          <p title={V1_META.label}>
+            {WEIGHT_VERSION_LABEL.v1}: {QUADRANT_LABEL[scoreV1.quadrant]}
+          </p>
+          {sensitive ? <p className="font-medium">sensitif</p> : null}
+        </section>
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <Stat
             label="Risiko (1–10)"

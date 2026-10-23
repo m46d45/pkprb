@@ -11,6 +11,18 @@ export const HAZARDS = [
 
 export type HazardId = (typeof HAZARDS)[number];
 
+/** Filter peta. Gunung api dan karhutla tetap di data, tidak ditampilkan. */
+export const MAP_HAZARDS = [
+  "composite",
+  "gempa",
+  "tsunami",
+  "banjir",
+  "longsor",
+  "likuefaksi",
+] as const;
+
+export type MapHazardId = (typeof MAP_HAZARDS)[number];
+
 export const DISCIPLINES = [
   "sipil",
   "arsitektur",

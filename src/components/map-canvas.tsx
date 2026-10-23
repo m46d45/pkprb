@@ -14,6 +14,7 @@ type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
 type Props = {
   geo: Geo;
   scores: ProvinceScore[];
+  sensitiveIds: ReadonlySet<string>;
 };
 
 const VB_W = 1100;
@@ -67,7 +68,7 @@ function zoomAt(t: Transform, cx: number, cy: number, nextK: number): Transform 
   return { k, x, y };
 }
 
-export function MapCanvas({ geo, scores }: Props) {
+export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const tRef = useRef<Transform>({ k: 1, x: 0, y: 0 });
@@ -165,24 +166,27 @@ export function MapCanvas({ geo, scores }: Props) {
   }
 
   function hoverLine(s: ProvinceScore) {
+    const mark = sensitiveIds.has(s.provinceId) ? " · sensitif" : "";
     if (viewMode === "keselarasan") {
-      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))} · Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))} · Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}${mark}`;
     }
     if (viewMode === "risiko") {
-      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))}`;
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))}${mark}`;
     }
     if (viewMode === "idpki") {
-      return `Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
+      return `Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}${mark}`;
     }
     if (viewMode === "historis") {
-      return s.deaths > 0
-        ? `${formatInt(s.deaths)} korban jiwa sejak 2000`
-        : "Tidak ada kejadian signifikan dalam katalog";
+      return (
+        (s.deaths > 0
+          ? `${formatInt(s.deaths)} korban jiwa sejak 2000`
+          : "Tidak ada kejadian signifikan dalam katalog") + mark
+      );
     }
     if (viewMode === "pusat") {
-      return `Pusat ${formatNumber(toScale10(Math.log(1 + s.pusat), PUSAT_CAP))}`;
+      return `Pusat ${formatNumber(toScale10(Math.log(1 + s.pusat), PUSAT_CAP))}${mark}`;
     }
-    return RESPONS_LABEL[s.respons];
+    return RESPONS_LABEL[s.respons] + mark;
   }
 
   function placeHover(e: MouseEvent, name: string, s: ProvinceScore) {
@@ -254,11 +258,17 @@ export function MapCanvas({ geo, scores }: Props) {
   }
 
   function onPointerUp(e: PointerEvent<SVGSVGElement>) {
+    const drag = dragRef.current;
+    const tap =
+      drag.down && drag.id === e.pointerId && !drag.moved && pointersRef.current.size <= 1;
     pointersRef.current.delete(e.pointerId);
     if (pointersRef.current.size < 2) pinchRef.current = null;
-    if (dragRef.current.id === e.pointerId) {
-      dragRef.current.down = false;
-    }
+    if (drag.id === e.pointerId) drag.down = false;
+    if (!tap) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const node = el instanceof Element ? el.closest("[data-province]") : null;
+    const pid = node?.getAttribute("data-province");
+    if (pid) setSelectedId(pid);
   }
 
   function zoomButton(dir: 1 | -1) {
@@ -294,29 +304,63 @@ export function MapCanvas({ geo, scores }: Props) {
             const id = nameToId.get(name);
             const s = id ? scoreMap.get(id) : undefined;
             const selected = id === selectedId;
+            const sensitive = id ? sensitiveIds.has(id) : false;
             const d = pathGen(f as Feature) ?? "";
+            const centroid = sensitive ? pathGen.centroid(f as Feature) : null;
             return (
-              <path
-                key={`${name}-${String(f.id ?? "")}`}
-                d={d}
-                style={{
-                  fill: s ? colorFor(s) : "#cfc6b8",
-                  stroke: selected ? "#1f1a16" : "#fffaf3",
-                  strokeWidth: selected ? strokeSel : stroke,
-                }}
-                className="cursor-pointer"
-                onClick={() => {
-                  if (dragRef.current.moved) return;
-                  if (id) setSelectedId(id);
-                }}
-                onMouseEnter={(e) => {
-                  if (s) placeHover(e, name, s);
-                }}
-                onMouseMove={(e) => {
-                  if (s) placeHover(e, name, s);
-                }}
-                onMouseLeave={() => setHover(null)}
-              />
+              <g key={`${name}-${String(f.id ?? "")}`}>
+                <path
+                  d={d}
+                  data-province={id ?? undefined}
+                  style={{
+                    fill: s ? colorFor(s) : "#cfc6b8",
+                    stroke: selected || sensitive ? "#1f1a16" : "#fffaf3",
+                    strokeWidth: selected ? strokeSel : sensitive ? strokeSel * 0.7 : stroke,
+                    strokeDasharray: sensitive && !selected ? `${4 / t.k} ${2.5 / t.k}` : undefined,
+                  }}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    if (dragRef.current.moved) return;
+                    if (id) setSelectedId(id);
+                  }}
+                  onMouseEnter={(e) => {
+                    if (s) placeHover(e, name, s);
+                  }}
+                  onMouseMove={(e) => {
+                    if (s) placeHover(e, name, s);
+                  }}
+                  onMouseLeave={() => setHover(null)}
+                >
+                  {sensitive ? <title>{name}: sensitif</title> : null}
+                </path>
+                {sensitive && centroid && Number.isFinite(centroid[0]) && Number.isFinite(centroid[1]) ? (
+                  <g
+                    transform={`translate(${centroid[0]} ${centroid[1]})`}
+                    data-province={id ?? undefined}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <rect
+                      x={-34 / t.k}
+                      y={-9 / t.k}
+                      width={68 / t.k}
+                      height={18 / t.k}
+                      rx={3 / t.k}
+                      fill="#fffaf3"
+                      stroke="#1f1a16"
+                      strokeWidth={0.6 / t.k}
+                    />
+                    <text
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize={10 / t.k}
+                      fontWeight={650}
+                      fill="#1f1a16"
+                    >
+                      sensitif
+                    </text>
+                  </g>
+                ) : null}
+              </g>
             );
           })}
         </g>

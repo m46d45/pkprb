@@ -1,6 +1,6 @@
 # Agregasi jawaban matriks validasi PKPRB
 
-Dokumen ini menetapkan aturan agregasi butir A dan D. Aturan ini tidak mengubah peta. `DEFAULT_WEIGHTS`, bobot jenjang, bobot akreditasi, dan fungsi skor provinsi tetap seperti yang dipakai peta.
+Dokumen ini menetapkan aturan agregasi butir A dan D. Fungsi agregasi tidak menulis ulang `DEFAULT_WEIGHTS`. Peta memakai dua versi. V0 adalah nilai bawaan. V1 adalah salinan statis yang dibekukan 23 Oktober 2026 pukul 17.02 WIB dari 24 jawaban validasi: pada lima bahaya filter (gempabumi, tsunami, banjir, longsor, likuefaksi) dan komposit, sel diganti median hanya bila selisih absolutnya mencapai ambang 0,125. Gunung api dan karhutla tidak masuk filter peta dan tidak diubah di V1. Berkas V1 ada di `src/data/v1-beku-20261023.json`. Peta tidak membaca agregasi ini secara langsung.
 
 Agregasi dibaca di `GET /api/validasi?format=agregasi` tanpa token. Respons hanya berisi hitungan, bukan nama, institusi, atau catatan bebas.
 
@@ -69,4 +69,4 @@ Agregasi publik hanya memakai baris `validasi`. Baris `pilot` tidak dihapus. `n_
 
 `GET /api/validasi?format=agregasi` tidak meminta token. Isinya hanya jumlah, median, status, dan tally pilihan dari jawaban validasi, plus `n_pilot`. Nama, institusi, surel, dan catatan bebas tidak ikut. Unduh JSON atau CSV yang memuat identitas tetap memakai token fasilitator.
 
-Halaman proyeksi `/validasi-hasil.html` menampilkan agregat yang sama dan memuat ulang setiap 30 detik. Peta resmi tidak diubah.
+Halaman proyeksi `/validasi-hasil.html` menampilkan agregat yang sama, termasuk gunung api dan karhutla, dan memuat ulang setiap 30 detik. Halaman itu tidak mengganti versi bobot di peta.
