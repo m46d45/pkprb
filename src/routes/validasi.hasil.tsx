@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 type Ringkas = {
   id: string;
   created_at: string;
+  fase: string | null;
   versi: string | null;
   nama: string | null;
   institusi: string | null;
@@ -37,6 +38,8 @@ function ValidasiHasilPage() {
   });
   const [rows, setRows] = useState<Ringkas[] | null>(null);
   const [jumlah, setJumlah] = useState<number | null>(null);
+  const [jumlahValidasi, setJumlahValidasi] = useState<number | null>(null);
+  const [jumlahPilot, setJumlahPilot] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -52,9 +55,12 @@ function ValidasiHasilPage() {
         ok?: boolean;
         error?: string;
         jumlah?: number;
+        jumlah_validasi?: number;
+        jumlah_pilot?: number;
         jawaban?: Array<{
           id: string;
           created_at: string;
+          fase?: string | null;
           versi: string | null;
           nama: string | null;
           institusi: string | null;
@@ -63,22 +69,32 @@ function ValidasiHasilPage() {
       if (!res.ok || !data.ok) {
         setRows(null);
         setJumlah(null);
+        setJumlahValidasi(null);
+        setJumlahPilot(null);
         setError(data.error ?? `Gagal (${res.status})`);
         return;
       }
       const list = (data.jawaban ?? []).map((j) => ({
         id: j.id,
         created_at: j.created_at,
+        fase: j.fase ?? null,
         versi: j.versi,
         nama: j.nama,
         institusi: j.institusi,
       }));
+      const pilot = list.filter((j) => j.fase === "pilot").length;
       setRows(list);
       setJumlah(typeof data.jumlah === "number" ? data.jumlah : list.length);
+      setJumlahPilot(typeof data.jumlah_pilot === "number" ? data.jumlah_pilot : pilot);
+      setJumlahValidasi(
+        typeof data.jumlah_validasi === "number" ? data.jumlah_validasi : list.length - pilot,
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gagal memuat");
       setRows(null);
       setJumlah(null);
+      setJumlahValidasi(null);
+      setJumlahPilot(null);
     } finally {
       setBusy(false);
     }
@@ -149,7 +165,9 @@ function ValidasiHasilPage() {
             di form; jawaban langsung tersimpan di server. Unduh JSON atau CSV dari sini.
           </p>
           <p className="text-[15px] leading-relaxed text-muted">
-            Tampilan proyeksi agregat, tanpa token:{" "}
+            Agregasi publik hanya menghitung jawaban <strong className="text-ink">validasi</strong>.
+            Baris <strong className="text-ink">pilot</strong> tetap tersimpan dan ikut terunduh,
+            dengan penanda fase. Tampilan proyeksi agregat, tanpa token:{" "}
             <a className="underline" href="/validasi-hasil.html">
               /validasi-hasil.html
             </a>
@@ -213,30 +231,54 @@ function ValidasiHasilPage() {
         </section>
 
         {jumlah != null ? (
-          <section className="space-y-3">
-            <p className="text-sm text-muted">Jumlah kiriman</p>
-            <p className="font-display text-5xl leading-none">{jumlah}</p>
+          <section className="space-y-4">
+            <div>
+              <p className="text-sm text-muted">Jawaban validasi (masuk agregasi)</p>
+              <p className="font-display text-5xl leading-none">{jumlahValidasi ?? 0}</p>
+            </div>
             <p className="text-sm text-muted">
-              {jumlah === 0 ? "Belum ada jawaban tersimpan." : "Jawaban tersimpan di server."}
+              Uji coba pilot, tidak masuk agregasi: {jumlahPilot ?? 0}. Total tersimpan: {jumlah}.
+              Keduanya ada di unduhan, pada kolom{" "}
+              <code className="rounded bg-line/60 px-1">fase</code>.
             </p>
             {rows && rows.length > 0 ? (
-              <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
-                {rows.map((r) => (
-                  <li key={r.id} className="px-4 py-3 text-[14px]">
-                    <p className="font-medium">
-                      {r.nama?.trim() || "(tanpa nama)"}
-                      {r.institusi?.trim() ? (
-                        <span className="font-normal text-muted"> · {r.institusi}</span>
-                      ) : null}
-                    </p>
-                    <p className="mt-0.5 text-[12px] text-muted">
-                      {r.created_at}
-                      {r.versi ? ` · ${r.versi}` : ""} · {r.id}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+              <div className="space-y-4">
+                {(["validasi", "pilot"] as const).map((fase) => {
+                  const bagian = rows.filter((r) =>
+                    fase === "pilot" ? r.fase === "pilot" : r.fase !== "pilot",
+                  );
+                  if (bagian.length === 0) return null;
+                  return (
+                    <div key={fase}>
+                      <h2 className="mb-2 text-sm font-medium">
+                        {fase === "pilot" ? "Pilot" : "Validasi"}
+                      </h2>
+                      <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
+                        {bagian.map((r) => (
+                          <li key={r.id} className="px-4 py-3 text-[14px]">
+                            <p className="font-medium">
+                              {r.nama?.trim() || "(tanpa nama)"}
+                              <span className="ml-2 rounded border border-line px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-wide">
+                                {r.fase === "pilot" ? "Pilot" : "Validasi"}
+                              </span>
+                              {r.institusi?.trim() ? (
+                                <span className="font-normal text-muted"> · {r.institusi}</span>
+                              ) : null}
+                            </p>
+                            <p className="mt-0.5 text-[12px] text-muted">
+                              {r.created_at}
+                              {r.versi ? ` · ${r.versi}` : ""} · {r.id}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-muted">Belum ada jawaban tersimpan.</p>
+            )}
           </section>
         ) : null}
 

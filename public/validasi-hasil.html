@@ -148,7 +148,8 @@
   </header>
   <main>
     <h1>Agregasi validasi PKPRB</h1>
-    <p class="lede">Angka agregat dari jawaban kuesioner. Nama, institusi, dan catatan tidak ditampilkan. Disegarkan setiap 30 detik.</p>
+    <p class="lede">Angka agregat dari jawaban validasi workshop. Uji coba sebelum 23 Oktober 2026 tidak dihitung. Nama, institusi, dan catatan tidak ditampilkan. Disegarkan setiap 30 detik.</p>
+    <p id="pilot" class="lede"></p>
     <p id="galat" role="status"></p>
     <section class="jumlah" aria-live="polite">
       <div>
@@ -264,6 +265,13 @@
         const data = await res.json();
         if (!res.ok || !data || data.ok !== true) throw new Error("gagal");
         document.getElementById("jumlah").textContent = String(data.n_jawaban ?? 0);
+        const nPilot = Number(data.n_pilot);
+        const pilotEl = document.getElementById("pilot");
+        if (pilotEl) {
+          pilotEl.textContent = Number.isFinite(nPilot) && nPilot > 0
+            ? "Uji coba tidak dihitung: " + nPilot
+            : "";
+        }
         const badan = HAZ.map((h) => {
           const baris = data.matriks && data.matriks[h] ? data.matriks[h] : {};
           return "<tr><th class=\"bahaya\">" + esc(h) + "</th>" + DISC.map((d) => selMatriks(baris[d])).join("") + "</tr>";

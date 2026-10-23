@@ -2,9 +2,10 @@
 /**
  * Deploy-time database migrator (node-postgres, `pg`).
  *
- * Runs during `npm run build` — on every Vercel deploy — applying pending files
+ * Runs during `npm run build`. On Vercel, only a production deploy applies files
  * in ../migrations to DATABASE_URL. Each file is applied in one transaction and
  * recorded in a `_migrations` table, so it runs once and is safe to re-run.
+ * Preview builds skip: they share the production database.
  *
  * No DATABASE_URL (local / preview builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
@@ -18,6 +19,16 @@ const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
   console.log(
     "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
+  );
+  process.exit(0);
+}
+
+// Preview Vercel memakai database yang sama dengan produksi. Jangan mengubah
+// skema dari build preview; migrasi jalan saat deploy production (setelah merge).
+const vercelEnv = process.env.VERCEL_ENV;
+if (vercelEnv && vercelEnv !== "production") {
+  console.log(
+    `[migrate] VERCEL_ENV=${vercelEnv} — skipping so a preview build does not alter the shared database.`,
   );
   process.exit(0);
 }
