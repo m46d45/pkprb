@@ -258,11 +258,17 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
   }
 
   function onPointerUp(e: PointerEvent<SVGSVGElement>) {
+    const drag = dragRef.current;
+    const tap =
+      drag.down && drag.id === e.pointerId && !drag.moved && pointersRef.current.size <= 1;
     pointersRef.current.delete(e.pointerId);
     if (pointersRef.current.size < 2) pinchRef.current = null;
-    if (dragRef.current.id === e.pointerId) {
-      dragRef.current.down = false;
-    }
+    if (drag.id === e.pointerId) drag.down = false;
+    if (!tap) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const node = el instanceof Element ? el.closest("[data-province]") : null;
+    const pid = node?.getAttribute("data-province");
+    if (pid) setSelectedId(pid);
   }
 
   function zoomButton(dir: 1 | -1) {
@@ -305,6 +311,7 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
               <g key={`${name}-${String(f.id ?? "")}`}>
                 <path
                   d={d}
+                  data-province={id ?? undefined}
                   style={{
                     fill: s ? colorFor(s) : "#cfc6b8",
                     stroke: selected || sensitive ? "#1f1a16" : "#fffaf3",
@@ -327,21 +334,31 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
                   {sensitive ? <title>{name}: sensitif</title> : null}
                 </path>
                 {sensitive && centroid && Number.isFinite(centroid[0]) && Number.isFinite(centroid[1]) ? (
-                  <text
-                    x={centroid[0]}
-                    y={centroid[1]}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={11 / t.k}
-                    fontWeight={650}
-                    fill="#1f1a16"
-                    stroke="#fffaf3"
-                    strokeWidth={3 / t.k}
-                    paintOrder="stroke"
-                    style={{ pointerEvents: "none" }}
+                  <g
+                    transform={`translate(${centroid[0]} ${centroid[1]})`}
+                    data-province={id ?? undefined}
+                    style={{ cursor: "pointer" }}
                   >
-                    sensitif
-                  </text>
+                    <rect
+                      x={-34 / t.k}
+                      y={-9 / t.k}
+                      width={68 / t.k}
+                      height={18 / t.k}
+                      rx={3 / t.k}
+                      fill="#fffaf3"
+                      stroke="#1f1a16"
+                      strokeWidth={0.6 / t.k}
+                    />
+                    <text
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize={10 / t.k}
+                      fontWeight={650}
+                      fill="#1f1a16"
+                    >
+                      sensitif
+                    </text>
+                  </g>
                 ) : null}
               </g>
             );
