@@ -144,21 +144,7 @@ export function institutionPoints(hazard: HazardId): InstitutionPoint[] {
 
   const points: InstitutionPoint[] = [];
   for (const list of byCity.values()) {
-    list.sort((a, b) => a.name.localeCompare(b.name, "id"));
-    list.forEach((point, index) => {
-      if (index === 0) {
-        points.push(point);
-        return;
-      }
-      const angle = (index - 1) * 2.399;
-      const ring = 0.045 * (1 + Math.floor((index - 1) / 6));
-      const latScale = Math.cos((point.lat * Math.PI) / 180) || 1;
-      points.push({
-        ...point,
-        lon: point.lon + (ring * Math.cos(angle)) / latScale,
-        lat: point.lat + ring * Math.sin(angle),
-      });
-    });
+    for (const point of list) points.push(point);
   }
   points.sort((a, b) => a.name.localeCompare(b.name, "id"));
   const programCounts = points.map((point) => point.programs).sort((a, b) => a - b);
