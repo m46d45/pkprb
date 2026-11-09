@@ -1,7 +1,8 @@
 import cityCoordinates from "@/data/city-coordinates.json";
 import { centers } from "@/data/centers";
 import { programs } from "@/data/programs";
-import type { HazardId } from "@/lib/types";
+import { BIVARIATE } from "@/lib/palette";
+import type { DisciplineId, HazardId } from "@/lib/types";
 
 /** Zoom peta (faktor k) saat lebar layar kira-kira satu provinsi besar. */
 export const INSTITUTION_ZOOM_K = 4;
@@ -22,7 +23,15 @@ export type InstitutionPoint = {
   lat: number;
   programs: number;
   centers: number;
+  /** 0 sedikit, 2 banyak. Sumbu datar matriks warna. */
+  programClass: 0 | 1 | 2;
+  /** 0 tanpa pusat, 1 satu pusat, 2 lebih dari satu. Sumbu tegak matriks warna. */
+  centerClass: 0 | 1 | 2;
+  color: string;
 };
+
+export const PROGRAM_TIER_LABEL = ["sedikit", "sedang", "banyak"] as const;
+export const CENTER_TIER_LABEL = ["tanpa pusat", "satu pusat", "lebih dari satu pusat"] as const;
 
 type Bucket = {
   name: string;
@@ -54,6 +63,29 @@ function majorityCity(name: string): { city: string; province: string } | null {
 
 function centerMatches(hazard: HazardId, hazards: HazardId[]) {
   return hazard === "composite" || hazards.includes(hazard);
+}
+
+function tertile(sorted: number[], value: number): 0 | 1 | 2 {
+  if (sorted.length === 0) return 1;
+  const at = (q: number) => {
+    const pos = (sorted.length - 1) * q;
+    const i = Math.floor(pos);
+    const frac = pos - i;
+    const a = sorted[i] ?? 0;
+    const b = sorted[i + 1] ?? a;
+    return a + (b - a) * frac;
+  };
+  const low = at(1 / 3);
+  const high = at(2 / 3);
+  if (value <= low) return 0;
+  if (value <= high) return 1;
+  return 2;
+}
+
+function centerClassOf(n: number): 0 | 1 | 2 {
+  if (n <= 0) return 0;
+  if (n === 1) return 1;
+  return 2;
 }
 
 /**
@@ -101,6 +133,9 @@ export function institutionPoints(hazard: HazardId): InstitutionPoint[] {
       lat: coord[1],
       programs: row.programs,
       centers: row.centerHazards.filter((hazards) => centerMatches(hazard, hazards)).length,
+      programClass: 1,
+      centerClass: 0,
+      color: BIVARIATE[0][1],
     };
     const list = byCity.get(place.city) ?? [];
     list.push(point);
@@ -126,5 +161,39 @@ export function institutionPoints(hazard: HazardId): InstitutionPoint[] {
     });
   }
   points.sort((a, b) => a.name.localeCompare(b.name, "id"));
+  const programCounts = points.map((point) => point.programs).sort((a, b) => a - b);
+  for (const point of points) {
+    point.programClass = tertile(programCounts, point.programs);
+    point.centerClass = centerClassOf(point.centers);
+    point.color = BIVARIATE[point.centerClass][point.programClass] ?? BIVARIATE[1][1];
+  }
   return points;
+}
+
+export type InstitutionProgramLine = {
+  id: string;
+  program: string;
+  strata: string;
+  discipline: DisciplineId;
+};
+
+export type InstitutionCenterLine = {
+  id: string;
+  name: string;
+  focus: string;
+};
+
+export function institutionLines(hazard: HazardId, university: string) {
+  const programLines: InstitutionProgramLine[] = programs
+    .filter((item) => item.university === university)
+    .map((item) => ({
+      id: item.id,
+      program: item.program,
+      strata: item.strata,
+      discipline: item.discipline,
+    }));
+  const centerLines: InstitutionCenterLine[] = centers
+    .filter((item) => item.university === university && centerMatches(hazard, item.hazards))
+    .map((item) => ({ id: item.id, name: item.name, focus: item.focus }));
+  return { programLines, centerLines };
 }

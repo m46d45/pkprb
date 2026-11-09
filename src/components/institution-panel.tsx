@@ -1,0 +1,117 @@
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  CENTER_TIER_LABEL,
+  INSTITUTION_DISCLAIMER,
+  PROGRAM_TIER_LABEL,
+  institutionLines,
+  type InstitutionPoint,
+} from "@/lib/institutions";
+import { BIVARIATE } from "@/lib/palette";
+import { DISCIPLINE_LABEL } from "@/lib/weights";
+import { useMapStore } from "@/lib/store";
+import { formatInt } from "@/lib/utils";
+
+export function InstitutionPanel({ point }: { point: InstitutionPoint }) {
+  const hazard = useMapStore((s) => s.hazard);
+  const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
+  const { programLines, centerLines } = institutionLines(hazard, point.name);
+  const ink = point.programClass + point.centerClass >= 3 ? "#f3eee4" : "#1f1a16";
+
+  return (
+    <aside className="flex h-full flex-col bg-surface">
+      <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-4">
+        <div>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Institusi</p>
+          <h2 className="font-display text-2xl leading-tight">{point.name}</h2>
+          <p className="mt-1 text-[12px] text-muted">
+            {point.city} · {point.province}
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Tutup"
+          onClick={() => setSelectedInstitutionId(null)}
+        >
+          <X className="size-4" />
+        </Button>
+      </header>
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
+        <div className="rounded-lg px-3 py-2 text-sm" style={{ background: point.color, color: ink }}>
+          Prodi {PROGRAM_TIER_LABEL[point.programClass]}, {CENTER_TIER_LABEL[point.centerClass]}
+        </div>
+        <dl className="grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-lg bg-paper px-3 py-2">
+            <dt className="text-[11px] text-muted">Program studi relevan</dt>
+            <dd className="font-display text-xl tabular-nums">{formatInt(point.programs)}</dd>
+          </div>
+          <div className="rounded-lg bg-paper px-3 py-2">
+            <dt className="text-[11px] text-muted">Pusat studi relevan</dt>
+            <dd className="font-display text-xl tabular-nums">{formatInt(point.centers)}</dd>
+          </div>
+        </dl>
+        <p className="text-[12px] leading-relaxed text-muted">{INSTITUTION_DISCLAIMER}</p>
+        <p className="text-[12px] leading-relaxed text-muted">
+          Warna titik memakai matriks 3×3 yang sama dengan peta. Tegak: pusat studi
+          (tanpa, satu, lebih dari satu). Datar: program studi (sedikit, sedang, banyak).
+          Ini bukan skor individu.
+        </p>
+        <div className="grid w-fit grid-cols-3 gap-px" aria-hidden>
+          {[2, 1, 0].map((row) =>
+            [0, 1, 2].map((col) => (
+              <div
+                key={`${row}-${col}`}
+                className="size-4"
+                style={{
+                  background: BIVARIATE[row][col],
+                  outline:
+                    row === point.centerClass && col === point.programClass
+                      ? "2px solid #1f1a16"
+                      : undefined,
+                  outlineOffset: "1px",
+                }}
+              />
+            )),
+          )}
+        </div>
+
+        <section>
+          <h3 className="mb-2 text-[11px] font-medium tracking-wide text-muted uppercase">
+            Program studi ({programLines.length})
+          </h3>
+          <ul className="space-y-2">
+            {programLines.length === 0 && (
+              <li className="text-sm text-muted">Tidak ada prodi pada inventaris ini.</li>
+            )}
+            {programLines.map((item) => (
+              <li key={item.id} className="border-b border-line pb-2 text-[13px]">
+                <p className="font-medium">{item.program}</p>
+                <p className="text-muted">
+                  {item.strata} · {DISCIPLINE_LABEL[item.discipline]}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h3 className="mb-2 text-[11px] font-medium tracking-wide text-muted uppercase">
+            Pusat studi ({centerLines.length})
+          </h3>
+          <ul className="space-y-2">
+            {centerLines.length === 0 && (
+              <li className="text-sm text-muted">Tidak ada pusat yang cocok dengan filter bahaya ini.</li>
+            )}
+            {centerLines.map((item) => (
+              <li key={item.id} className="border-b border-line pb-2 text-[13px]">
+                <p className="font-medium">{item.name}</p>
+                <p className="text-muted">{item.focus}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </aside>
+  );
+}

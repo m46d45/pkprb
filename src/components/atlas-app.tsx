@@ -7,6 +7,7 @@ import { ViewToolbar } from "@/components/view-toolbar";
 import { BivariateLegend } from "@/components/bivariate-legend";
 import { RampLegend } from "@/components/ramp-legend";
 import { ResponsLegend } from "@/components/respons-legend";
+import { InstitutionPanel } from "@/components/institution-panel";
 import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
@@ -28,6 +29,7 @@ export function AtlasApp() {
   const kepakaranWeight = useMapStore((s) => s.kepakaranWeight);
   const spilloverWeight = useMapStore((s) => s.spilloverWeight);
   const selectedId = useMapStore((s) => s.selectedId);
+  const selectedInstitutionId = useMapStore((s) => s.selectedInstitutionId);
   const panelOpen = useMapStore((s) => s.panelOpen);
   const setPanelOpen = useMapStore((s) => s.setPanelOpen);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
@@ -106,6 +108,9 @@ export function AtlasApp() {
   const selectedV0 = scoresV0.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV1 = scoresV1.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV2 = scoresV2.find((s) => s.provinceId === selectedId) ?? null;
+  const selectedInstitution =
+    institutions.find((point) => point.id === selectedInstitutionId) ?? null;
+  const rightOpen = Boolean(selected || selectedInstitution);
   const gaps = [...scores].sort((a, b) => b.gap - a.gap).slice(0, 6);
   const roadmap = [...scores]
     .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
@@ -195,10 +200,12 @@ export function AtlasApp() {
         <div
           className={cn(
             "absolute inset-y-0 right-0 z-20 w-[min(100%,24rem)] overflow-hidden border-l border-line bg-surface shadow-sm transition-transform duration-200",
-            selected ? "translate-x-0" : "translate-x-full pointer-events-none",
+            rightOpen ? "translate-x-0" : "translate-x-full pointer-events-none",
           )}
         >
-          {selected && selectedV0 && selectedV1 && selectedV2 ? (
+          {selectedInstitution ? (
+            <InstitutionPanel point={selectedInstitution} />
+          ) : selected && selectedV0 && selectedV1 && selectedV2 ? (
             <ProvincePanel
               score={selected}
               scoreV0={selectedV0}

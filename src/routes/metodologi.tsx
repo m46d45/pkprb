@@ -260,10 +260,13 @@ function MetodologiPage() {
           <h2 className="font-display text-xl">Titik institusi</h2>
           <p className="text-[15px] leading-relaxed">
             Titik institusi muncul bila peta diperbesar ke tingkat provinsi atau
-            lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Tiap titik
-            menyebut nama institusi, jumlah program studi pada inventaris PKPRB,
-            dan jumlah pusat studi yang cocok dengan filter bahaya. Komposit
-            menghitung semua pusat institusi itu. Titik tidak memuat skor
+            lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Di peta
+            yang tampak hanya titik, tanpa nama. Warna memakai matriks 3×3 yang
+            sama: tegak adalah kelas pusat studi (tanpa, satu, lebih dari satu),
+            datar adalah kelas program studi (sedikit, sedang, banyak, tertil
+            antarinstitusi). Klik titik membuka keterangan di panel kanan: nama,
+            jumlah program studi pada inventaris, jumlah pusat yang cocok dengan
+            filter bahaya, lalu daftar nama prodi dan pusat. Tidak ada skor
             individu atau dosen. Lapisan ini tidak mengubah skor maupun label
             Keselarasan, dan tidak bergantung pada versi bobot. Pancaran
             kapasitas tidak diubah.

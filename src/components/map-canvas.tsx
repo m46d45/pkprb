@@ -91,7 +91,9 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
   const selectedId = useMapStore((s) => s.selectedId);
+  const selectedInstitutionId = useMapStore((s) => s.selectedInstitutionId);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
+  const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
   const [t, setT] = useState<Transform>({ k: 1, x: 0, y: 0 });
   const [hover, setHover] = useState<{
     name: string;
@@ -197,7 +199,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
       name: point.name,
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
-      line: `${formatInt(point.programs)} program studi relevan · ${formatInt(point.centers)} pusat studi relevan\n${INSTITUTION_DISCLAIMER}`,
+      line: "Klik untuk keterangan",
     });
   }
 
@@ -278,7 +280,12 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     if (drag.id === e.pointerId) drag.down = false;
     if (!tap) return;
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    if (el instanceof Element && el.closest("[data-institution]")) return;
+    const institution = el instanceof Element ? el.closest("[data-institution]") : null;
+    if (institution) {
+      const id = institution.getAttribute("data-institution");
+      if (id) setSelectedInstitutionId(id);
+      return;
+    }
     const node = el instanceof Element ? el.closest("[data-province]") : null;
     const pid = node?.getAttribute("data-province");
     if (pid) setSelectedId(pid);
@@ -387,6 +394,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
                   | null;
                 const xy = project ? project([point.lon, point.lat]) : null;
                 if (!xy || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) return null;
+                const picked = point.id === selectedInstitutionId;
                 return (
                   <g
                     key={point.id}
@@ -397,26 +405,13 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
                     onMouseMove={(e) => placeInstitutionHover(e, point)}
                     onMouseLeave={() => setHover(null)}
                   >
+                    <circle r={11 / t.k} fill="transparent" />
                     <circle
-                      r={4.2 / t.k}
-                      fill="#1b4f5c"
-                      stroke="#fffaf3"
-                      strokeWidth={1.1 / t.k}
+                      r={(picked ? 6.2 : 4.6) / t.k}
+                      fill={point.color}
+                      stroke={picked ? "#1f1a16" : "#fffaf3"}
+                      strokeWidth={(picked ? 1.8 : 1) / t.k}
                     />
-                    <text
-                      x={6 / t.k}
-                      y={-1 / t.k}
-                      fontSize={8 / t.k}
-                      fill="#1f1a16"
-                      stroke="#fffaf3"
-                      strokeWidth={2.2 / t.k}
-                      paintOrder="stroke"
-                    >
-                      <tspan x={6 / t.k}>{point.name}</tspan>
-                      <tspan x={6 / t.k} dy={9.5 / t.k}>
-                        {formatInt(point.programs)} prodi · {formatInt(point.centers)} pusat
-                      </tspan>
-                    </text>
                   </g>
                 );
               })
