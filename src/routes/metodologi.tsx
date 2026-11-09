@@ -2,13 +2,55 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { programs } from "@/data/programs";
 import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K } from "@/lib/institutions";
-import { V1_CHANGED, V1_META, V2_META } from "@/lib/weight-versions";
-import type { DisciplineId, HazardId } from "@/lib/types";
-import { DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
+import { getProvince, QUADRANT_LABEL, scoreProvinces } from "@/lib/scoring";
+import { MAP_HAZARDS, type HazardId, type DisciplineId } from "@/lib/types";
+import { V1_CHANGED, V1_META, V1_WEIGHTS, V2_META, V2_WEIGHTS } from "@/lib/weight-versions";
+import {
+  DEFAULT_ACC,
+  DEFAULT_CENTER_WEIGHT,
+  DEFAULT_KEPAKARAN_WEIGHT,
+  DEFAULT_SPILLOVER_WEIGHT,
+  DEFAULT_STRATA,
+  DISCIPLINE_LABEL,
+  HAZARD_LABEL,
+} from "@/lib/weights";
 
 function angkaId(n: number) {
   return n.toLocaleString("id-ID", { maximumFractionDigits: 3 });
 }
+
+const SENSITIVE_OPTS = {
+  strataWeights: DEFAULT_STRATA,
+  accWeights: DEFAULT_ACC,
+  centerWeight: DEFAULT_CENTER_WEIGHT,
+  kepakaranWeight: DEFAULT_KEPAKARAN_WEIGHT,
+  spilloverWeight: DEFAULT_SPILLOVER_WEIGHT,
+};
+
+/** Sensitif = label V1 berbeda dari V2. V0 tidak ikut. */
+const SENSITIVE = MAP_HAZARDS.map((hazard) => {
+  const v1 = scoreProvinces({ hazard, weights: V1_WEIGHTS[hazard], ...SENSITIVE_OPTS });
+  const v2 = new Map(
+    scoreProvinces({ hazard, weights: V2_WEIGHTS[hazard], ...SENSITIVE_OPTS }).map((row) => [
+      row.provinceId,
+      row.quadrant,
+    ]),
+  );
+  return {
+    hazard,
+    rows: v1.flatMap((row) => {
+      const next = v2.get(row.provinceId);
+      if (!next || next === row.quadrant) return [];
+      return [
+        {
+          name: getProvince(row.provinceId)?.name ?? row.provinceId,
+          v1: row.quadrant,
+          v2: next,
+        },
+      ];
+    }),
+  };
+});
 
 export const Route = createFileRoute("/metodologi")({
   component: MetodologiPage,
@@ -75,7 +117,7 @@ function MetodologiPage() {
             <div>
               <p className="font-medium">Template data</p>
               <p className="mt-0.5 text-sm text-muted">
-                204 prodi, 17 pusat, IRBI 2025.
+                {programs.length.toLocaleString("id-ID")} prodi, 17 pusat, IRBI 2025.
               </p>
               <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal">
                 <Download className="size-3.5" /> Unduh .xlsx
@@ -250,12 +292,31 @@ function MetodologiPage() {
             </table>
           </div>
           <p className="text-[15px] leading-relaxed">
-            Label Keselarasan dihitung untuk V0, V1, dan V2 dengan parameter lain
-            yang sedang dipakai. Pada filter bahaya yang aktif, provinsi
-            ditandai sensitif bila label versi yang sedang dipakai berbeda dari
-            inventori prodi sebelumnya, atau bila label V0, V1, dan V2 tidak
-            sama. Panel menampilkan ketiga label sekaligus.
+            Label Keselarasan dihitung untuk V0, V1, dan V2. V0 tetap dapat
+            dipilih di peta, tetapi tidak dipakai untuk menentukan provinsi
+            sensitif. Panel menampilkan ketiga label sekaligus.
           </p>
+          <p className="text-[15px] leading-relaxed">
+            Provinsi yang labelnya berubah antara V1 (tervalidasi) dan V2 (penyesuaian peneliti).
+          </p>
+          <div className="space-y-3">
+            {SENSITIVE.map((group) => (
+              <div key={group.hazard}>
+                <p className="text-[13px] font-medium">{HAZARD_LABEL[group.hazard]}</p>
+                {group.rows.length === 0 ? (
+                  <p className="text-[14px] text-muted">Tidak ada.</p>
+                ) : (
+                  <ul className="mt-1 space-y-1 text-[14px]">
+                    {group.rows.map((row) => (
+                      <li key={row.name}>
+                        {row.name}: {QUADRANT_LABEL[row.v1]} → {QUADRANT_LABEL[row.v2]}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="space-y-4">

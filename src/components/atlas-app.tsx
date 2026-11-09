@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
 import { institutionPoints, placeKey } from "@/lib/institutions";
-import baselineLabels from "@/data/label-sebelum-inventori.json";
 import { V1_WEIGHTS, V2_WEIGHTS } from "@/lib/weight-versions";
 import { DEFAULT_WEIGHTS } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
@@ -23,7 +22,6 @@ import { cn } from "@/lib/utils";
 export function AtlasApp() {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
-  const weightVersion = useMapStore((s) => s.weightVersion);
   const weights = useMapStore((s) => s.weights);
   const strataWeights = useMapStore((s) => s.strataWeights);
   const accWeights = useMapStore((s) => s.accWeights);
@@ -89,32 +87,6 @@ export function AtlasApp() {
 
   const institutions = useMemo(() => institutionPoints(hazard), [hazard]);
 
-  const sensitive = useMemo(() => {
-    const byV0 = new Map(scoresV0.map((s) => [s.provinceId, s.quadrant]));
-    const byV1 = new Map(scoresV1.map((s) => [s.provinceId, s.quadrant]));
-    const byV2 = new Map(scoresV2.map((s) => [s.provinceId, s.quadrant]));
-    const active = weightVersion === "v1" ? byV1 : weightVersion === "v2" ? byV2 : byV0;
-    const previous =
-      (baselineLabels as Record<string, Record<string, Record<string, string>>>)[hazard]?.[
-        weightVersion
-      ] ?? {};
-    return scoresV0.filter((s) => {
-      const id = s.provinceId;
-      const versionsDiffer = byV0.get(id) !== byV1.get(id) || byV0.get(id) !== byV2.get(id);
-      const moved = previous[id] !== undefined && previous[id] !== active.get(id);
-      return versionsDiffer || moved;
-    });
-  }, [scoresV0, scoresV1, scoresV2, hazard, weightVersion]);
-
-  const sensitiveIds = useMemo(
-    () => new Set(sensitive.map((s) => s.provinceId)),
-    [sensitive],
-  );
-
-  const sensitiveNames = sensitive.map(
-    (s) => getProvince(s.provinceId)?.name ?? s.provinceId,
-  );
-
   const selected = scores.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV0 = scoresV0.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV1 = scoresV1.find((s) => s.provinceId === selectedId) ?? null;
@@ -132,7 +104,7 @@ export function AtlasApp() {
   return (
     <div className="flex h-dvh max-w-[100vw] flex-col overflow-hidden bg-paper text-ink">
       <Header />
-      <ViewToolbar sensitiveNames={sensitiveNames} />
+      <ViewToolbar />
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <aside
           className={cn(
@@ -151,7 +123,7 @@ export function AtlasApp() {
 
         <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div className="absolute inset-0">
-            <MapView scores={scores} sensitiveIds={sensitiveIds} institutions={institutions} />
+            <MapView scores={scores} institutions={institutions} />
           </div>
           <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start">
             <Button
@@ -223,7 +195,6 @@ export function AtlasApp() {
               scoreV0={selectedV0}
               scoreV1={selectedV1}
               scoreV2={selectedV2}
-              sensitive={sensitiveIds.has(selected.provinceId)}
             />
           ) : null}
         </div>
