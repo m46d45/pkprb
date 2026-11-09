@@ -30,7 +30,7 @@ function versionTitle(version: WeightVersion) {
   return "Nilai bawaan disiplin × bahaya";
 }
 
-export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
+export function ViewToolbar() {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
   const weightVersion = useMapStore((s) => s.weightVersion);
@@ -142,11 +142,6 @@ export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
             </button>
           ))}
         </div>
-        {sensitiveNames.length > 0 ? (
-          <p className="text-[10px] leading-snug text-muted">
-            sensitif: {sensitiveNames.join(", ")}
-          </p>
-        ) : null}
       </div>
     </div>
   );

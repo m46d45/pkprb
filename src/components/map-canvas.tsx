@@ -21,7 +21,6 @@ type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
 type Props = {
   geo: Geo;
   scores: ProvinceScore[];
-  sensitiveIds: ReadonlySet<string>;
   institutions: InstitutionPoint[];
 };
 
@@ -76,7 +75,7 @@ function zoomAt(t: Transform, cx: number, cy: number, nextK: number): Transform 
   return { k, x, y };
 }
 
-export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
+export function MapCanvas({ geo, scores, institutions }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const tRef = useRef<Transform>({ k: 1, x: 0, y: 0 });
@@ -176,27 +175,24 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
   }
 
   function hoverLine(s: ProvinceScore) {
-    const mark = sensitiveIds.has(s.provinceId) ? " · sensitif" : "";
     if (viewMode === "keselarasan") {
-      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))} · Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}${mark}`;
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))} · Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
     }
     if (viewMode === "risiko") {
-      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))}${mark}`;
+      return `Risiko ${formatNumber(toScale10(s.risk, riskCap(hazard)))}`;
     }
     if (viewMode === "idpki") {
-      return `Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}${mark}`;
+      return `Pendidikan ${formatNumber(toScale10(s.idpki, EDU_CAP))}`;
     }
     if (viewMode === "historis") {
-      return (
-        (s.deaths > 0
-          ? `${formatInt(s.deaths)} korban jiwa sejak 2000`
-          : "Tidak ada kejadian signifikan dalam katalog") + mark
-      );
+      return s.deaths > 0
+        ? `${formatInt(s.deaths)} korban jiwa sejak 2000`
+        : "Tidak ada kejadian signifikan dalam katalog";
     }
     if (viewMode === "pusat") {
-      return `Pusat ${formatNumber(toScale10(Math.log(1 + s.pusat), PUSAT_CAP))}${mark}`;
+      return `Pusat ${formatNumber(toScale10(Math.log(1 + s.pusat), PUSAT_CAP))}`;
     }
-    return RESPONS_LABEL[s.respons] + mark;
+    return RESPONS_LABEL[s.respons];
   }
 
   function placeInstitutionHover(
@@ -382,9 +378,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
             const id = nameToId.get(name);
             const s = id ? scoreMap.get(id) : undefined;
             const selected = id === selectedId;
-            const sensitive = id ? sensitiveIds.has(id) : false;
             const d = pathGen(f as Feature) ?? "";
-            const centroid = sensitive ? pathGen.centroid(f as Feature) : null;
             return (
               <g key={`${name}-${String(f.id ?? "")}`}>
                 <path
@@ -392,9 +386,8 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
                   data-province={id ?? undefined}
                   style={{
                     fill: s ? colorFor(s) : "#cfc6b8",
-                    stroke: selected || sensitive ? "#1f1a16" : "#fffaf3",
-                    strokeWidth: selected ? strokeSel : sensitive ? strokeSel * 0.7 : stroke,
-                    strokeDasharray: sensitive && !selected ? `${4 / t.k} ${2.5 / t.k}` : undefined,
+                    stroke: selected ? "#1f1a16" : "#fffaf3",
+                    strokeWidth: selected ? strokeSel : stroke,
                   }}
                   className="cursor-pointer"
                   onClick={() => {
@@ -413,35 +406,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
                     setHover(null);
                   }}
                 >
-                  {sensitive ? <title>{name}: sensitif</title> : null}
                 </path>
-                {sensitive && centroid && Number.isFinite(centroid[0]) && Number.isFinite(centroid[1]) ? (
-                  <g
-                    transform={`translate(${centroid[0]} ${centroid[1]})`}
-                    data-province={id ?? undefined}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <rect
-                      x={-34 / t.k}
-                      y={-9 / t.k}
-                      width={68 / t.k}
-                      height={18 / t.k}
-                      rx={3 / t.k}
-                      fill="#fffaf3"
-                      stroke="#1f1a16"
-                      strokeWidth={0.6 / t.k}
-                    />
-                    <text
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize={10 / t.k}
-                      fontWeight={650}
-                      fill="#1f1a16"
-                    >
-                      sensitif
-                    </text>
-                  </g>
-                ) : null}
               </g>
             );
           })}

@@ -73,4 +73,26 @@ test("setiap kota inventaris punya koordinat dan lapisan tidak memuat skor", () 
     /Program studi relevan/,
   );
   assert.doesNotMatch(canvas, /dosen/);
+  assert.doesNotMatch(canvas, /sensitif/i);
+  assert.doesNotMatch(
+    readFileSync(new URL("../src/components/view-toolbar.tsx", import.meta.url), "utf8"),
+    /sensitif/i,
+  );
+  assert.doesNotMatch(
+    readFileSync(new URL("../src/components/atlas-app.tsx", import.meta.url), "utf8"),
+    /sensitif/i,
+  );
+  assert.doesNotMatch(
+    readFileSync(new URL("../src/components/province-panel.tsx", import.meta.url), "utf8"),
+    /sensitif/i,
+  );
+  const metodologi = readFileSync(
+    new URL("../src/routes/metodologi.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(metodologi, /204 prodi/);
+  assert.match(
+    metodologi,
+    /Provinsi yang labelnya berubah antara V1 \(tervalidasi\) dan V2 \(penyesuaian peneliti\)\./,
+  );
 });

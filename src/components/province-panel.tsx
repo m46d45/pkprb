@@ -15,13 +15,11 @@ export function ProvincePanel({
   scoreV0,
   scoreV1,
   scoreV2,
-  sensitive,
 }: {
   score: ProvinceScore;
   scoreV0: ProvinceScore;
   scoreV1: ProvinceScore;
   scoreV2: ProvinceScore;
-  sensitive: boolean;
 }) {
   const hazard = useMapStore((s) => s.hazard);
   const weights = useMapStore((s) => s.weights);
@@ -55,9 +53,6 @@ export function ProvincePanel({
             {HAZARD_LABEL[hazard]}
           </p>
           <h2 className="font-display text-2xl leading-tight">{p.name}</h2>
-          {sensitive ? (
-            <p className="mt-1 text-[12px] font-medium tracking-wide">sensitif</p>
-          ) : null}
         </div>
         <Button
           variant="ghost"
@@ -107,7 +102,6 @@ export function ProvincePanel({
           <p title={V2_META.note}>
             {WEIGHT_VERSION_LABEL.v2}: {QUADRANT_LABEL[scoreV2.quadrant]}
           </p>
-          {sensitive ? <p className="font-medium">sensitif</p> : null}
         </section>
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <Stat
