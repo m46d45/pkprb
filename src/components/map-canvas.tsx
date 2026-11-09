@@ -4,6 +4,7 @@ import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
 import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K, type InstitutionPoint } from "@/lib/institutions";
+import { spreadPositions } from "@/lib/spread-points.mjs";
 import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
@@ -203,6 +204,47 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     });
   }
 
+  function renderInstitutions() {
+    const project = pathGen.projection() as
+      | ((coord: [number, number]) => [number, number] | null)
+      | null;
+    const raw: { point: InstitutionPoint; x: number; y: number }[] = [];
+    for (const point of institutions) {
+      const xy = project ? project([point.lon, point.lat]) : null;
+      if (!xy || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) continue;
+      raw.push({ point, x: xy[0], y: xy[1] });
+    }
+    // Jarak layar tetap, supaya di zoom provinsi titik se-kota tidak saling tutup.
+    const spread = spreadPositions(raw, 26 / t.k);
+    const ordered = [...spread].sort((a, b) => {
+      const ap = a.point.id === selectedInstitutionId ? 1 : 0;
+      const bp = b.point.id === selectedInstitutionId ? 1 : 0;
+      return ap - bp;
+    });
+    return ordered.map(({ point, x, y }) => {
+      const picked = point.id === selectedInstitutionId;
+      return (
+        <g
+          key={point.id}
+          data-institution={point.id}
+          transform={`translate(${x} ${y})`}
+          className="cursor-pointer"
+          onMouseEnter={(e) => placeInstitutionHover(e, point)}
+          onMouseMove={(e) => placeInstitutionHover(e, point)}
+          onMouseLeave={() => setHover(null)}
+        >
+          <circle r={11 / t.k} fill="transparent" />
+          <circle
+            r={(picked ? 6.2 : 4.6) / t.k}
+            fill={point.color}
+            stroke={picked ? "#1f1a16" : "#fffaf3"}
+            strokeWidth={(picked ? 1.8 : 1) / t.k}
+          />
+        </g>
+      );
+    });
+  }
+
   function placeHover(e: MouseEvent, name: string, s: ProvinceScore) {
     const r = wrapRef.current?.getBoundingClientRect();
     setHover({
@@ -387,35 +429,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
               </g>
             );
           })}
-          {t.k >= INSTITUTION_ZOOM_K
-            ? institutions.map((point) => {
-                const project = pathGen.projection() as
-                  | ((coord: [number, number]) => [number, number] | null)
-                  | null;
-                const xy = project ? project([point.lon, point.lat]) : null;
-                if (!xy || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) return null;
-                const picked = point.id === selectedInstitutionId;
-                return (
-                  <g
-                    key={point.id}
-                    data-institution={point.id}
-                    transform={`translate(${xy[0]} ${xy[1]})`}
-                    className="cursor-pointer"
-                    onMouseEnter={(e) => placeInstitutionHover(e, point)}
-                    onMouseMove={(e) => placeInstitutionHover(e, point)}
-                    onMouseLeave={() => setHover(null)}
-                  >
-                    <circle r={11 / t.k} fill="transparent" />
-                    <circle
-                      r={(picked ? 6.2 : 4.6) / t.k}
-                      fill={point.color}
-                      stroke={picked ? "#1f1a16" : "#fffaf3"}
-                      strokeWidth={(picked ? 1.8 : 1) / t.k}
-                    />
-                  </g>
-                );
-              })
-            : null}
+          {t.k >= INSTITUTION_ZOOM_K ? renderInstitutions() : null}
         </g>
         <g>
           <rect
