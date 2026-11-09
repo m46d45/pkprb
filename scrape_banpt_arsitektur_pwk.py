@@ -11,12 +11,16 @@ Tidak mengubah situs PKPRB.
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import urllib.request
 from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
+
+from scrape_sakti import COLUMNS as SAKTI_COLUMNS
+from scrape_sakti import akhir_key, write_xlsx
 
 JSON_URL = "https://www.banpt.or.id/direktori/model/dir_prodi/get_hasil_pencariannew.php"
 PAGE_URL = "https://www.banpt.or.id/direktori/prodi/pencarian_prodi.php"
@@ -173,11 +177,56 @@ def write(path: Path, rows: list[dict[str, str]]) -> None:
             "Dikecualikan: Teknologi Rekayasa Arsitektur Perkapalan dan Teknik Infrastruktur Sipil Dan Perancangan Arsitektur.",
         ]
     )
-    note.append(["Sumber baris lama", "SAKTI LAM Teknik, 150 halaman pertama database-akreditasi."])
+    note.append(
+        [
+            "Sumber SAKTI",
+            "https://sakti.lamteknik.or.id/database-akreditasi halaman 1 sampai 277. "
+            "Jika prodi yang sama ada di SAKTI dan BAN-PT, baris SAKTI yang dipertahankan.",
+        ]
+    )
     book.save(path)
 
 
+def gabungkan_sakti(path: Path) -> None:
+    """Tambahkan sisa halaman SAKTI. Baris SAKTI mengalahkan BAN-PT pada kunci yang sama."""
+    existing = load_existing(INVENTORI)
+    tambahan = load_existing(path)
+    for row in tambahan:
+        row["Sumber"] = "SAKTI"
+    sakti = [row for row in existing if row["Sumber"] == "SAKTI"] + tambahan
+    banpt = [row for row in existing if row["Sumber"] == "BAN-PT"]
+    terbaik: dict[tuple[str, str, str], dict[str, str]] = {}
+    for row in sakti:
+        key = kunci(row)
+        current = terbaik.get(key)
+        if current is None or akhir_key(row["Berakhir_Pada"]) > akhir_key(current["Berakhir_Pada"]):
+            terbaik[key] = row
+    tertahan: list[dict[str, str]] = []
+    diganti = 0
+    for row in banpt:
+        if kunci(row) in terbaik:
+            diganti += 1
+            continue
+        tertahan.append(row)
+    combined = list(terbaik.values()) + tertahan
+    kosong = [row for row in combined if not row["Disiplin_PKPRB"]]
+    if kosong:
+        raise SystemExit(f"{len(kosong)} baris tanpa Disiplin_PKPRB")
+    combined.sort(key=lambda row: (row["Disiplin_PKPRB"], row["Institusi"], row["Prodi"], row["Jenjang"]))
+    write(INVENTORI, combined)
+    sakti_bersih = sorted(terbaik.values(), key=lambda row: (row["Disiplin_PKPRB"], row["Institusi"], row["Prodi"], row["Jenjang"]))
+    write_xlsx(Path("Inventori_Prodi_SAKTI.xlsx"), [{column: row[column] for column in SAKTI_COLUMNS} for row in sakti_bersih])
+    print(f"sakti {len(terbaik)} banpt {len(tertahan)} diganti karena sama dengan SAKTI {diganti}")
+    print(f"total {len(combined)} -> {INVENTORI}")
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--gabung-sakti", type=Path, default=None)
+    args, _unknown = parser.parse_known_args()
+    if args.gabung_sakti:
+        gabungkan_sakti(args.gabung_sakti)
+        return
     existing = load_existing(INVENTORI)
     known = {kunci(row) for row in existing}
     added = {"Arsitektur": 0, "PWK": 0}

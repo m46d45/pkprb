@@ -124,10 +124,10 @@ def rows_from_html(html: str) -> list[dict[str, str]]:
     return found
 
 
-def scrape(max_pages: int, pause: float = 0.35) -> list[dict[str, str]]:
+def scrape(max_pages: int, pause: float = 0.35, start_page: int = 1) -> list[dict[str, str]]:
     collected: list[dict[str, str]] = []
     empty = 0
-    for page in range(1, max_pages + 1):
+    for page in range(start_page, max_pages + 1):
         html = fetch_page(page)
         batch = rows_from_html(html)
         collected.extend(batch)
@@ -187,10 +187,18 @@ def report(rows: list[dict[str, str]]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-pages", type=int, default=50)
+    parser.add_argument("--start-page", type=int, default=1)
+    parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
-    raw = scrape(args.max_pages)
-    write_xlsx(OUT_SAKTI, raw)
+    raw = scrape(args.max_pages, start_page=args.start_page)
     clean = dedupe(raw)
+    if args.output:
+        write_xlsx(args.output, clean)
+        print(f"mentah relevan {len(raw)} -> {args.output}")
+        print(f"setelah buang duplikat {len(clean)}")
+        report(clean)
+        return
+    write_xlsx(OUT_SAKTI, raw)
     write_xlsx(OUT_LENGKAP, clean)
     print(f"mentah relevan {len(raw)} -> {OUT_SAKTI}")
     print(f"setelah buang duplikat {len(clean)} -> {OUT_LENGKAP}")
