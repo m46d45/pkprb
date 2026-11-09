@@ -13,7 +13,7 @@ import {
 import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
-import { cn, formatInt, formatNumber } from "@/lib/utils";
+import { formatInt, formatNumber } from "@/lib/utils";
 import { RESPONS_LABEL } from "@/lib/scoring";
 
 type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
@@ -106,7 +106,6 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     x: number;
     y: number;
     line: string;
-    scroll?: boolean;
   } | null>(null);
 
   const nameToId = useMemo(
@@ -213,7 +212,6 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
       line: only ? body.slice(body.indexOf("\n") + 1) : body,
-      scroll: true,
     });
   }
 
@@ -468,13 +466,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
       </svg>
       {hover ? (
         <div
-          className={cn(
-            "absolute z-10 max-h-[min(22rem,70vh)] max-w-sm overflow-y-auto whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper",
-            hover.scroll ? "" : "pointer-events-none",
-          )}
-          onMouseLeave={() => {
-            if (hover.scroll) setHover(null);
-          }}
+          className="pointer-events-none absolute z-10 max-w-xs whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper"
           style={{
             left: Math.min(
               hover.x + 12,

@@ -182,20 +182,19 @@ export function programLineLabel(item: InstitutionProgramLine) {
   return `${label} · ${item.strata} · ${item.program}`;
 }
 
-/** Teks tooltip dari inventori prodi dan pusat yang sama dengan perhitungan skor. */
+/** Ringkas untuk hover. Daftar prodi ada di panel kanan, bukan di sini. */
 export function institutionTooltipText(hazard: HazardId, members: InstitutionPoint[]) {
-  const blocks = [...members]
+  return [...members]
     .sort((a, b) => a.name.localeCompare(b.name, "id"))
     .map((member) => {
       const { programLines, centerLines } = institutionLines(hazard, member.name);
       const pusat = centerLines.length > 0 ? "ada pusat studi" : "tidak ada pusat studi";
       if (programLines.length === 0) {
-        return `${member.name}\ndata prodi belum lengkap\n${pusat}`;
+        return `${member.name}\ndata prodi belum lengkap · ${pusat}`;
       }
-      const daftar = programLines.map((item) => programLineLabel(item)).join("\n");
-      return `${member.name}\n${programLines.length} program studi · ${pusat}\n${daftar}`;
-    });
-  return `${blocks.join("\n\n")}\n${INSTITUTION_DISCLAIMER}`;
+      return `${member.name}\n${programLines.length} program studi · ${pusat}`;
+    })
+    .join("\n\n");
 }
 
 export function institutionLines(hazard: HazardId, university: string) {
