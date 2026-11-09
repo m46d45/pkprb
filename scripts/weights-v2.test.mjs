@@ -54,6 +54,14 @@ test("setiap kota inventaris punya koordinat dan lapisan tidak memuat skor", () 
     assert.ok(coords[city], `koordinat hilang: ${city}`);
     assert.equal(coords[city].length, 2);
   }
+  const seen = new Map();
+  for (const city of cities) {
+    const key = coords[city].join(",");
+    const other = seen.get(key);
+    assert.equal(other, undefined, `${city} menumpuk di koordinat ${other}`);
+    seen.set(key, city);
+  }
+  assert.deepEqual(coords["Kota Bandung"], [107.619, -6.917]);
   const layer = readFileSync(new URL("../src/lib/institutions.ts", import.meta.url), "utf8");
   assert.match(layer, /indicative only — not an individual assessment/);
   assert.doesNotMatch(layer, /weightVersion|idpki|skor/);

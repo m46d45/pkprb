@@ -1047,8 +1047,10 @@ def pin(city: str, province: str, coords: dict) -> tuple[float, float]:
     found = find_place(city)
     if found and found[0] == city:
         return found[2], found[3]
-    lon, lat = CAPITAL[province]
-    return lon, lat
+    # Jangan menempelkan kota yang tidak dikenali ke ibu kota provinsi.
+    # Itu menumpuk Bekasi, Bogor, dan Cianjur di atas Kota Bandung, sehingga
+    # klik mengenai daftar lain dan ITB tidak muncul.
+    raise KeyError(f"koordinat kota belum ada: {city} ({province})")
 
 
 def choose_name(spellings: Counter[str], known: set[str]) -> str:

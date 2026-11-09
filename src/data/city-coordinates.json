@@ -280,8 +280,8 @@
     -6.32
   ],
   "Kabupaten Minahasa Utara": [
-    124.842,
-    1.474
+    125.0,
+    1.53
   ],
   "Kabupaten Sumbawa": [
     117.42,
@@ -296,8 +296,8 @@
     -1.61
   ],
   "Kabupaten Bireuen": [
-    95.322,
-    5.548
+    96.7,
+    5.2
   ],
   "Kabupaten Tulungagung": [
     111.9,
@@ -332,8 +332,8 @@
     -3.93
   ],
   "Kabupaten Probolinggo": [
-    112.752,
-    -7.257
+    113.42,
+    -7.85
   ],
   "Kabupaten Bulungan": [
     117.37,
@@ -352,8 +352,8 @@
     1.04
   ],
   "Kabupaten Bangli": [
-    115.217,
-    -8.67
+    115.35,
+    -8.28
   ],
   "Jakarta Pusat": [
     106.83,
@@ -364,8 +364,8 @@
     -8.62
   ],
   "Kabupaten Bekasi": [
-    107.619,
-    -6.917
+    107.17,
+    -6.25
   ],
   "Kabupaten Pohuwato": [
     121.65,
@@ -376,28 +376,28 @@
     3.19
   ],
   "Kabupaten Wonosobo": [
-    110.42,
-    -6.966
+    109.9,
+    -7.36
   ],
   "Kabupaten Kendal": [
-    110.42,
-    -6.966
+    110.19,
+    -6.92
   ],
   "Kabupaten Subang": [
     107.76,
     -6.57
   ],
   "Kabupaten Demak": [
-    110.42,
-    -6.966
+    110.64,
+    -6.89
   ],
   "Kabupaten Banggai": [
     122.79,
     -0.94
   ],
   "Kota Bogor": [
-    107.619,
-    -6.917
+    106.806,
+    -6.597
   ],
   "Kabupaten Gresik": [
     112.55,
@@ -432,8 +432,8 @@
     -4.13
   ],
   "Kabupaten Lombok Timur": [
-    116.117,
-    -8.583
+    116.53,
+    -8.65
   ],
   "Kota Tangerang": [
     106.63,
@@ -500,12 +500,12 @@
     -5.12
   ],
   "Kabupaten Bandung": [
-    107.619,
-    -6.917
+    107.52,
+    -7.02
   ],
   "Kabupaten Simalungun": [
-    98.673,
-    3.595
+    98.87,
+    2.96
   ],
   "Kabupaten Poso": [
     120.75,
@@ -524,16 +524,16 @@
     3.55
   ],
   "Kabupaten Kotamobagu": [
-    124.842,
-    1.474
+    124.32,
+    0.73
   ],
   "Kabupaten Kediri": [
-    112.752,
-    -7.257
+    112.17,
+    -7.82
   ],
   "Kabupaten Muna Barat": [
-    122.515,
-    -3.998
+    122.48,
+    -4.83
   ],
   "Kota Pagar Alam": [
     103.25,
@@ -544,8 +544,8 @@
     -0.38
   ],
   "Kabupaten Indragiri Hilir": [
-    101.447,
-    0.507
+    103.15,
+    -0.32
   ],
   "Kabupaten Nias": [
     97.62,
@@ -556,8 +556,8 @@
     -3.25
   ],
   "Kabupaten Bandung Barat": [
-    107.619,
-    -6.917
+    107.45,
+    -6.84
   ],
   "Kabupaten Banyuwangi": [
     114.37,
@@ -580,8 +580,8 @@
     0.82
   ],
   "Kabupaten Rejang Lebong": [
-    102.265,
-    -3.792
+    102.64,
+    -3.45
   ],
   "Kabupaten Kutai Barat": [
     115.75,
@@ -596,8 +596,8 @@
     -4.12
   ],
   "Kabupaten Mojokerto": [
-    112.752,
-    -7.257
+    112.43,
+    -7.47
   ],
   "Kota Dumai": [
     101.45,
@@ -612,8 +612,8 @@
     -6.12
   ],
   "Kabupaten Aceh Besar": [
-    95.322,
-    5.548
+    95.48,
+    5.45
   ],
   "Kabupaten Sumenep": [
     113.87,
@@ -624,8 +624,8 @@
     -2.68
   ],
   "Kabupaten Asahan": [
-    98.673,
-    3.595
+    99.55,
+    2.98
   ],
   "Kabupaten Bojonegoro": [
     111.88,
@@ -636,40 +636,40 @@
     -7.91
   ],
   "Kabupaten Grobogan": [
-    110.42,
-    -6.966
+    110.92,
+    -7.03
   ],
   "Kota Baubau": [
     122.6,
     -5.47
   ],
   "Kabupaten Serang": [
-    106.151,
-    -6.118
+    106.28,
+    -6.05
   ],
   "Kabupaten Ciamis": [
     108.35,
     -7.33
   ],
   "Kota Padangsidimpuan": [
-    98.673,
-    3.595
+    99.27,
+    1.38
   ],
   "Kabupaten Gunungkidul": [
     110.6,
     -8.03
   ],
   "Kabupaten Aceh Tenggara": [
-    95.322,
-    5.548
+    97.45,
+    3.37
   ],
   "Kabupaten Jombang": [
     112.23,
     -7.55
   ],
   "Kabupaten Buru": [
-    128.181,
-    -3.695
+    126.78,
+    -3.33
   ],
   "Kota Blitar": [
     112.17,
@@ -692,8 +692,8 @@
     -7.82
   ],
   "Kabupaten Manggarai": [
-    123.607,
-    -10.177
+    120.47,
+    -8.61
   ],
   "Kabupaten Tana Toraja": [
     119.86,
@@ -704,8 +704,8 @@
     -6.98
   ],
   "Kabupaten Soppeng": [
-    119.432,
-    -5.147
+    119.88,
+    -4.35
   ],
   "Kabupaten Kebumen": [
     109.66,
@@ -728,28 +728,28 @@
     -1.48
   ],
   "Kabupaten Brebes": [
-    110.42,
-    -6.966
+    109.05,
+    -6.87
   ],
   "Kabupaten Kolaka Utara": [
-    122.515,
-    -3.998
+    121.3,
+    -3.4
   ],
   "Kabupaten Purworejo": [
     110.01,
     -7.71
   ],
   "Kota Lubuklinggau": [
-    104.745,
-    -2.991
+    102.86,
+    -3.3
   ],
   "Kabupaten Rote Ndao": [
     123.0,
     -10.73
   ],
   "Kabupaten Kampar": [
-    101.447,
-    0.507
+    101.15,
+    0.32
   ],
   "Kota Tegal": [
     109.13,
@@ -760,20 +760,20 @@
     0.86
   ],
   "Kabupaten Semarang": [
-    110.42,
-    -6.966
+    110.41,
+    -7.26
   ],
   "Kabupaten Musi Banyuasin": [
-    104.745,
-    -2.991
+    103.55,
+    -2.88
   ],
   "Kabupaten Ngawi": [
-    112.752,
-    -7.257
+    111.45,
+    -7.4
   ],
   "Kabupaten Cianjur": [
-    107.619,
-    -6.917
+    107.14,
+    -6.82
   ],
   "Kabupaten Morowali": [
     121.74,
