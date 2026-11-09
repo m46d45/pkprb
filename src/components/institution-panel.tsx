@@ -5,6 +5,7 @@ import {
   INSTITUTION_DISCLAIMER,
   PROGRAM_TIER_LABEL,
   institutionLines,
+  programLineLabel,
   type InstitutionPoint,
 } from "@/lib/institutions";
 import { BIVARIATE } from "@/lib/palette";
@@ -13,6 +14,7 @@ import { useMapStore } from "@/lib/store";
 import { formatInt } from "@/lib/utils";
 
 export function InstitutionPanel({ points }: { points: InstitutionPoint[] }) {
+  const hazard = useMapStore((s) => s.hazard);
   const focusId = useMapStore((s) => s.selectedInstitutionId);
   const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
   const setSelectedPlace = useMapStore((s) => s.setSelectedPlace);
@@ -54,11 +56,22 @@ export function InstitutionPanel({ points }: { points: InstitutionPoint[] }) {
                       className="size-3 shrink-0 rounded-full border border-line"
                       style={{ background: point.color }}
                     />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block text-[14px] font-medium">{point.name}</span>
                       <span className="block text-[12px] text-muted">
-                        {formatInt(point.programs)} program studi · {formatInt(point.centers)} pusat
+                        {point.programs === 0
+                          ? "data prodi belum lengkap"
+                          : `${formatInt(point.programs)} program studi`}
+                        {" · "}
+                        {point.centers > 0 ? "ada pusat studi" : "tidak ada pusat studi"}
                       </span>
+                      {point.programs === 0 ? null : (
+                        <span className="mt-1 block whitespace-pre-line text-[12px] leading-snug text-ink">
+                          {institutionLines(hazard, point.name)
+                            .programLines.map((item) => programLineLabel(item))
+                            .join("\n")}
+                        </span>
+                      )}
                     </span>
                   </button>
                 </li>

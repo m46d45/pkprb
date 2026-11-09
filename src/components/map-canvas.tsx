@@ -6,13 +6,14 @@ import { provinces } from "@/data/provinces";
 import {
   INSTITUTION_DISCLAIMER,
   INSTITUTION_ZOOM_K,
+  institutionTooltipText,
   placeKey,
   type InstitutionPoint,
 } from "@/lib/institutions";
 import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
-import { formatInt, formatNumber } from "@/lib/utils";
+import { cn, formatInt, formatNumber } from "@/lib/utils";
 import { RESPONS_LABEL } from "@/lib/scoring";
 
 type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
@@ -105,6 +106,7 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     x: number;
     y: number;
     line: string;
+    scroll?: boolean;
   } | null>(null);
 
   const nameToId = useMemo(
@@ -205,11 +207,13 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
   ) {
     const r = wrapRef.current?.getBoundingClientRect();
     const only = members.length === 1 ? members[0] : null;
+    const body = institutionTooltipText(hazard, members);
     setHover({
       name: only ? only.name : place.split("|")[0] ?? place,
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
-      line: only ? "Klik untuk keterangan" : `${members.length} institusi · klik untuk daftar`,
+      line: only ? body.slice(body.indexOf("\n") + 1) : body,
+      scroll: true,
     });
   }
 
@@ -464,13 +468,19 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
       </svg>
       {hover ? (
         <div
-          className="pointer-events-none absolute z-10 max-w-xs whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper"
+          className={cn(
+            "absolute z-10 max-h-[min(22rem,70vh)] max-w-sm overflow-y-auto whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper",
+            hover.scroll ? "" : "pointer-events-none",
+          )}
+          onMouseLeave={() => {
+            if (hover.scroll) setHover(null);
+          }}
           style={{
             left: Math.min(
               hover.x + 12,
               (wrapRef.current?.clientWidth ?? 360) - 180,
             ),
-            top: Math.max(8, hover.y - 42),
+            top: Math.max(8, Math.min(hover.y + 14, (wrapRef.current?.clientHeight ?? 400) - 80)),
           }}
         >
           <strong>{hover.name}</strong>
