@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { programs } from "@/data/programs";
 import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K } from "@/lib/institutions";
 import { V1_CHANGED, V1_META, V2_META } from "@/lib/weight-versions";
 import type { DisciplineId, HazardId } from "@/lib/types";
@@ -250,9 +251,10 @@ function MetodologiPage() {
           </div>
           <p className="text-[15px] leading-relaxed">
             Label Keselarasan dihitung untuk V0, V1, dan V2 dengan parameter lain
-            yang sedang dipakai. Provinsi yang labelnya tidak sama di antara
-            ketiga versi, pada filter bahaya yang aktif, ditandai sensitif.
-            Panel menampilkan ketiga label sekaligus.
+            yang sedang dipakai. Pada filter bahaya yang aktif, provinsi
+            ditandai sensitif bila label versi yang sedang dipakai berbeda dari
+            inventori prodi sebelumnya, atau bila label V0, V1, dan V2 tidak
+            sama. Panel menampilkan ketiga label sekaligus.
           </p>
         </section>
 
@@ -323,7 +325,12 @@ function MetodologiPage() {
               514). Tabel gunung api (130 kab) dan karhutla (467) tetap tersimpan,
               tidak dipakai sebagai filter.
             </li>
-            <li>204 program studi (BAN-PT / SAKTI / IABEE / laman PT).</li>
+            <li>
+              {programs.length.toLocaleString("id-ID")} program studi dari
+              inventori SAKTI dan BAN-PT. Provinsi diisi dari nama institusi.
+              Diploma tiga dan sarjana terapan memakai bobot jenjang S1, karena
+              tabel jenjang hanya berisi S1, S2, dan S3.
+            </li>
             <li>17 pusat studi bernama; kepakaran = bendera PkM.</li>
             <li>
               50 peristiwa historis dengan korban jiwa, termasuk Flores 2026.

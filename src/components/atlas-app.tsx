@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
 import { institutionPoints, placeKey } from "@/lib/institutions";
+import baselineLabels from "@/data/label-sebelum-inventori.json";
 import { V1_WEIGHTS, V2_WEIGHTS } from "@/lib/weight-versions";
 import { DEFAULT_WEIGHTS } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils";
 export function AtlasApp() {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
+  const weightVersion = useMapStore((s) => s.weightVersion);
   const weights = useMapStore((s) => s.weights);
   const strataWeights = useMapStore((s) => s.strataWeights);
   const accWeights = useMapStore((s) => s.accWeights);
@@ -88,12 +90,21 @@ export function AtlasApp() {
   const institutions = useMemo(() => institutionPoints(hazard), [hazard]);
 
   const sensitive = useMemo(() => {
+    const byV0 = new Map(scoresV0.map((s) => [s.provinceId, s.quadrant]));
     const byV1 = new Map(scoresV1.map((s) => [s.provinceId, s.quadrant]));
     const byV2 = new Map(scoresV2.map((s) => [s.provinceId, s.quadrant]));
-    return scoresV0.filter(
-      (s) => byV1.get(s.provinceId) !== s.quadrant || byV2.get(s.provinceId) !== s.quadrant,
-    );
-  }, [scoresV0, scoresV1, scoresV2]);
+    const active = weightVersion === "v1" ? byV1 : weightVersion === "v2" ? byV2 : byV0;
+    const previous =
+      (baselineLabels as Record<string, Record<string, Record<string, string>>>)[hazard]?.[
+        weightVersion
+      ] ?? {};
+    return scoresV0.filter((s) => {
+      const id = s.provinceId;
+      const versionsDiffer = byV0.get(id) !== byV1.get(id) || byV0.get(id) !== byV2.get(id);
+      const moved = previous[id] !== undefined && previous[id] !== active.get(id);
+      return versionsDiffer || moved;
+    });
+  }, [scoresV0, scoresV1, scoresV2, hazard, weightVersion]);
 
   const sensitiveIds = useMemo(
     () => new Set(sensitive.map((s) => s.provinceId)),

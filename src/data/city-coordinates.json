@@ -1,69 +1,794 @@
 {
-  "Jakarta Barat": [106.765, -6.168],
-  "Jakarta Selatan": [106.823, -6.261],
-  "Kota Jakarta Selatan": [106.831, -6.269],
-  "Kota Yogyakarta": [110.381, -7.801],
-  "Kabupaten Aceh Barat": [96.127, 4.145],
-  "Kabupaten Aceh Utara": [97.318, 5.052],
-  "Kabupaten Badung": [115.177, -8.581],
-  "Kabupaten Bangka": [106.117, -1.866],
-  "Kabupaten Bantul": [110.329, -7.887],
-  "Kabupaten Banyumas": [109.234, -7.424],
-  "Kabupaten Bogor": [106.806, -6.482],
-  "Kabupaten Bone Bolango": [123.136, 0.537],
-  "Kabupaten Gowa": [119.452, -5.202],
-  "Kabupaten Jember": [113.703, -8.173],
-  "Kabupaten Karawang": [107.305, -6.323],
-  "Kabupaten Kolaka": [121.599, -4.049],
-  "Kabupaten Lamongan": [112.327, -7.126],
-  "Kabupaten Lampung Selatan": [105.594, -5.736],
-  "Kabupaten Majene": [118.945, -3.541],
-  "Kabupaten Malang": [112.573, -8.132],
-  "Kabupaten Manokwari": [134.064, -0.861],
-  "Kabupaten Merauke": [140.402, -8.493],
-  "Kabupaten Minahasa": [124.912, 1.304],
-  "Kabupaten Muaro Jambi": [103.55, -1.65],
-  "Kabupaten Ogan Ilir": [104.65, -3.25],
-  "Kabupaten Sleman": [110.355, -7.716],
-  "Kabupaten Sukoharjo": [110.835, -7.683],
-  "Kabupaten Sumedang": [107.927, -6.838],
-  "Kabupaten Tangerang": [106.464, -6.178],
-  "Kota Ambon": [128.181, -3.695],
-  "Kota Balikpapan": [116.829, -1.237],
-  "Kota Banda Aceh": [95.324, 5.548],
-  "Kota Bandar Lampung": [105.267, -5.429],
-  "Kota Bandung": [107.619, -6.917],
-  "Kota Banjarbaru": [114.764, -3.442],
-  "Kota Banjarmasin": [114.591, -3.319],
-  "Kota Batam": [104.031, 1.045],
-  "Kota Bengkulu": [102.265, -3.792],
-  "Kota Denpasar": [115.217, -8.67],
-  "Kota Depok": [106.818, -6.402],
-  "Kota Jayapura": [140.718, -2.591],
-  "Kota Kendari": [122.515, -3.998],
-  "Kota Kupang": [123.607, -10.177],
-  "Kota Langsa": [97.968, 4.475],
-  "Kota Lhokseumawe": [97.151, 5.18],
-  "Kota Magelang": [110.217, -7.481],
-  "Kota Makassar": [119.432, -5.147],
-  "Kota Malang": [112.633, -7.967],
-  "Kota Manado": [124.842, 1.474],
-  "Kota Mataram": [116.117, -8.583],
-  "Kota Medan": [98.673, 3.595],
-  "Kota Padang": [100.354, -0.947],
-  "Kota Palangka Raya": [113.921, -2.209],
-  "Kota Palembang": [104.745, -2.991],
-  "Kota Palu": [119.878, -0.9],
-  "Kota Parepare": [119.624, -4.014],
-  "Kota Pekanbaru": [101.447, 0.507],
-  "Kota Pontianak": [109.343, -0.026],
-  "Kota Samarinda": [117.143, -0.502],
-  "Kota Semarang": [110.42, -6.966],
-  "Kota Serang": [106.151, -6.118],
-  "Kota Surabaya": [112.752, -7.257],
-  "Kota Surakarta": [110.827, -7.576],
-  "Kota Tanjungpinang": [104.455, 0.918],
-  "Kota Tarakan": [117.592, 3.313],
-  "Kota Tasikmalaya": [108.221, -7.328],
-  "Kota Ternate": [127.366, 0.79]
+  "Jakarta Barat": [
+    106.765,
+    -6.168
+  ],
+  "Jakarta Selatan": [
+    106.823,
+    -6.261
+  ],
+  "Kota Jakarta Selatan": [
+    106.831,
+    -6.269
+  ],
+  "Kota Yogyakarta": [
+    110.381,
+    -7.801
+  ],
+  "Kabupaten Aceh Barat": [
+    96.127,
+    4.145
+  ],
+  "Kabupaten Aceh Utara": [
+    97.318,
+    5.052
+  ],
+  "Kabupaten Badung": [
+    115.177,
+    -8.581
+  ],
+  "Kabupaten Bangka": [
+    106.117,
+    -1.866
+  ],
+  "Kabupaten Bantul": [
+    110.329,
+    -7.887
+  ],
+  "Kabupaten Banyumas": [
+    109.234,
+    -7.424
+  ],
+  "Kabupaten Bogor": [
+    106.806,
+    -6.482
+  ],
+  "Kabupaten Bone Bolango": [
+    123.136,
+    0.537
+  ],
+  "Kabupaten Gowa": [
+    119.452,
+    -5.202
+  ],
+  "Kabupaten Jember": [
+    113.703,
+    -8.173
+  ],
+  "Kabupaten Karawang": [
+    107.305,
+    -6.323
+  ],
+  "Kabupaten Kolaka": [
+    121.599,
+    -4.049
+  ],
+  "Kabupaten Lamongan": [
+    112.327,
+    -7.126
+  ],
+  "Kabupaten Lampung Selatan": [
+    105.594,
+    -5.736
+  ],
+  "Kabupaten Majene": [
+    118.945,
+    -3.541
+  ],
+  "Kabupaten Malang": [
+    112.573,
+    -8.132
+  ],
+  "Kabupaten Manokwari": [
+    134.064,
+    -0.861
+  ],
+  "Kabupaten Merauke": [
+    140.402,
+    -8.493
+  ],
+  "Kabupaten Minahasa": [
+    124.912,
+    1.304
+  ],
+  "Kabupaten Muaro Jambi": [
+    103.55,
+    -1.65
+  ],
+  "Kabupaten Ogan Ilir": [
+    104.65,
+    -3.25
+  ],
+  "Kabupaten Sleman": [
+    110.355,
+    -7.716
+  ],
+  "Kabupaten Sukoharjo": [
+    110.835,
+    -7.683
+  ],
+  "Kabupaten Sumedang": [
+    107.927,
+    -6.838
+  ],
+  "Kabupaten Tangerang": [
+    106.464,
+    -6.178
+  ],
+  "Kota Ambon": [
+    128.181,
+    -3.695
+  ],
+  "Kota Balikpapan": [
+    116.829,
+    -1.237
+  ],
+  "Kota Banda Aceh": [
+    95.324,
+    5.548
+  ],
+  "Kota Bandar Lampung": [
+    105.267,
+    -5.429
+  ],
+  "Kota Bandung": [
+    107.619,
+    -6.917
+  ],
+  "Kota Banjarbaru": [
+    114.764,
+    -3.442
+  ],
+  "Kota Banjarmasin": [
+    114.591,
+    -3.319
+  ],
+  "Kota Batam": [
+    104.031,
+    1.045
+  ],
+  "Kota Bengkulu": [
+    102.265,
+    -3.792
+  ],
+  "Kota Denpasar": [
+    115.217,
+    -8.67
+  ],
+  "Kota Depok": [
+    106.818,
+    -6.402
+  ],
+  "Kota Jayapura": [
+    140.718,
+    -2.591
+  ],
+  "Kota Kendari": [
+    122.515,
+    -3.998
+  ],
+  "Kota Kupang": [
+    123.607,
+    -10.177
+  ],
+  "Kota Langsa": [
+    97.968,
+    4.475
+  ],
+  "Kota Lhokseumawe": [
+    97.151,
+    5.18
+  ],
+  "Kota Magelang": [
+    110.217,
+    -7.481
+  ],
+  "Kota Makassar": [
+    119.432,
+    -5.147
+  ],
+  "Kota Malang": [
+    112.633,
+    -7.967
+  ],
+  "Kota Manado": [
+    124.842,
+    1.474
+  ],
+  "Kota Mataram": [
+    116.117,
+    -8.583
+  ],
+  "Kota Medan": [
+    98.673,
+    3.595
+  ],
+  "Kota Padang": [
+    100.354,
+    -0.947
+  ],
+  "Kota Palangka Raya": [
+    113.921,
+    -2.209
+  ],
+  "Kota Palembang": [
+    104.745,
+    -2.991
+  ],
+  "Kota Palu": [
+    119.878,
+    -0.9
+  ],
+  "Kota Parepare": [
+    119.624,
+    -4.014
+  ],
+  "Kota Pekanbaru": [
+    101.447,
+    0.507
+  ],
+  "Kota Pontianak": [
+    109.343,
+    -0.026
+  ],
+  "Kota Samarinda": [
+    117.143,
+    -0.502
+  ],
+  "Kota Semarang": [
+    110.42,
+    -6.966
+  ],
+  "Kota Serang": [
+    106.151,
+    -6.118
+  ],
+  "Kota Surabaya": [
+    112.752,
+    -7.257
+  ],
+  "Kota Surakarta": [
+    110.827,
+    -7.576
+  ],
+  "Kota Tanjungpinang": [
+    104.455,
+    0.918
+  ],
+  "Kota Tarakan": [
+    117.592,
+    3.313
+  ],
+  "Kota Tasikmalaya": [
+    108.221,
+    -7.328
+  ],
+  "Kota Ternate": [
+    127.366,
+    0.79
+  ],
+  "Jakarta Timur": [
+    106.9,
+    -6.26
+  ],
+  "Kabupaten Garut": [
+    107.91,
+    -7.21
+  ],
+  "Kota Tangerang Selatan": [
+    106.71,
+    -6.32
+  ],
+  "Kabupaten Minahasa Utara": [
+    124.842,
+    1.474
+  ],
+  "Kabupaten Sumbawa": [
+    117.42,
+    -8.49
+  ],
+  "Kota Cirebon": [
+    108.55,
+    -6.73
+  ],
+  "Kota Jambi": [
+    103.61,
+    -1.61
+  ],
+  "Kabupaten Bireuen": [
+    95.322,
+    5.548
+  ],
+  "Kabupaten Tulungagung": [
+    111.9,
+    -8.07
+  ],
+  "Kota Gorontalo": [
+    123.06,
+    0.54
+  ],
+  "Kota Tidore Kepulauan": [
+    127.44,
+    0.68
+  ],
+  "Kabupaten Ende": [
+    121.66,
+    -8.84
+  ],
+  "Kabupaten Gorontalo": [
+    123.059,
+    0.537
+  ],
+  "Kabupaten Penajam Paser Utara": [
+    116.64,
+    -1.29
+  ],
+  "Kabupaten Situbondo": [
+    114.01,
+    -7.71
+  ],
+  "Kabupaten Sidenreng Rappang": [
+    119.77,
+    -3.93
+  ],
+  "Kabupaten Probolinggo": [
+    112.752,
+    -7.257
+  ],
+  "Kabupaten Bulungan": [
+    117.37,
+    2.84
+  ],
+  "Kota Bekasi": [
+    107.0,
+    -6.24
+  ],
+  "Kota Tomohon": [
+    124.84,
+    1.33
+  ],
+  "Kabupaten Toli-Toli": [
+    120.82,
+    1.04
+  ],
+  "Kabupaten Bangli": [
+    115.217,
+    -8.67
+  ],
+  "Jakarta Pusat": [
+    106.83,
+    -6.18
+  ],
+  "Kabupaten Sikka": [
+    122.21,
+    -8.62
+  ],
+  "Kabupaten Bekasi": [
+    107.619,
+    -6.917
+  ],
+  "Kabupaten Pohuwato": [
+    121.65,
+    0.55
+  ],
+  "Kabupaten Karo": [
+    98.51,
+    3.19
+  ],
+  "Kabupaten Wonosobo": [
+    110.42,
+    -6.966
+  ],
+  "Kabupaten Kendal": [
+    110.42,
+    -6.966
+  ],
+  "Kabupaten Subang": [
+    107.76,
+    -6.57
+  ],
+  "Kabupaten Demak": [
+    110.42,
+    -6.966
+  ],
+  "Kabupaten Banggai": [
+    122.79,
+    -0.94
+  ],
+  "Kota Bogor": [
+    107.619,
+    -6.917
+  ],
+  "Kabupaten Gresik": [
+    112.55,
+    -7.16
+  ],
+  "Kabupaten Bone": [
+    120.25,
+    -4.54
+  ],
+  "Kota Tual": [
+    132.75,
+    -5.63
+  ],
+  "Kabupaten Pangkajene dan Kepulauan": [
+    119.55,
+    -4.75
+  ],
+  "Kabupaten Indramayu": [
+    108.38,
+    -6.37
+  ],
+  "Kabupaten Cilacap": [
+    109.02,
+    -7.73
+  ],
+  "Kota Bontang": [
+    117.47,
+    0.13
+  ],
+  "Kabupaten Ogan Komering Ulu": [
+    104.17,
+    -4.13
+  ],
+  "Kabupaten Lombok Timur": [
+    116.117,
+    -8.583
+  ],
+  "Kota Tangerang": [
+    106.63,
+    -6.18
+  ],
+  "Kabupaten Berau": [
+    117.5,
+    2.16
+  ],
+  "Kota Sorong": [
+    131.26,
+    -0.88
+  ],
+  "Kabupaten Sidoarjo": [
+    112.72,
+    -7.45
+  ],
+  "Kota Bima": [
+    118.73,
+    -8.46
+  ],
+  "Kabupaten Pulau Morotai": [
+    128.32,
+    2.32
+  ],
+  "Kota Prabumulih": [
+    104.23,
+    -3.43
+  ],
+  "Kabupaten Jayawijaya": [
+    138.95,
+    -4.1
+  ],
+  "Kota Pekalongan": [
+    109.68,
+    -6.89
+  ],
+  "Kabupaten Kuantan Singingi": [
+    101.52,
+    -0.52
+  ],
+  "Kabupaten Karimun": [
+    103.43,
+    1.03
+  ],
+  "Kabupaten Konawe": [
+    122.05,
+    -3.85
+  ],
+  "Kabupaten Barru": [
+    119.68,
+    -4.41
+  ],
+  "Kabupaten Bulukumba": [
+    120.21,
+    -5.43
+  ],
+  "Kota Palopo": [
+    120.2,
+    -3.0
+  ],
+  "Kabupaten Sinjai": [
+    120.25,
+    -5.12
+  ],
+  "Kabupaten Bandung": [
+    107.619,
+    -6.917
+  ],
+  "Kabupaten Simalungun": [
+    98.673,
+    3.595
+  ],
+  "Kabupaten Poso": [
+    120.75,
+    -1.39
+  ],
+  "Kota Payakumbuh": [
+    100.63,
+    -0.23
+  ],
+  "Kabupaten Biak Numfor": [
+    136.08,
+    -1.17
+  ],
+  "Kabupaten Deli Serdang": [
+    98.71,
+    3.55
+  ],
+  "Kabupaten Kotamobagu": [
+    124.842,
+    1.474
+  ],
+  "Kabupaten Kediri": [
+    112.752,
+    -7.257
+  ],
+  "Kabupaten Muna Barat": [
+    122.515,
+    -3.998
+  ],
+  "Kota Pagar Alam": [
+    103.25,
+    -4.02
+  ],
+  "Kabupaten Indragiri Hulu": [
+    102.33,
+    -0.38
+  ],
+  "Kabupaten Indragiri Hilir": [
+    101.447,
+    0.507
+  ],
+  "Kabupaten Nias": [
+    97.62,
+    1.05
+  ],
+  "Kabupaten Kotabaru": [
+    116.0,
+    -3.25
+  ],
+  "Kabupaten Bandung Barat": [
+    107.619,
+    -6.917
+  ],
+  "Kabupaten Banyuwangi": [
+    114.37,
+    -8.22
+  ],
+  "Kabupaten Bengkalis": [
+    102.08,
+    1.49
+  ],
+  "Kabupaten Fakfak": [
+    132.3,
+    -2.93
+  ],
+  "Kabupaten Lumajang": [
+    113.22,
+    -8.13
+  ],
+  "Kabupaten Kapuas Hulu": [
+    112.92,
+    0.82
+  ],
+  "Kabupaten Rejang Lebong": [
+    102.265,
+    -3.792
+  ],
+  "Kabupaten Kutai Barat": [
+    115.75,
+    -0.4
+  ],
+  "Kota Sukabumi": [
+    106.93,
+    -6.92
+  ],
+  "Kabupaten Ogan Komering Ulu Timur": [
+    104.62,
+    -4.12
+  ],
+  "Kabupaten Mojokerto": [
+    112.752,
+    -7.257
+  ],
+  "Kota Dumai": [
+    101.45,
+    1.67
+  ],
+  "Kabupaten Tuban": [
+    112.05,
+    -6.9
+  ],
+  "Jakarta Utara": [
+    106.88,
+    -6.12
+  ],
+  "Kabupaten Aceh Besar": [
+    95.322,
+    5.548
+  ],
+  "Kabupaten Sumenep": [
+    113.87,
+    -7.01
+  ],
+  "Kabupaten Kotawaringin Barat": [
+    111.64,
+    -2.68
+  ],
+  "Kabupaten Asahan": [
+    98.673,
+    3.595
+  ],
+  "Kabupaten Bojonegoro": [
+    111.88,
+    -7.15
+  ],
+  "Kabupaten Bondowoso": [
+    113.82,
+    -7.91
+  ],
+  "Kabupaten Grobogan": [
+    110.42,
+    -6.966
+  ],
+  "Kota Baubau": [
+    122.6,
+    -5.47
+  ],
+  "Kabupaten Serang": [
+    106.151,
+    -6.118
+  ],
+  "Kabupaten Ciamis": [
+    108.35,
+    -7.33
+  ],
+  "Kota Padangsidimpuan": [
+    98.673,
+    3.595
+  ],
+  "Kabupaten Gunungkidul": [
+    110.6,
+    -8.03
+  ],
+  "Kabupaten Aceh Tenggara": [
+    95.322,
+    5.548
+  ],
+  "Kabupaten Jombang": [
+    112.23,
+    -7.55
+  ],
+  "Kabupaten Buru": [
+    128.181,
+    -3.695
+  ],
+  "Kota Blitar": [
+    112.17,
+    -8.1
+  ],
+  "Kabupaten Jepara": [
+    110.68,
+    -6.59
+  ],
+  "Kabupaten Ogan Komering Ilir": [
+    105.37,
+    -3.37
+  ],
+  "Kota Cimahi": [
+    107.54,
+    -6.88
+  ],
+  "Kota Kediri": [
+    112.01,
+    -7.82
+  ],
+  "Kabupaten Manggarai": [
+    123.607,
+    -10.177
+  ],
+  "Kabupaten Tana Toraja": [
+    119.86,
+    -3.08
+  ],
+  "Kabupaten Kuningan": [
+    108.48,
+    -6.98
+  ],
+  "Kabupaten Soppeng": [
+    119.432,
+    -5.147
+  ],
+  "Kabupaten Kebumen": [
+    109.66,
+    -7.67
+  ],
+  "Kabupaten Pamekasan": [
+    113.47,
+    -7.16
+  ],
+  "Kabupaten Majalengka": [
+    108.23,
+    -6.84
+  ],
+  "Kota Madiun": [
+    111.52,
+    -7.63
+  ],
+  "Kabupaten Bungo": [
+    101.88,
+    -1.48
+  ],
+  "Kabupaten Brebes": [
+    110.42,
+    -6.966
+  ],
+  "Kabupaten Kolaka Utara": [
+    122.515,
+    -3.998
+  ],
+  "Kabupaten Purworejo": [
+    110.01,
+    -7.71
+  ],
+  "Kota Lubuklinggau": [
+    104.745,
+    -2.991
+  ],
+  "Kabupaten Rote Ndao": [
+    123.0,
+    -10.73
+  ],
+  "Kabupaten Kampar": [
+    101.447,
+    0.507
+  ],
+  "Kota Tegal": [
+    109.13,
+    -6.87
+  ],
+  "Kabupaten Rokan Hulu": [
+    100.33,
+    0.86
+  ],
+  "Kabupaten Semarang": [
+    110.42,
+    -6.966
+  ],
+  "Kabupaten Musi Banyuasin": [
+    104.745,
+    -2.991
+  ],
+  "Kabupaten Ngawi": [
+    112.752,
+    -7.257
+  ],
+  "Kabupaten Cianjur": [
+    107.619,
+    -6.917
+  ],
+  "Kabupaten Morowali": [
+    121.74,
+    -2.2
+  ],
+  "Kabupaten Tojo Una-Una": [
+    121.55,
+    -1.15
+  ],
+  "Kabupaten Polewali Mandar": [
+    119.34,
+    -3.41
+  ],
+  "Kabupaten Klaten": [
+    110.61,
+    -7.71
+  ]
 }

@@ -47,7 +47,7 @@ export const VIEW_MODES = [
 export type ViewMode = (typeof VIEW_MODES)[number];
 
 export type IabeeStatus = "none" | "provisional" | "general";
-export type StrataId = "S1" | "S2" | "S3" | "D4";
+export type StrataId = "S1" | "S2" | "S3" | "D3" | "D4";
 
 export const STRATA_LEVELS = ["S1", "S2", "S3"] as const;
 export type StrataLevel = (typeof STRATA_LEVELS)[number];
