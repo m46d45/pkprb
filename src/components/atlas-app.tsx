@@ -11,7 +11,8 @@ import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
-import { V1_WEIGHTS } from "@/lib/weight-versions";
+import { institutionPoints } from "@/lib/institutions";
+import { V1_WEIGHTS, V2_WEIGHTS } from "@/lib/weight-versions";
 import { DEFAULT_WEIGHTS } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatNumber } from "@/lib/utils";
@@ -72,10 +73,25 @@ export function AtlasApp() {
     [hazard, scoreOpts],
   );
 
+  const scoresV2 = useMemo(
+    () =>
+      scoreProvinces({
+        hazard,
+        weights: V2_WEIGHTS[hazard],
+        ...scoreOpts,
+      }),
+    [hazard, scoreOpts],
+  );
+
+  const institutions = useMemo(() => institutionPoints(hazard), [hazard]);
+
   const sensitive = useMemo(() => {
     const byV1 = new Map(scoresV1.map((s) => [s.provinceId, s.quadrant]));
-    return scoresV0.filter((s) => byV1.get(s.provinceId) !== s.quadrant);
-  }, [scoresV0, scoresV1]);
+    const byV2 = new Map(scoresV2.map((s) => [s.provinceId, s.quadrant]));
+    return scoresV0.filter(
+      (s) => byV1.get(s.provinceId) !== s.quadrant || byV2.get(s.provinceId) !== s.quadrant,
+    );
+  }, [scoresV0, scoresV1, scoresV2]);
 
   const sensitiveIds = useMemo(
     () => new Set(sensitive.map((s) => s.provinceId)),
@@ -89,6 +105,7 @@ export function AtlasApp() {
   const selected = scores.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV0 = scoresV0.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV1 = scoresV1.find((s) => s.provinceId === selectedId) ?? null;
+  const selectedV2 = scoresV2.find((s) => s.provinceId === selectedId) ?? null;
   const gaps = [...scores].sort((a, b) => b.gap - a.gap).slice(0, 6);
   const roadmap = [...scores]
     .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
@@ -117,7 +134,7 @@ export function AtlasApp() {
 
         <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div className="absolute inset-0">
-            <MapView scores={scores} sensitiveIds={sensitiveIds} />
+            <MapView scores={scores} sensitiveIds={sensitiveIds} institutions={institutions} />
           </div>
           <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start">
             <Button
@@ -181,11 +198,12 @@ export function AtlasApp() {
             selected ? "translate-x-0" : "translate-x-full pointer-events-none",
           )}
         >
-          {selected && selectedV0 && selectedV1 ? (
+          {selected && selectedV0 && selectedV1 && selectedV2 ? (
             <ProvincePanel
               score={selected}
               scoreV0={selectedV0}
               scoreV1={selectedV1}
+              scoreV2={selectedV2}
               sensitive={sensitiveIds.has(selected.provinceId)}
             />
           ) : null}

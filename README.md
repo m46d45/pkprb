@@ -14,7 +14,7 @@ Bukan peta kesiapan, ketangguhan, atau kapasitas kelembagaan daerah.
 
 Bobot prodi (sipil, kebencanaan, PWK, geologi, arsitektur, lingkungan, kelautan), bonus IABEE, pusat studi/PkM, dan spillover antarprovinsi dapat digeser di panel kiri.
 
-Dua versi bobot disiplin × bahaya dapat dipilih di peta. V0 Bawaan adalah prior di `src/lib/weights.ts`. V1 Tervalidasi dibekukan 23 Oktober 2026 pukul 17.02 WIB dari 24 validator (`src/data/v1-beku-20261023.json`): hanya sel yang selisih mediannya mencapai 0,125 diganti median. Provinsi yang label Keselarasannya berbeda antara V0 dan V1 pada filter yang aktif ditandai sensitif.
+Tiga versi bobot disiplin × bahaya dapat dipilih di peta. V0 Bawaan adalah prior di `src/lib/weights.ts` dan tetap pilihan awal. V1 Tervalidasi dibekukan 23 Oktober 2026 pukul 17.02 WIB dari 24 validator (`src/data/v1-beku-20261023.json`): hanya sel yang selisih mediannya mencapai 0,125 diganti median. V2 menaikkan disiplin non-sipil dari V1 (Arsitektur, PWK, Geologi, Lingkungan, Kelautan, Multidisiplin); Sipil dan Kebencanaan tetap. Provinsi yang label Keselarasannya tidak sama di antara V0, V1, dan V2 pada filter yang aktif ditandai sensitif. Pada zoom tingkat provinsi, titik institusi menunjukkan nama, jumlah prodi, dan jumlah pusat, tanpa skor individu.
 
 ## Validasi ahli
 

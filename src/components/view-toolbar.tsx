@@ -1,5 +1,5 @@
 import { MAP_HAZARDS, type ViewMode } from "@/lib/types";
-import { V1_META, WEIGHT_VERSION_LABEL, type WeightVersion } from "@/lib/weight-versions";
+import { V1_META, V2_META, WEIGHT_VERSION_LABEL, type WeightVersion } from "@/lib/weight-versions";
 import { HAZARD_LABEL, VIEW_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,13 @@ const VIEW_GROUPS: {
   },
 ];
 
-const VERSIONS: WeightVersion[] = ["v0", "v1"];
+const VERSIONS: WeightVersion[] = ["v0", "v1", "v2"];
+
+function versionTitle(version: WeightVersion) {
+  if (version === "v1") return V1_META.label;
+  if (version === "v2") return V2_META.note;
+  return "Nilai bawaan disiplin × bahaya";
+}
 
 export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
   const viewMode = useMapStore((s) => s.viewMode);
@@ -90,7 +96,7 @@ export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
               key={v}
               type="button"
               aria-pressed={weightVersion === v}
-              title={v === "v1" ? V1_META.label : "Nilai bawaan disiplin × bahaya"}
+              title={versionTitle(v)}
               onClick={() => setWeightVersion(v)}
               className={cn(
                 "h-8 rounded-full border px-2.5 text-[11px] transition-colors",
@@ -104,7 +110,8 @@ export function ViewToolbar({ sensitiveNames }: { sensitiveNames: string[] }) {
           ))}
         </div>
         <p className="max-w-xs text-[10px] leading-snug text-muted">
-          V1: {V1_META.nValidator} validator, dibekukan {V1_META.frozenLabel}.
+          V1: {V1_META.nValidator} validator, dibekukan {V1_META.frozenLabel}. V2: penyesuaian
+          peneliti dari V1.
         </p>
       </div>
 
