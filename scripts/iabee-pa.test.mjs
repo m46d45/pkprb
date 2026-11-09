@@ -20,7 +20,12 @@ test("hanya IABEE GA yang mendapat faktor internasional", () => {
 
 test("Teknik Sipil Unand berstatus PA memakai peringkat LAM", () => {
   const programs = readFileSync(new URL("../src/data/programs.ts", import.meta.url), "utf8");
-  const row = programs.split("\n").find((line) => line.includes('"id": "p17"'));
+  const row = programs.split("\n").find(
+    (line) =>
+      line.includes('"university": "Universitas Andalas"') &&
+      line.includes('"program": "Teknik Sipil"') &&
+      line.includes('"strata": "S1"'),
+  );
   assert.ok(row);
   assert.match(row, /"accreditation": "Unggul"/);
   assert.match(row, /"iabee": "provisional"/);
