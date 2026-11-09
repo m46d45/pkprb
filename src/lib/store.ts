@@ -24,6 +24,7 @@ type MapStore = {
   spilloverWeight: number;
   selectedId: string | null;
   selectedInstitutionId: string | null;
+  selectedPlace: string | null;
   panelOpen: boolean;
   setViewMode: (v: ViewMode) => void;
   setHazard: (h: HazardId) => void;
@@ -36,6 +37,7 @@ type MapStore = {
   setSpilloverWeight: (v: number) => void;
   setSelectedId: (id: string | null) => void;
   setSelectedInstitutionId: (id: string | null) => void;
+  setSelectedPlace: (key: string | null) => void;
   setPanelOpen: (v: boolean) => void;
   resetWeights: () => void;
 };
@@ -55,6 +57,7 @@ export const useMapStore = create<MapStore>((set) => ({
   hazard: "gempa",
   selectedId: null,
   selectedInstitutionId: null,
+  selectedPlace: null,
   panelOpen: false,
   ...resetSlice("v0"),
   setViewMode: (viewMode) => set({ viewMode }),
@@ -76,12 +79,22 @@ export const useMapStore = create<MapStore>((set) => ({
   setKepakaranWeight: (kepakaranWeight) => set({ kepakaranWeight }),
   setSpilloverWeight: (spilloverWeight) => set({ spilloverWeight }),
   setSelectedId: (selectedId) =>
-    set(selectedId ? { selectedId, selectedInstitutionId: null } : { selectedId }),
+    set(
+      selectedId
+        ? { selectedId, selectedInstitutionId: null, selectedPlace: null }
+        : { selectedId },
+    ),
   setSelectedInstitutionId: (selectedInstitutionId) =>
     set(
       selectedInstitutionId
         ? { selectedInstitutionId, selectedId: null }
         : { selectedInstitutionId },
+    ),
+  setSelectedPlace: (selectedPlace) =>
+    set(
+      selectedPlace
+        ? { selectedPlace, selectedInstitutionId: null, selectedId: null }
+        : { selectedPlace, selectedInstitutionId: null },
     ),
   setPanelOpen: (panelOpen) => set({ panelOpen }),
   resetWeights: () => set((s) => resetSlice(s.weightVersion)),

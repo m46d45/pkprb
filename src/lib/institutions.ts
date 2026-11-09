@@ -3,6 +3,7 @@ import { centers } from "@/data/centers";
 import { programs } from "@/data/programs";
 import { BIVARIATE } from "@/lib/palette";
 import type { DisciplineId, HazardId } from "@/lib/types";
+import { DISCIPLINE_LABEL } from "@/lib/weights";
 
 /** Zoom peta (faktor k) saat lebar layar kira-kira satu provinsi besar. */
 export const INSTITUTION_ZOOM_K = 4;
@@ -29,6 +30,10 @@ export type InstitutionPoint = {
   centerClass: 0 | 1 | 2;
   color: string;
 };
+
+export function placeKey(point: { city: string; province: string }) {
+  return `${point.city}|${point.province}`;
+}
 
 export const PROGRAM_TIER_LABEL = ["sedikit", "sedang", "banyak"] as const;
 export const CENTER_TIER_LABEL = ["tanpa pusat", "satu pusat", "lebih dari satu pusat"] as const;
@@ -168,6 +173,30 @@ export type InstitutionCenterLine = {
   name: string;
   focus: string;
 };
+
+export function programLineLabel(item: InstitutionProgramLine) {
+  const label = item.discipline === "pwk" ? "Planologi/PWK" : DISCIPLINE_LABEL[item.discipline];
+  if (item.program === label || item.program === DISCIPLINE_LABEL[item.discipline]) {
+    return `${label} · ${item.strata}`;
+  }
+  return `${label} · ${item.strata} · ${item.program}`;
+}
+
+/** Teks tooltip dari inventori prodi dan pusat yang sama dengan perhitungan skor. */
+export function institutionTooltipText(hazard: HazardId, members: InstitutionPoint[]) {
+  const blocks = [...members]
+    .sort((a, b) => a.name.localeCompare(b.name, "id"))
+    .map((member) => {
+      const { programLines, centerLines } = institutionLines(hazard, member.name);
+      const pusat = centerLines.length > 0 ? "ada pusat studi" : "tidak ada pusat studi";
+      if (programLines.length === 0) {
+        return `${member.name}\ndata prodi belum lengkap\n${pusat}`;
+      }
+      const daftar = programLines.map((item) => programLineLabel(item)).join("\n");
+      return `${member.name}\n${programLines.length} program studi · ${pusat}\n${daftar}`;
+    });
+  return `${blocks.join("\n\n")}\n${INSTITUTION_DISCLAIMER}`;
+}
 
 export function institutionLines(hazard: HazardId, university: string) {
   const programLines: InstitutionProgramLine[] = programs

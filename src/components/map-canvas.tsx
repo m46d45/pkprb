@@ -3,12 +3,17 @@ import { geoMercator, geoPath } from "d3-geo";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
-import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K, type InstitutionPoint } from "@/lib/institutions";
-import { spreadPositions } from "@/lib/spread-points.mjs";
+import {
+  INSTITUTION_DISCLAIMER,
+  INSTITUTION_ZOOM_K,
+  institutionTooltipText,
+  placeKey,
+  type InstitutionPoint,
+} from "@/lib/institutions";
 import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
-import { formatInt, formatNumber } from "@/lib/utils";
+import { cn, formatInt, formatNumber } from "@/lib/utils";
 import { RESPONS_LABEL } from "@/lib/scoring";
 
 type Geo = FeatureCollection<Geometry, { PROVINSI: string; KODE_PROV: string }>;
@@ -92,15 +97,16 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
   const viewMode = useMapStore((s) => s.viewMode);
   const hazard = useMapStore((s) => s.hazard);
   const selectedId = useMapStore((s) => s.selectedId);
-  const selectedInstitutionId = useMapStore((s) => s.selectedInstitutionId);
+  const selectedPlace = useMapStore((s) => s.selectedPlace);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
-  const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
+  const setSelectedPlace = useMapStore((s) => s.setSelectedPlace);
   const [t, setT] = useState<Transform>({ k: 1, x: 0, y: 0 });
   const [hover, setHover] = useState<{
     name: string;
     x: number;
     y: number;
     line: string;
+    scroll?: boolean;
   } | null>(null);
 
   const nameToId = useMemo(
@@ -194,13 +200,20 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     return RESPONS_LABEL[s.respons] + mark;
   }
 
-  function placeInstitutionHover(e: MouseEvent, point: InstitutionPoint) {
+  function placeInstitutionHover(
+    e: MouseEvent,
+    place: string,
+    members: InstitutionPoint[],
+  ) {
     const r = wrapRef.current?.getBoundingClientRect();
+    const only = members.length === 1 ? members[0] : null;
+    const body = institutionTooltipText(hazard, members);
     setHover({
-      name: point.name,
+      name: only ? only.name : place.split("|")[0] ?? place,
       x: e.clientX - (r?.left ?? 0),
       y: e.clientY - (r?.top ?? 0),
-      line: "Klik untuk keterangan",
+      line: only ? body.slice(body.indexOf("\n") + 1) : body,
+      scroll: true,
     });
   }
 
@@ -208,35 +221,40 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     const project = pathGen.projection() as
       | ((coord: [number, number]) => [number, number] | null)
       | null;
-    const raw: { point: InstitutionPoint; x: number; y: number }[] = [];
+    const groups = new Map<string, { members: InstitutionPoint[]; x: number; y: number }>();
     for (const point of institutions) {
       const xy = project ? project([point.lon, point.lat]) : null;
       if (!xy || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) continue;
-      raw.push({ point, x: xy[0], y: xy[1] });
+      const key = placeKey(point);
+      const group = groups.get(key);
+      if (group) group.members.push(point);
+      else groups.set(key, { members: [point], x: xy[0], y: xy[1] });
     }
-    // Jarak layar tetap, supaya di zoom provinsi titik se-kota tidak saling tutup.
-    const spread = spreadPositions(raw, 26 / t.k);
-    const ordered = [...spread].sort((a, b) => {
-      const ap = a.point.id === selectedInstitutionId ? 1 : 0;
-      const bp = b.point.id === selectedInstitutionId ? 1 : 0;
-      return ap - bp;
-    });
-    return ordered.map(({ point, x, y }) => {
-      const picked = point.id === selectedInstitutionId;
+    return [...groups.entries()].map(([key, group]) => {
+      const lead = [...group.members].sort(
+        (a, b) => b.programClass - a.programClass || b.centerClass - a.centerClass || b.programs - a.programs,
+      )[0];
+      if (!lead) return null;
+      const picked = selectedPlace === key;
       return (
         <g
-          key={point.id}
-          data-institution={point.id}
-          transform={`translate(${x} ${y})`}
+          key={key}
+          data-place={key}
+          transform={`translate(${group.x} ${group.y})`}
           className="cursor-pointer"
-          onMouseEnter={(e) => placeInstitutionHover(e, point)}
-          onMouseMove={(e) => placeInstitutionHover(e, point)}
+          onMouseEnter={(e) => placeInstitutionHover(e, key, group.members)}
+          onMouseMove={(e) => placeInstitutionHover(e, key, group.members)}
           onMouseLeave={() => setHover(null)}
         >
+          <title>
+            {group.members.length === 1
+              ? lead.name
+              : `${lead.city}: ${group.members.length} institusi`}
+          </title>
           <circle r={11 / t.k} fill="transparent" />
           <circle
             r={(picked ? 6.2 : 4.6) / t.k}
-            fill={point.color}
+            fill={lead.color}
             stroke={picked ? "#1f1a16" : "#fffaf3"}
             strokeWidth={(picked ? 1.8 : 1) / t.k}
           />
@@ -322,10 +340,10 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
     if (drag.id === e.pointerId) drag.down = false;
     if (!tap) return;
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    const institution = el instanceof Element ? el.closest("[data-institution]") : null;
+    const institution = el instanceof Element ? el.closest("[data-place]") : null;
     if (institution) {
-      const id = institution.getAttribute("data-institution");
-      if (id) setSelectedInstitutionId(id);
+      const key = institution.getAttribute("data-place");
+      if (key) setSelectedPlace(key);
       return;
     }
     const node = el instanceof Element ? el.closest("[data-province]") : null;
@@ -450,13 +468,19 @@ export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
       </svg>
       {hover ? (
         <div
-          className="pointer-events-none absolute z-10 max-w-xs whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper"
+          className={cn(
+            "absolute z-10 max-h-[min(22rem,70vh)] max-w-sm overflow-y-auto whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper",
+            hover.scroll ? "" : "pointer-events-none",
+          )}
+          onMouseLeave={() => {
+            if (hover.scroll) setHover(null);
+          }}
           style={{
             left: Math.min(
               hover.x + 12,
               (wrapRef.current?.clientWidth ?? 360) - 180,
             ),
-            top: Math.max(8, hover.y - 42),
+            top: Math.max(8, Math.min(hover.y + 14, (wrapRef.current?.clientHeight ?? 400) - 80)),
           }}
         >
           <strong>{hover.name}</strong>
