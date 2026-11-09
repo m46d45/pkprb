@@ -59,6 +59,10 @@ test("setiap kota inventaris punya koordinat dan lapisan tidak memuat skor", () 
   assert.doesNotMatch(layer, /weightVersion|idpki|skor/);
   const canvas = readFileSync(new URL("../src/components/map-canvas.tsx", import.meta.url), "utf8");
   assert.match(canvas, /INSTITUTION_ZOOM_K/);
-  assert.match(canvas, /prodi · /);
+  assert.doesNotMatch(canvas, /prodi · /);
+  assert.match(
+    readFileSync(new URL("../src/components/institution-panel.tsx", import.meta.url), "utf8"),
+    /Program studi relevan/,
+  );
   assert.doesNotMatch(canvas, /dosen/);
 });

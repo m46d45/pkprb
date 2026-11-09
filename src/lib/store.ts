@@ -23,6 +23,7 @@ type MapStore = {
   kepakaranWeight: number;
   spilloverWeight: number;
   selectedId: string | null;
+  selectedInstitutionId: string | null;
   panelOpen: boolean;
   setViewMode: (v: ViewMode) => void;
   setHazard: (h: HazardId) => void;
@@ -34,6 +35,7 @@ type MapStore = {
   setKepakaranWeight: (v: number) => void;
   setSpilloverWeight: (v: number) => void;
   setSelectedId: (id: string | null) => void;
+  setSelectedInstitutionId: (id: string | null) => void;
   setPanelOpen: (v: boolean) => void;
   resetWeights: () => void;
 };
@@ -52,6 +54,7 @@ export const useMapStore = create<MapStore>((set) => ({
   viewMode: "keselarasan",
   hazard: "gempa",
   selectedId: null,
+  selectedInstitutionId: null,
   panelOpen: false,
   ...resetSlice("v0"),
   setViewMode: (viewMode) => set({ viewMode }),
@@ -72,7 +75,14 @@ export const useMapStore = create<MapStore>((set) => ({
   setCenterWeight: (centerWeight) => set({ centerWeight }),
   setKepakaranWeight: (kepakaranWeight) => set({ kepakaranWeight }),
   setSpilloverWeight: (spilloverWeight) => set({ spilloverWeight }),
-  setSelectedId: (selectedId) => set({ selectedId }),
+  setSelectedId: (selectedId) =>
+    set(selectedId ? { selectedId, selectedInstitutionId: null } : { selectedId }),
+  setSelectedInstitutionId: (selectedInstitutionId) =>
+    set(
+      selectedInstitutionId
+        ? { selectedInstitutionId, selectedId: null }
+        : { selectedInstitutionId },
+    ),
   setPanelOpen: (panelOpen) => set({ panelOpen }),
   resetWeights: () => set((s) => resetSlice(s.weightVersion)),
 }));
