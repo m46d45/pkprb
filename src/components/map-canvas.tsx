@@ -3,6 +3,7 @@ import { geoMercator, geoPath } from "d3-geo";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import { provinces } from "@/data/provinces";
+import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K, type InstitutionPoint } from "@/lib/institutions";
 import { bivariateColor, EDU_CAP, EDU_RAMP, HIST_CAP, HIST_RAMP, PUSAT_CAP, rampColor, RISK_RAMP, riskCap, responsColor, toScale10 } from "@/lib/palette";
 import type { ProvinceScore } from "@/lib/types";
 import { useMapStore } from "@/lib/store";
@@ -15,6 +16,7 @@ type Props = {
   geo: Geo;
   scores: ProvinceScore[];
   sensitiveIds: ReadonlySet<string>;
+  institutions: InstitutionPoint[];
 };
 
 const VB_W = 1100;
@@ -68,7 +70,7 @@ function zoomAt(t: Transform, cx: number, cy: number, nextK: number): Transform 
   return { k, x, y };
 }
 
-export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
+export function MapCanvas({ geo, scores, sensitiveIds, institutions }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const tRef = useRef<Transform>({ k: 1, x: 0, y: 0 });
@@ -189,6 +191,16 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
     return RESPONS_LABEL[s.respons] + mark;
   }
 
+  function placeInstitutionHover(e: MouseEvent, point: InstitutionPoint) {
+    const r = wrapRef.current?.getBoundingClientRect();
+    setHover({
+      name: point.name,
+      x: e.clientX - (r?.left ?? 0),
+      y: e.clientY - (r?.top ?? 0),
+      line: `${formatInt(point.programs)} program studi relevan · ${formatInt(point.centers)} pusat studi relevan\n${INSTITUTION_DISCLAIMER}`,
+    });
+  }
+
   function placeHover(e: MouseEvent, name: string, s: ProvinceScore) {
     const r = wrapRef.current?.getBoundingClientRect();
     setHover({
@@ -266,6 +278,7 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
     if (drag.id === e.pointerId) drag.down = false;
     if (!tap) return;
     const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el instanceof Element && el.closest("[data-institution]")) return;
     const node = el instanceof Element ? el.closest("[data-province]") : null;
     const pid = node?.getAttribute("data-province");
     if (pid) setSelectedId(pid);
@@ -329,7 +342,11 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
                   onMouseMove={(e) => {
                     if (s) placeHover(e, name, s);
                   }}
-                  onMouseLeave={() => setHover(null)}
+                  onMouseLeave={(e) => {
+                    const next = e.relatedTarget;
+                    if (next instanceof Element && next.closest("[data-institution]")) return;
+                    setHover(null);
+                  }}
                 >
                   {sensitive ? <title>{name}: sensitif</title> : null}
                 </path>
@@ -363,11 +380,68 @@ export function MapCanvas({ geo, scores, sensitiveIds }: Props) {
               </g>
             );
           })}
+          {t.k >= INSTITUTION_ZOOM_K
+            ? institutions.map((point) => {
+                const project = pathGen.projection() as
+                  | ((coord: [number, number]) => [number, number] | null)
+                  | null;
+                const xy = project ? project([point.lon, point.lat]) : null;
+                if (!xy || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) return null;
+                return (
+                  <g
+                    key={point.id}
+                    data-institution={point.id}
+                    transform={`translate(${xy[0]} ${xy[1]})`}
+                    className="cursor-pointer"
+                    onMouseEnter={(e) => placeInstitutionHover(e, point)}
+                    onMouseMove={(e) => placeInstitutionHover(e, point)}
+                    onMouseLeave={() => setHover(null)}
+                  >
+                    <circle
+                      r={4.2 / t.k}
+                      fill="#1b4f5c"
+                      stroke="#fffaf3"
+                      strokeWidth={1.1 / t.k}
+                    />
+                    <text
+                      x={6 / t.k}
+                      y={-1 / t.k}
+                      fontSize={8 / t.k}
+                      fill="#1f1a16"
+                      stroke="#fffaf3"
+                      strokeWidth={2.2 / t.k}
+                      paintOrder="stroke"
+                    >
+                      <tspan x={6 / t.k}>{point.name}</tspan>
+                      <tspan x={6 / t.k} dy={9.5 / t.k}>
+                        {formatInt(point.programs)} prodi · {formatInt(point.centers)} pusat
+                      </tspan>
+                    </text>
+                  </g>
+                );
+              })
+            : null}
+        </g>
+        <g>
+          <rect
+            x={12}
+            y={8}
+            width={t.k >= INSTITUTION_ZOOM_K ? 372 : 392}
+            height={18}
+            rx={3}
+            fill="#fffaf3"
+            fillOpacity={0.94}
+          />
+          <text x={18} y={20.5} fontSize={11} fill="#1f1a16">
+            {t.k >= INSTITUTION_ZOOM_K
+              ? INSTITUTION_DISCLAIMER
+              : "Perbesar hingga tingkat provinsi untuk titik institusi."}
+          </text>
         </g>
       </svg>
       {hover ? (
         <div
-          className="pointer-events-none absolute z-10 rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper"
+          className="pointer-events-none absolute z-10 max-w-xs whitespace-pre-line rounded-md bg-ink px-2.5 py-1.5 text-[12px] text-paper"
           style={{
             left: Math.min(
               hover.x + 12,

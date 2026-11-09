@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { centersIn, eventsIn, programsIn, prodiAccLevel, QUADRANT_LABEL, RESPONS_LABEL } from "@/lib/scoring";
 import type { ProvinceScore } from "@/lib/types";
-import { V1_META, WEIGHT_VERSION_LABEL } from "@/lib/weight-versions";
+import { V1_META, V2_META, WEIGHT_VERSION_LABEL } from "@/lib/weight-versions";
 import { ACC_LABEL, DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatInt, formatNumber } from "@/lib/utils";
@@ -14,11 +14,13 @@ export function ProvincePanel({
   score,
   scoreV0,
   scoreV1,
+  scoreV2,
   sensitive,
 }: {
   score: ProvinceScore;
   scoreV0: ProvinceScore;
   scoreV1: ProvinceScore;
+  scoreV2: ProvinceScore;
   sensitive: boolean;
 }) {
   const hazard = useMapStore((s) => s.hazard);
@@ -101,6 +103,9 @@ export function ProvincePanel({
           </p>
           <p title={V1_META.label}>
             {WEIGHT_VERSION_LABEL.v1}: {QUADRANT_LABEL[scoreV1.quadrant]}
+          </p>
+          <p title={V2_META.note}>
+            {WEIGHT_VERSION_LABEL.v2}: {QUADRANT_LABEL[scoreV2.quadrant]}
           </p>
           {sensitive ? <p className="font-medium">sensitif</p> : null}
         </section>

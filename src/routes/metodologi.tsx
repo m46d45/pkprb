@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, FileSpreadsheet, FileText } from "lucide-react";
-import { V1_CHANGED, V1_META } from "@/lib/weight-versions";
+import { INSTITUTION_DISCLAIMER, INSTITUTION_ZOOM_K } from "@/lib/institutions";
+import { V1_CHANGED, V1_META, V2_META } from "@/lib/weight-versions";
 import type { DisciplineId, HazardId } from "@/lib/types";
 import { DISCIPLINE_LABEL, HAZARD_LABEL } from "@/lib/weights";
 
@@ -183,11 +184,12 @@ function MetodologiPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-display text-xl">Versi bobot V0 dan V1</h2>
+          <h2 className="font-display text-xl">Versi bobot V0, V1, dan V2</h2>
           <p className="text-[15px] leading-relaxed">
-            Peta punya dua matriks disiplin × bahaya. Pilihan bawaan adalah V0.
+            Peta punya tiga matriks disiplin × bahaya. Pilihan bawaan adalah V0.
             Mengganti versi hanya mengubah bobot disiplin. Jenjang, akreditasi,
-            pusat, kepakaran, dan spillover tidak ikut berganti.
+            pusat, kepakaran, dan spillover tidak ikut berganti. Pancaran
+            kapasitas tetap rumus yang sama.
           </p>
           <p className="text-[15px] leading-relaxed">
             <strong>V0 Bawaan</strong> adalah prior yang sudah dipakai peta
@@ -209,6 +211,14 @@ function MetodologiPage() {
             persis dengan bawaan. Gunung api dan karhutla tidak diganti dan tidak
             masuk filter. Komposit mengikuti aturan yang sama; pada beku ini
             tidak ada sel komposit yang lolos ambang.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            <strong>V2 {V2_META.shortLabel}</strong>. {V2_META.note} V2 dihitung
+            dari V1, bukan dari kuesioner baru. Sipil dan Kebencanaan tetap pada
+            angka V1. Arsitektur, Planologi (PWK), Geologi, Lingkungan, Kelautan,
+            dan Multidisiplin naik: +0,125 bila V1 di bawah 0,40; +0,10 bila V1
+            antara 0,40 dan 0,60 (termasuk kedua batas); +0,05 bila V1 di atas
+            0,60. Hasil tidak melebihi 1.
           </p>
           <p className="text-[15px] leading-relaxed">
             Dua belas sel yang berubah, semuanya usul naik:
@@ -239,10 +249,27 @@ function MetodologiPage() {
             </table>
           </div>
           <p className="text-[15px] leading-relaxed">
-            Label Keselarasan dihitung untuk kedua versi dengan parameter lain
-            yang sedang dipakai. Provinsi yang labelnya berbeda pada filter
-            bahaya yang aktif ditandai sensitif, di peta dan di panel provinsi.
-            Panel menampilkan label V0 dan V1 sekaligus.
+            Label Keselarasan dihitung untuk V0, V1, dan V2 dengan parameter lain
+            yang sedang dipakai. Provinsi yang labelnya tidak sama di antara
+            ketiga versi, pada filter bahaya yang aktif, ditandai sensitif.
+            Panel menampilkan ketiga label sekaligus.
+          </p>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="font-display text-xl">Titik institusi</h2>
+          <p className="text-[15px] leading-relaxed">
+            Titik institusi muncul bila peta diperbesar ke tingkat provinsi atau
+            lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Tiap titik
+            menyebut nama institusi, jumlah program studi pada inventaris PKPRB,
+            dan jumlah pusat studi yang cocok dengan filter bahaya. Komposit
+            menghitung semua pusat institusi itu. Titik tidak memuat skor
+            individu atau dosen. Lapisan ini tidak mengubah skor maupun label
+            Keselarasan, dan tidak bergantung pada versi bobot. Pancaran
+            kapasitas tidak diubah.
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            Label kecil pada lapisan: {INSTITUTION_DISCLAIMER}.
           </p>
         </section>
 
@@ -251,7 +278,7 @@ function MetodologiPage() {
           <div className="space-y-3 text-[15px] leading-relaxed">
             <p>
               <strong>1. Skor prodi</strong> = bobot disiplin dari versi yang
-              dipilih (V0 atau V1) × bobot jenjang × bobot akreditasi. Hanya
+              dipilih (V0, V1, atau V2) × bobot jenjang × bobot akreditasi. Hanya
               IABEE General Accreditation (GA) =
               Internasional, dan tidak ditumpuk dengan peringkat BAN-PT/LAM.
               IABEE Provisional Accreditation (PA) bukan akreditasi; prodi PA
