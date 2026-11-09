@@ -263,11 +263,11 @@ function MetodologiPage() {
             lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Titik
             diletakkan pada koordinat kota, tidak digeser. Di peta yang tampak
             hanya titik, tanpa nama. Beberapa institusi di kota yang sama berbagi
-            satu titik. Menunjuk titik membuka keterangan dari inventori yang
-            sama dengan perhitungan skor: nama institusi, daftar prodi relevan
-            beserta jenjang, jumlah prodi, dan ada atau tidaknya pusat studi.
-            Bila prodi belum terpetakan, tertulis “data prodi belum lengkap”.
-            Klik tetap membuka panel kanan. Warna memakai matriks 3×3 yang sama: tegak
+            satu titik. Menunjuk titik hanya menampilkan nama, jumlah prodi,
+            dan ada atau tidaknya pusat studi. Daftar prodi beserta jenjang
+            ada di panel kanan setelah titik diklik. Bila prodi belum
+            terpetakan, tertulis “data prodi belum lengkap”. Warna memakai
+            matriks 3×3 yang sama: tegak
             adalah kelas pusat studi (tanpa, satu, lebih dari satu), datar adalah
             kelas program studi (sedikit, sedang, banyak, tertil antarinstitusi).
             Pada kota dengan lebih dari satu institusi, warna titik mengikuti
