@@ -12,9 +12,71 @@ import { DISCIPLINE_LABEL } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
 import { formatInt } from "@/lib/utils";
 
-export function InstitutionPanel({ point }: { point: InstitutionPoint }) {
+export function InstitutionPanel({ points }: { points: InstitutionPoint[] }) {
+  const focusId = useMapStore((s) => s.selectedInstitutionId);
+  const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
+  const setSelectedPlace = useMapStore((s) => s.setSelectedPlace);
+  const focus = points.find((point) => point.id === focusId) ?? null;
+  if (!focus && points.length > 1) {
+    const place = points[0];
+    return (
+      <aside className="flex h-full flex-col bg-surface">
+        <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-4">
+          <div>
+            <p className="text-[11px] tracking-wide text-muted uppercase">Koordinat kota</p>
+            <h2 className="font-display text-2xl leading-tight">{place?.city}</h2>
+            <p className="mt-1 text-[12px] text-muted">
+              {place?.province} · {points.length} institusi pada koordinat yang sama
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Tutup"
+            onClick={() => setSelectedPlace(null)}
+          >
+            <X className="size-4" />
+          </Button>
+        </header>
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <p className="text-[12px] leading-relaxed text-muted">{INSTITUTION_DISCLAIMER}</p>
+          <ul className="space-y-2">
+            {[...points]
+              .sort((a, b) => a.name.localeCompare(b.name, "id"))
+              .map((point) => (
+                <li key={point.id}>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg border border-line px-3 py-2 text-left hover:border-ink"
+                    onClick={() => setSelectedInstitutionId(point.id)}
+                  >
+                    <i
+                      className="size-3 shrink-0 rounded-full border border-line"
+                      style={{ background: point.color }}
+                    />
+                    <span>
+                      <span className="block text-[14px] font-medium">{point.name}</span>
+                      <span className="block text-[12px] text-muted">
+                        {formatInt(point.programs)} program studi · {formatInt(point.centers)} pusat
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </aside>
+    );
+  }
+  const point = focus ?? points[0];
+  if (!point) return null;
+  return <InstitutionDetail point={point} many={points.length > 1} />;
+}
+
+function InstitutionDetail({ point, many }: { point: InstitutionPoint; many: boolean }) {
   const hazard = useMapStore((s) => s.hazard);
   const setSelectedInstitutionId = useMapStore((s) => s.setSelectedInstitutionId);
+  const setSelectedPlace = useMapStore((s) => s.setSelectedPlace);
   const { programLines, centerLines } = institutionLines(hazard, point.name);
   const ink = point.programClass + point.centerClass >= 3 ? "#f3eee4" : "#1f1a16";
 
@@ -28,15 +90,24 @@ export function InstitutionPanel({ point }: { point: InstitutionPoint }) {
             {point.city} · {point.province}
           </p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Tutup"
-          onClick={() => setSelectedInstitutionId(null)}
-        >
-          <X className="size-4" />
-        </Button>
-      </header>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Tutup"
+            onClick={() => setSelectedPlace(null)}
+          >
+            <X className="size-4" />
+          </Button>
+        </header>
+        {many ? (
+          <button
+            type="button"
+            className="border-b border-line px-4 py-2 text-left text-[13px] text-muted hover:text-ink"
+            onClick={() => setSelectedInstitutionId(null)}
+          >
+            ← Semua institusi di {point.city}
+          </button>
+        ) : null}
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
         <div className="rounded-lg px-3 py-2 text-sm" style={{ background: point.color, color: ink }}>
           Prodi {PROGRAM_TIER_LABEL[point.programClass]}, {CENTER_TIER_LABEL[point.centerClass]}

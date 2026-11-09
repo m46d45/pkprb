@@ -12,7 +12,7 @@ import { ProvincePanel } from "@/components/province-panel";
 import { Button } from "@/components/ui/button";
 import { scoreProvinces, getProvince } from "@/lib/scoring";
 import { EDU_RAMP, HIST_RAMP, RISK_RAMP } from "@/lib/palette";
-import { institutionPoints } from "@/lib/institutions";
+import { institutionPoints, placeKey } from "@/lib/institutions";
 import { V1_WEIGHTS, V2_WEIGHTS } from "@/lib/weight-versions";
 import { DEFAULT_WEIGHTS } from "@/lib/weights";
 import { useMapStore } from "@/lib/store";
@@ -29,7 +29,7 @@ export function AtlasApp() {
   const kepakaranWeight = useMapStore((s) => s.kepakaranWeight);
   const spilloverWeight = useMapStore((s) => s.spilloverWeight);
   const selectedId = useMapStore((s) => s.selectedId);
-  const selectedInstitutionId = useMapStore((s) => s.selectedInstitutionId);
+  const selectedPlace = useMapStore((s) => s.selectedPlace);
   const panelOpen = useMapStore((s) => s.panelOpen);
   const setPanelOpen = useMapStore((s) => s.setPanelOpen);
   const setSelectedId = useMapStore((s) => s.setSelectedId);
@@ -108,9 +108,10 @@ export function AtlasApp() {
   const selectedV0 = scoresV0.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV1 = scoresV1.find((s) => s.provinceId === selectedId) ?? null;
   const selectedV2 = scoresV2.find((s) => s.provinceId === selectedId) ?? null;
-  const selectedInstitution =
-    institutions.find((point) => point.id === selectedInstitutionId) ?? null;
-  const rightOpen = Boolean(selected || selectedInstitution);
+  const placePoints = selectedPlace
+    ? institutions.filter((point) => placeKey(point) === selectedPlace)
+    : [];
+  const rightOpen = Boolean(selected || placePoints.length > 0);
   const gaps = [...scores].sort((a, b) => b.gap - a.gap).slice(0, 6);
   const roadmap = [...scores]
     .filter((s) => s.respons === "belum-terespons" && s.riskClass === 2)
@@ -203,8 +204,8 @@ export function AtlasApp() {
             rightOpen ? "translate-x-0" : "translate-x-full pointer-events-none",
           )}
         >
-          {selectedInstitution ? (
-            <InstitutionPanel point={selectedInstitution} />
+          {placePoints.length > 0 ? (
+            <InstitutionPanel points={placePoints} />
           ) : selected && selectedV0 && selectedV1 && selectedV2 ? (
             <ProvincePanel
               score={selected}

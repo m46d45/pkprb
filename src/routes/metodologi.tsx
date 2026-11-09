@@ -260,14 +260,16 @@ function MetodologiPage() {
           <h2 className="font-display text-xl">Titik institusi</h2>
           <p className="text-[15px] leading-relaxed">
             Titik institusi muncul bila peta diperbesar ke tingkat provinsi atau
-            lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Di peta
-            yang tampak hanya titik, tanpa nama. Warna memakai matriks 3×3 yang
-            sama: tegak adalah kelas pusat studi (tanpa, satu, lebih dari satu),
-            datar adalah kelas program studi (sedikit, sedang, banyak, tertil
-            antarinstitusi). Klik titik membuka keterangan di panel kanan: nama,
-            jumlah program studi pada inventaris, jumlah pusat yang cocok dengan
-            filter bahaya, lalu daftar nama prodi dan pusat. Tidak ada skor
-            individu atau dosen. Lapisan ini tidak mengubah skor maupun label
+            lebih dekat (faktor zoom {INSTITUTION_ZOOM_K} atau lebih). Titik
+            diletakkan pada koordinat kota, tidak digeser. Di peta yang tampak
+            hanya titik, tanpa nama. Beberapa institusi di kota yang sama berbagi
+            satu titik; klik membuka daftar di panel kanan, lalu satu nama
+            membuka keterangannya. Warna memakai matriks 3×3 yang sama: tegak
+            adalah kelas pusat studi (tanpa, satu, lebih dari satu), datar adalah
+            kelas program studi (sedikit, sedang, banyak, tertil antarinstitusi).
+            Pada kota dengan lebih dari satu institusi, warna titik mengikuti
+            institusi dengan kelas tertinggi. Tidak ada skor individu atau dosen.
+            Lapisan ini tidak mengubah skor maupun label
             Keselarasan, dan tidak bergantung pada versi bobot. Pancaran
             kapasitas tidak diubah.
           </p>

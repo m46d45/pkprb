@@ -30,6 +30,10 @@ export type InstitutionPoint = {
   color: string;
 };
 
+export function placeKey(point: { city: string; province: string }) {
+  return `${point.city}|${point.province}`;
+}
+
 export const PROGRAM_TIER_LABEL = ["sedikit", "sedang", "banyak"] as const;
 export const CENTER_TIER_LABEL = ["tanpa pusat", "satu pusat", "lebih dari satu pusat"] as const;
 
