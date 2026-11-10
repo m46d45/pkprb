@@ -1,5 +1,7 @@
 # PKPRB
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24095084.svg)](https://doi.org/10.5281/zenodo.24095084)
+
 **Peta Keselarasan Pendidikan dan Risiko Bencana**
 
 Atlas interaktif 38 provinsi Indonesia yang menampilkan kaitan antara profil risiko bencana (IRBI / bahaya) dan dukungan pendidikan tinggi yang relevan bagi ketangguhan infrastruktur.
@@ -50,4 +52,4 @@ TanStack Start · Vite · React 19 · d3-geo · Tailwind v4 · Zustand
 
 Code in this repository is licensed under the MIT License (copyright 2026 Muhamad Abduh). Data files under `src/data/`, inventori files at the repository root (`Inventori_Prodi_PKPRB_Lengkap.csv`, `Inventori_Prodi_PKPRB_Lengkap.xlsx`, `Inventori_Prodi_SAKTI.xlsx`), and GeoJSON under `public/geo/` are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0). Batas administrasi dari GeoJSON provinsi Indonesia. Data pendidikan dan indeks di repositori ini untuk keperluan penelitian dan diskusi; bukan produk resmi BNPB, BAN-PT, atau perguruan tinggi yang tercantum.
 
-**Versi terkunci untuk peninjau:** DOI akan ditambahkan di sini setelah arsip Zenodo v1.0.0 terbit (lihat juga https://pkprb.vercel.app).
+**Versi terkunci untuk peninjau:** release GitHub [v1.0.0](https://github.com/m46d45/pkprb/releases/tag/v1.0.0); arsip Zenodo https://doi.org/10.5281/zenodo.24095084 (concept DOI: https://doi.org/10.5281/zenodo.24095083); aplikasi terkunci (immutable) https://pkprb-3wfpk1k5t-m46d45s-projects.vercel.app (produksi bergerak: https://pkprb.vercel.app).
