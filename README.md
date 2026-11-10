@@ -46,6 +46,8 @@ Buka `http://localhost:8080`.
 
 TanStack Start · Vite · React 19 · d3-geo · Tailwind v4 · Zustand
 
-## Lisensi data
+## License and citation
 
-Batas administrasi dari GeoJSON provinsi Indonesia. Data pendidikan dan indeks di repositori ini untuk keperluan penelitian dan diskusi; bukan produk resmi BNPB, BAN-PT, atau perguruan tinggi yang tercantum.
+Code in this repository is licensed under the MIT License (copyright 2026 Muhamad Abduh). Data files under `src/data/`, inventori files at the repository root (`Inventori_Prodi_PKPRB_Lengkap.csv`, `Inventori_Prodi_PKPRB_Lengkap.xlsx`, `Inventori_Prodi_SAKTI.xlsx`), and GeoJSON under `public/geo/` are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0). Batas administrasi dari GeoJSON provinsi Indonesia. Data pendidikan dan indeks di repositori ini untuk keperluan penelitian dan diskusi; bukan produk resmi BNPB, BAN-PT, atau perguruan tinggi yang tercantum.
+
+**Versi terkunci untuk peninjau:** DOI akan ditambahkan di sini setelah arsip Zenodo v1.0.0 terbit (lihat juga https://pkprb.vercel.app).

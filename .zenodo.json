@@ -1,0 +1,12 @@
+{
+  "title": "PKPRB — Peta Keselarasan Pendidikan dan Risiko Bencana",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Abduh, Muhamad",
+      "affiliation": "Institut Teknologi Bandung"
+    }
+  ],
+  "license": "MIT",
+  "description": "Atlas interaktif 38 provinsi Indonesia yang menampilkan kaitan antara profil risiko bencana (IRBI / bahaya) dan dukungan pendidikan tinggi yang relevan bagi ketangguhan infrastruktur. Bukan peta kesiapan, ketangguhan, atau kapasitas kelembagaan daerah."
+}
